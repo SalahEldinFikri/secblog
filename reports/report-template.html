@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title id="page-title">Report — SecBlog</title>
+<link rel="stylesheet" href="../assets/css/style.css"/>
+<link rel="stylesheet" href="../assets/css/report.css"/>
+</head>
+<body>
+
+<nav>
+  <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+  <div class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../reports.html">Reports</a>
+    <a href="../ioc-feed.html">IOC Feed</a>
+    <a href="../about.html">About</a>
+  </div>
+  <button class="nav-cta" onclick="window.location='../about.html'">CONTACT</button>
+</nav>
+
+<div class="report-container">
+
+  <div class="report-breadcrumb">
+    <a href="../reports.html">&lt; All Reports</a>
+  </div>
+
+  <!-- ============================================================
+       EDIT EVERYTHING BELOW THIS LINE
+       ============================================================ -->
+
+  <div class="report-header">
+    <div class="report-tags">
+      <!-- Change tag class: tag-malware | tag-threat | tag-vuln | tag-apt -->
+      <span class="tag-pill tag-malware">MALWARE ANALYSIS</span>
+      <!-- Add more tags if needed -->
+    </div>
+
+    <h1 class="report-title">
+      Your Report Title Goes Here
+    </h1>
+
+    <div class="report-meta">
+      <span>📅 2025-04-13</span>
+      <span>⏱ 10 MIN READ</span>
+      <span>✍ Your Name</span>
+      <!-- Severity: CRITICAL | HIGH | MEDIUM | LOW -->
+      <span class="sev sev-crit">CRITICAL</span>
+    </div>
+
+    <div class="report-summary">
+      A 2-3 sentence executive summary of this report. What did you find, why does it matter, and what should defenders do about it?
+    </div>
+  </div>
+
+  <!-- ── SECTION TEMPLATE ──────────────────────────────────────── -->
+  <div class="report-section">
+    <h2>1. Overview</h2>
+    <p>Write your introduction here. Describe the sample, how it was obtained, and what makes it notable.</p>
+  </div>
+
+  <div class="report-section">
+    <h2>2. Static Analysis</h2>
+    <p>Describe your static analysis findings. File type, size, hashes, strings, imports, etc.</p>
+
+    <!-- Code block example -->
+    <pre class="code-block">
+$ file sample.exe
+sample.exe: PE32 executable (GUI) Intel 80386, for MS Windows
+
+$ sha256sum sample.exe
+a3f9c1d2e4b5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1  sample.exe
+    </pre>
+  </div>
+
+  <div class="report-section">
+    <h2>3. Dynamic Analysis</h2>
+    <p>Describe runtime behavior, network connections, registry changes, dropped files, etc.</p>
+  </div>
+
+  <div class="report-section">
+    <h2>4. Indicators of Compromise</h2>
+    <p>All IOCs from this analysis. These are automatically pulled into the IOC Feed page.</p>
+
+    <!-- IOC Table — keep this format exactly, it's parsed by ioc-page.js -->
+    <div class="ioc-block" style="margin-top:1rem;">
+      <div class="ioc-header"><span class="dot"></span> IOCs — THIS REPORT</div>
+      <table class="ioc-table ioc-report-table">
+        <thead><tr><th>TYPE</th><th>INDICATOR</th><th>DESCRIPTION</th><th>CONFIDENCE</th></tr></thead>
+        <tbody>
+          <!-- Copy/paste rows to add more IOCs -->
+          <tr data-type="SHA256" data-confidence="HIGH" data-family="MalwareName">
+            <td style="color:var(--blue)">SHA256</td>
+            <td class="ioc-hash">aabbccdd...eeff0011</td>
+            <td>Main executable</td>
+            <td style="color:var(--red)">HIGH</td>
+          </tr>
+          <tr data-type="IP" data-confidence="HIGH" data-family="MalwareName">
+            <td style="color:var(--amber)">IP</td>
+            <td class="ioc-ip">1.2.3.4</td>
+            <td>C2 server</td>
+            <td style="color:var(--red)">HIGH</td>
+          </tr>
+          <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="MalwareName">
+            <td style="color:var(--red)">DOMAIN</td>
+            <td class="ioc-domain">evil-domain[.]com</td>
+            <td>Dropper domain</td>
+            <td style="color:var(--amber)">MEDIUM</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="report-section">
+    <h2>5. YARA Rule</h2>
+    <pre class="code-block">
+rule MalwareName_Sample {
+    meta:
+        author      = "Your Name"
+        date        = "2025-04-13"
+        description = "Detects MalwareName sample"
+    strings:
+        $s1 = "suspicious string 1" ascii
+        $s2 = { AA BB CC DD EE FF }
+    condition:
+        uint16(0) == 0x5A4D and all of them
+}
+    </pre>
+  </div>
+
+  <div class="report-section">
+    <h2>6. Mitigation & Recommendations</h2>
+    <ul class="report-list">
+      <li>Block the listed IPs and domains at the firewall/DNS level.</li>
+      <li>Deploy the YARA rule in your EDR/SIEM.</li>
+      <li>Add recommendation 3.</li>
+    </ul>
+  </div>
+
+  <div class="report-section">
+    <h2>References</h2>
+    <ul class="report-list">
+      <li><a href="https://any.run" target="_blank">Any.run sandbox link</a></li>
+      <li>Reference 2</li>
+    </ul>
+  </div>
+
+  <!-- ============================================================
+       STOP EDITING HERE
+       ============================================================ -->
+
+  <div class="report-footer">
+    <a href="../reports.html" class="read-more">&lt; Back to all reports</a>
+    <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">All findings shared for educational &amp; defensive purposes only.</span>
+  </div>
+
+</div>
+
+<footer>
+  <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+  <div class="footer-links" id="footer-links"></div>
+</footer>
+
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/report-page.js"></script>
+</body>
+</html>

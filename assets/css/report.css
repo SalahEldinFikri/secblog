@@ -1,0 +1,17 @@
+.report-container{max-width:800px;margin:0 auto;padding:3rem 2rem;}
+.report-breadcrumb{font-family:var(--mono);font-size:12px;margin-bottom:2rem;}
+.report-breadcrumb a{color:var(--muted);}
+.report-breadcrumb a:hover{color:var(--green);}
+.report-header{margin-bottom:3rem;padding-bottom:2rem;border-bottom:1px solid var(--border);}
+.report-title{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:700;line-height:1.2;margin-bottom:1rem;letter-spacing:-0.5px;}
+.report-meta{display:flex;gap:1.2rem;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:1.25rem;}
+.report-summary{font-size:16px;color:var(--muted);line-height:1.7;padding:1rem 1.25rem;border-left:3px solid var(--green);background:var(--surface);}
+.report-section{margin-bottom:2.5rem;}
+.report-section h2{font-family:var(--mono);font-size:14px;color:var(--green);letter-spacing:1px;margin-bottom:1rem;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.report-section p{font-size:15px;color:var(--text);line-height:1.8;margin-bottom:1rem;}
+.report-section a{color:var(--blue);text-decoration:underline;}
+.code-block{background:var(--surface);border:1px solid var(--border);padding:1.25rem 1.5rem;font-family:var(--mono);font-size:12px;color:var(--text);overflow-x:auto;white-space:pre;line-height:1.6;margin:1rem 0;}
+.report-list{padding-left:1.5rem;margin-top:8px;}
+.report-list li{font-size:15px;color:var(--text);line-height:1.8;margin-bottom:6px;}
+.report-list a{color:var(--blue);}
+.report-footer{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}

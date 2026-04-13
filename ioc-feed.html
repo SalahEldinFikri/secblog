@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IOC Feed — SecBlog</title>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<nav>
+  <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="reports.html">Reports</a>
+    <a href="ioc-feed.html">IOC Feed</a>
+    <a href="about.html">About</a>
+  </div>
+  <button class="nav-cta" onclick="window.location='about.html'">CONTACT</button>
+</nav>
+
+<div class="section" style="padding-top:3rem;">
+  <div class="section-header">
+    <span class="section-title">// IOC FEED</span>
+    <button class="view-all" id="download-csv" style="cursor:pointer;">download CSV →</button>
+  </div>
+
+  <div class="ioc-block">
+    <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>
+    <div style="overflow-x:auto;">
+      <table class="ioc-table" id="ioc-table">
+        <thead>
+          <tr>
+            <th>TYPE</th><th>INDICATOR</th><th>MALWARE FAMILY</th><th>CONFIDENCE</th><th>SOURCE REPORT</th><th>DATE</th>
+          </tr>
+        </thead>
+        <tbody id="ioc-body"></tbody>
+      </table>
+    </div>
+    <div id="no-iocs" style="display:none;padding:2rem;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);">&gt;_ no IOCs yet. Add them inside your report files.</div>
+  </div>
+</div>
+
+<footer>
+  <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+  <div class="footer-links" id="footer-links"></div>
+</footer>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/reports-data.js"></script>
+<script src="assets/js/ioc-page.js"></script>
+</body>
+</html>

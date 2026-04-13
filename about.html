@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>About — SecBlog</title>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+
+<nav>
+  <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="reports.html">Reports</a>
+    <a href="ioc-feed.html">IOC Feed</a>
+    <a href="about.html">About</a>
+  </div>
+  <button class="nav-cta">CONTACT</button>
+</nav>
+
+<div class="section" style="padding-top:3rem;max-width:700px;">
+  <div class="section-header">
+    <span class="section-title">// ABOUT</span>
+  </div>
+
+  <div class="about-band" style="border:1px solid var(--border);padding:2rem;background:var(--surface);">
+    <div class="about-inner" style="grid-template-columns:1fr 2fr;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div class="avatar" id="avatar-initials">??</div>
+        <div class="badge-row" style="justify-content:center;" id="cert-badges"></div>
+      </div>
+      <div>
+        <div class="about-name" id="author-name">Your Name</div>
+        <div class="about-title" id="author-title">CYBERSECURITY ANALYST / MALWARE ANALYST</div>
+        <div class="about-bio" id="author-bio" style="margin-top:12px;"></div>
+        <div class="badge-row" id="skill-badges" style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:2rem;">
+    <div class="section-title" style="margin-bottom:1rem;">// CONTACT & LINKS</div>
+    <div id="contact-links" style="display:flex;flex-direction:column;gap:10px;font-family:var(--mono);font-size:13px;"></div>
+  </div>
+</div>
+
+<footer>
+  <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+  <div class="footer-links" id="footer-links"></div>
+</footer>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/about-page.js"></script>
+</body>
+</html>

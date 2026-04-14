@@ -1,6 +1,7 @@
 # SecBlog — Cybersecurity & Malware Analysis Blog
 
 A dark-themed static blog for publishing malware analysis reports, threat intelligence, and IOC feeds. Runs entirely on GitHub Pages — no backend, no CMS, no database.
+<img width="2547" height="1282" alt="image" src="https://github.com/user-attachments/assets/3f342f70-d28c-4e01-b547-886780135078" />
 
 ## Quick Start
 
@@ -44,4 +45,4 @@ secblog/
 
 ## License
 
-Content © you. Code: MIT.
+Content © SalahEldin Kamil. Code: MIT.

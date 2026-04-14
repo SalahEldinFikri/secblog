@@ -4,38 +4,28 @@
 
 const SITE_CONFIG = {
 
-  // Your name (shown in About section and footer)
   authorName: "SalahEldin Kamil",
-
-  // Two-letter initials for the avatar circle
-  initials: "SE",
-
-  // Your job title
+  initials: "SK",
   title: "Cybersecurity Analyst / Malware Analyst",
+  bio: "Cybersecurity professional specializing in malware analysis and SOC operations, with hands-on experience in malware reverse engineering, YARA rules creation, and alert investigation. Passionate about reverse engineering, threat intelligence, and continuous learning.",
 
-  // Short bio
-  bio: "Cybersecurity professional specializing in malware analysis and SOC operations, with hands-on experience in malware reverse engineering, YARA rules creation, and alert investigation. Passionate about reverse engineering, threat intelligence, and continuous learning, with a strong drive to protect systems and support effective security operations.",
+  certifications: ["IELTS 6", "CSAW24 #1 MENA", "CTF Winner"],
 
-  // Your certifications (shown as badges)
-  certifications: ["Practical Malware Analysis", "Effective_Threat_Investigation"],
+  skills: ["Malware Analysis", "Reverse Engineering", "YARA", "IDA Pro", "x64dbg", "Threat Intelligence", "DFIR", "x86 Assembly", "Python", "C/C++"],
 
-  // Your skill tags
-  skills: ["Reverse Engineering", "Malware Analysis", "Threat Intelligence", "DFIR", "YARA"],
-
-  // Social / contact links (set to "" to hide)
   links: {
-    twitter: "https://x.com/Sir_SalahEldin",
-    github: "https://github.com/SalahEldinFikri",
-    linkedin: "https://www.linkedin.com/in/salaheldin-fikri-kamil-1ab233218/",
-    email: "mailto:salahfikri22@gmail.com",
+    twitter:  "",
+    github:   "https://github.com/SalahEldin-Kamil",
+    linkedin: "https://linkedin.com/in/salaheldin-kamil",
+    email:    "mailto:salaheldin.fikrikamil@gmail.com",
   },
 
-  // Ticker bar messages (shown at top of homepage)
-  // Add any announcements or recent findings here
   tickerMessages: [
-    { label: "BLOG", text: "Welcome to my threat research blog" },
-    { label: "FOCUS", text: "Malware Analysis · Threat Intel · Reverse Engineering" },
-    { label: "TOOLS", text: "IDA Pro · Ghidra · x64dbg · Wireshark · YARA" },
+    { label: "FOCUS", text: "Malware Analysis · Reverse Engineering · Threat Intelligence" },
+    { label: "TOOLS", text: "IDA Pro · x64dbg · Ghidra · YARA · Wireshark" },
+    { label: "AWARD", text: "#1 MENA Region — CSAW24 CTF Qualifications" },
+    { label: "BLOG",  text: "Malware writeups, IOCs, and YARA rules — all open source" },
   ],
 
 };
+

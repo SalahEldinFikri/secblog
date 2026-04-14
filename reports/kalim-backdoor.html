@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalim Backdoor — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../reports.html">Reports</a>
+      <a href="../ioc-feed.html">IOC Feed</a>
+      <a href="../about.html">About</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+    <div class="report-breadcrumb"><a href="../reports.html">&lt; All Reports</a></div>
+
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-apt">APT</span>
+        <span class="tag-pill tag-malware">BACKDOOR</span>
+      </div>
+      <h1 class="report-title">Kalim Backdoor Malware Analysis Report</h1>
+      <div class="report-meta">
+        <span>📅 2025-08-01</span>
+        <span>⏱ 18 MIN READ</span>
+        <span>✍ SalahEldin Kamil</span>
+        <span class="sev sev-crit">CRITICAL</span>
+      </div>
+      <div class="report-summary">
+        A 64-bit DLL backdoor attributed to the MuddyWater threat group. The malware establishes persistence via
+        COM-based startup shortcut creation, then performs host fingerprinting, encrypted C2 communication with
+        moodleuni[.]com, remote shell execution, and data exfiltration — all in a modular, thread-based design.
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>1. What is a Backdoor?</h2>
+      <p>A backdoor is a hidden method to access a system that bypasses normal authentication and security controls.
+        Unlike typical malware that executes a single task, a backdoor provides persistent, covert remote access to the
+        attacker, enabling ongoing command execution and data exfiltration.</p>
+    </div>
+
+    <div class="report-section">
+      <h2>2. Basic Static Analysis</h2>
+      <p>First, the sample was uploaded to VirusTotal for initial analysis. The results indicate that the file is a
+        64-bit DLL, identified under the Kalim malware family. Additionally, several detections suggest a potential
+        association with the MuddyWater threat group.</p>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-virustotal.png" alt="VirusTotal scan results for Kalim backdoor" />
+        <p class="img-caption">Figure 1: VirusTotal results — 64-bit DLL, Kalim family, MuddyWater attribution</p>
+      </div>
+      <p>The malware establishes network communication with the domain <code>moodleuni[.]com</code> and drops several
+        files on the infected system.</p>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-network-strings.png"
+          alt="Network strings and C2 domain in static analysis" />
+        <p class="img-caption">Figure 2: Static strings — C2 domain moodleuni[.]com and dropped file paths</p>
+      </div>
+      <p>Opening the sample in DIE (Detect It Easy) confirms it is not packed. The sample imports functions from six
+        DLLs: <code>KERNEL32.dll</code>, <code>USER32.dll</code>, <code>ADVAPI32.dll</code>, <code>SHELL32.dll</code>,
+        <code>ole32.dll</code>, and <code>WININET.dll</code>.
+      </p>
+      <p>Several imports are particularly noteworthy:</p>
+      <ul class="report-list">
+        <li>Networking APIs from <code>WININET.dll</code> — C2 communication</li>
+        <li>COM functions from <code>ole32.dll</code> — COM object creation for persistence</li>
+        <li><code>SHGetFolderPathW</code> from <code>SHELL32.dll</code> — retrieves system directory paths via CSIDL
+        </li>
+      </ul>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-imports.png" alt="Notable imports from DIE analysis" />
+        <p class="img-caption">Figure 3: Notable imports — WININET, ole32, and SHELL32 APIs indicate C2, COM abuse, and
+          path enumeration</p>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>3. Advanced Static Analysis</h2>
+
+      <h2>3.1 DllMain &amp; Thread Spawning</h2>
+      <p>At <code>DllMain</code>, the only action performed is the creation of a new thread. Within this thread, two
+        functions are executed: <code>sub_1800063A0</code> and <code>StartAddress</code>.</p>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-dllmain.png" alt="DllMain thread creation" />
+        <p class="img-caption">Figure 4: DllMain — single thread spawned, executing sub_1800063A0 then StartAddress</p>
+      </div>
+
+      <h2>3.2 sub_1800063A0 — Persistence &amp; Dropper</h2>
+      <p><strong>Stage 1 — Self-copy:</strong> The malware drops a copy of itself into the <code>AppData\Roaming</code>
+        directory. It creates a new subdirectory named <code>Updates</code>, then writes the embedded payload from
+        <code>unk_18002AA10</code> as <code>update.exe</code>:
+      </p>
+      <pre class="code-block">C:\Users\&lt;Username&gt;\AppData\Roaming\Update\update.exe</pre>
+      <p><strong>Stage 2 — COM Persistence:</strong> The malware initializes a COM object using:</p>
+      <ul class="report-list">
+        <li>CLSID: <code>{00021401-0000-0000-C000-000000000046}</code> — Shell Link Object</li>
+        <li>IID: <code>{000214F9-0000-0000-C000-000000000046}</code> — IShellLinkW interface</li>
+      </ul>
+      <p>It calls four key COM methods — <code>SetPath</code>, <code>SetDescription</code>, <code>Save</code>, and
+        <code>Release</code> — to create a malicious startup shortcut named <code>MicrosoftUpdateSerice.lnk</code>
+        within the Windows Startup directory, establishing persistence across reboots.
+      </p>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-com-persist.png" alt="COM-based persistence via startup shortcut" />
+        <p class="img-caption">Figure 5: COM abuse — IShellLinkW creates MicrosoftUpdateSerice.lnk in Startup directory
+        </p>
+      </div>
+
+      <h2>3.3 StartAddress — C2 Communication</h2>
+      <p>The malware implements its network communication logic through three distinct functions organized into three
+        logical layers:</p>
+      <ul class="report-list">
+        <li><strong>Layer 1</strong> — Host fingerprinting: collects system information from the compromised host</li>
+        <li><strong>Layer 2</strong> — Data processing: encrypts and prepares data for transmission</li>
+        <li><strong>Layer 3</strong> — Network comms: connects to <code>moodleuni[.]com</code> and transmits processed
+          data</li>
+      </ul>
+      <p>The first two functions handle authentication and HTTP POST request construction for authenticated data
+        transmission. The third function receives commands from the C2 server and determines the next action — spawning
+        a hidden command shell or uploading collected data.</p>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-c2-logic.png" alt="C2 communication three-layer architecture" />
+        <p class="img-caption">Figure 6: C2 architecture — three-layer design: fingerprint → encrypt → transmit to
+          moodleuni[.]com</p>
+      </div>
+      <div class="report-img-block">
+        <img src="images/kalim-c2-commands.png" alt="C2 command handling — shell or upload" />
+        <p class="img-caption">Figure 7: Command dispatch — C2 response triggers shell spawn or data upload</p>
+      </div>
+
+      <h2>3.4 Thread 1 — Hidden Command Shell</h2>
+      <p>The malware creates a job object along with two pipes and spawns a CMD process with the following flags:</p>
+      <pre class="code-block">CREATE_NO_WINDOW        = 0x08000000
+CREATE_NEW_PROCESS_GROUP = 0x00000200
+CREATE_UNICODE_ENVIRONMENT = 0x00000400
+STARTF_USESTDHANDLES   (dwFlags |= 0x100)</pre>
+      <p>The first pipe reads output from the shell; the second pipe writes commands to it. After creation, the shell is
+        assigned to the job object and enters a pending state waiting for commands from the C2.</p>
+      <p>The shell handles three control states via shared memory:</p>
+      <ul class="report-list">
+        <li><strong>Pending</strong> — Normal execution, wait for command</li>
+        <li><strong>Terminate</strong> — Kill shell and cleanup, fully destroy and reset</li>
+        <li><strong>Ctrlc</strong> — Force kill any remaining child processes</li>
+      </ul>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-shell-thread.png" alt="Hidden CMD shell creation and pipe setup" />
+        <p class="img-caption">Figure 8: Thread 1 — hidden CMD process with dual-pipe I/O and job object control</p>
+      </div>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-shell-control.png" alt="Shell control state machine" />
+        <p class="img-caption">Figure 9: Shell control flow — pending/terminate/ctrlc states via shared memory</p>
+      </div>
+      <p>In normal operation, if a command exists it writes the command to CMD, then checks for output using
+        <code>PeekNamedPipe</code> and stores it in the buffer.
+      </p>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-shell-io.png" alt="Command write and output read via named pipe" />
+        <p class="img-caption">Figure 10: Normal shell operation — command written, output read via PeekNamedPipe</p>
+      </div>
+
+      <h2>3.5 Thread 2 — Data Exfiltration</h2>
+      <p>The second thread creates a new file at a specified path to temporarily store data before upload. The file is
+        transmitted via HTTPS to <code>moodleuni[.]com</code> using custom headers and session identifiers to mimic
+        legitimate traffic. After the upload completes, the function updates shared memory:</p>
+      <ul class="report-list">
+        <li><code>"error"</code> — if the upload fails</li>
+        <li><code>"done"</code> — if the upload succeeds</li>
+      </ul>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-exfil.png" alt="HTTPS exfiltration thread" />
+        <p class="img-caption">Figure 11: Thread 2 — HTTPS POST exfiltration to moodleuni[.]com with custom headers</p>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>4. Summary</h2>
+      <p>The Kalim backdoor first focuses on establishing persistence to ensure long-term presence on the victim system.
+        It achieves this by creating a malicious shortcut within the Startup directory:</p>
+      <pre class="code-block">C:\Users\&lt;User&gt;\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup</pre>
+      <p>This mechanism guarantees that the malware is automatically executed each time the system boots. Once
+        persistence is established, the malware initiates communication with its C2 server <code>moodleuni[.]com</code>,
+        performs host fingerprinting, and enters a command-waiting state, continuously polling the C2 for instructions.
+      </p>
+      <p>Based on the received commands, the malware can dynamically decide its next actions — spawning a hidden command
+        shell for interactive control or uploading collected data back to the C2 server. This modular design enables
+        both remote command execution and data exfiltration, making Kalim a flexible and persistent backdoor.</p>
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-summary.png" alt="Kalim backdoor full execution flow summary" />
+        <p class="img-caption">Figure 12: Full execution flow — persistence → fingerprint → C2 → shell/exfil</p>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>5. IOCs</h2>
+      <div class="ioc-block" style="margin-top:1rem;">
+        <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>
+        <table class="ioc-table ioc-report-table">
+          <thead>
+            <tr>
+              <th>TYPE</th>
+              <th>INDICATOR</th>
+              <th>DESCRIPTION</th>
+              <th>CONFIDENCE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-type="SHA256" data-confidence="HIGH" data-family="Kalim">
+              <td style="color:var(--blue)">SHA256</td>
+              <td class="ioc-hash">0c8071494bc155c96f2cee998200f63efffcb5a064c021de0925504271806229</td>
+              <td>Kalim backdoor DLL</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="HIGH" data-family="Kalim">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">moodleuni[.]com</td>
+              <td>C2 server</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="IP" data-confidence="MEDIUM" data-family="Kalim">
+              <td style="color:var(--amber)">IP</td>
+              <td class="ioc-ip">150.171.27.12</td>
+              <td>C2 IP (via VirusTotal)</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="FILE" data-confidence="HIGH" data-family="Kalim">
+              <td style="color:var(--muted)">FILE</td>
+              <td>MicrosoftUpdateSerice.lnk</td>
+              <td>Malicious startup shortcut</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>6. YARA Rule</h2>
+      <pre class="code-block">rule kalim {
+    meta:
+        description = "Detects Kalim malware"
+        author      = "SalahEldin Fikri"
+    strings:
+        $m1  = "kalim.pdb" wide ascii
+        $s1  = "UPLOAD"
+        $s2  = "isHidden"
+        $s3  = "/command"
+        $s4  = "sleepTime"
+        $s5  = "hardwareId"
+        $s6  = "pending"
+        $s7  = "ctrlc"
+        $s8  = "terminate"
+        $s9  = { 8D 01 02 04 08 10 20 40 80 1B 36 }
+        $s10 = "KifHsNH6Xhgyebsr"
+    condition:
+        uint16(0) == 0x5A4D and
+        filesize &lt; 500KB and
+        ($m1) and
+        7 of ($s*)
+}</pre>
+    </div>
+
+    <div class="report-section">
+      <h2>7. MITRE ATT&amp;CK</h2>
+      <table class="ioc-table" style="margin-top:1rem;">
+        <thead>
+          <tr>
+            <th>TACTIC</th>
+            <th>TECHNIQUE ID</th>
+            <th>NAME</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Persistence</td>
+            <td>T1547.001</td>
+            <td>Startup Folder</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>T1036.005</td>
+            <td>Masquerading</td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>T1204.002</td>
+            <td>User Execution</td>
+          </tr>
+          <tr>
+            <td>Command &amp; Control</td>
+            <td>T1105</td>
+            <td>Ingress Tool Transfer</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>T1559.001</td>
+            <td>COM Abuse</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="report-footer">
+      <a href="../reports.html" class="read-more">&lt; Back to all reports</a>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">All findings shared for educational &amp;
+        defensive purposes only.</span>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/report-page.js"></script>
+</body>
+
+</html>

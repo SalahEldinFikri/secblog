@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evelyn Stealer — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../reports.html">Reports</a>
+      <a href="../ioc-feed.html">IOC Feed</a>
+      <a href="../about.html">About</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+    <div class="report-breadcrumb"><a href="../reports.html">&lt; All Reports</a></div>
+
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-malware">MALWARE ANALYSIS</span>
+        <span class="tag-pill tag-threat">STEALER</span>
+      </div>
+      <h1 class="report-title">Evelyn Stealer: Threat Analysis of a Developer-Focused Stealer Campaign</h1>
+      <div class="report-meta">
+        <span>📅 2026-01-31</span>
+        <span>⏱ 15 MIN READ</span>
+        <span>✍ SalahEldin Kamil</span>
+        <span class="sev sev-crit">CRITICAL</span>
+      </div>
+      <div class="report-summary">
+        A multi-stage information stealing campaign targeting software developers through malicious VS Code extensions.
+        The malware uses DLL hijacking, process hollowing, and headless browser abuse to harvest credentials, crypto
+        wallets, Telegram sessions, and more — then exfiltrates everything to attacker-controlled C2 infrastructure.
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>1. The Attack Chain</h2>
+      <p>The malware attack sequence begins with a malicious extension hosted on Visual Studio Code (VS Code). Once
+        installed by a software developer, the extension retrieves a malicious DLL, which subsequently downloads an
+        injector. The injector then deploys the Evelyn Stealer payload into a legitimate Windows system process
+        (<code>grpconv.exe</code>) by leveraging the process hollowing technique.</p>
+      <p>Evelyn Stealer was first identified and investigated by <a
+          href="https://www.koi.ai/blog/the-vs-code-malware-that-captures-your-screen" target="_blank">Koi.ai</a>, who
+        initially disclosed details of the malware campaign targeting software developers.</p>
+      <p>Evelyn Stealer is designed to exfiltrate a wide range of sensitive information, including developer
+        credentials, cryptocurrency-related data, gaming account information, and Telegram session data, effectively
+        harvesting nearly all accessible high-value data from compromised systems.</p>
+      <div class="report-img-block">
+        <img src="images/EvelynStealer/evelyn-attack-chain.png" alt="Evelyn Stealer attack chain diagram" />
+        <p class="img-caption">Figure 1: Evelyn Stealer attack chain — VS Code extension → DLL → Injector → Stealer</p>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>2. Bitcoin Black &amp; Codo AI (VS Code Extensions)</h2>
+      <p>The <code>"Bitcoin Black"</code> extension was marketed as a theme for Visual Studio Code. <code>Codo AI</code>
+        posed as an "AI-powered coding assistant with ChatGPT and DeepSeek integration." Both are confirmed to be part
+        of a malicious campaign, executing unauthorized scripts and exfiltrating sensitive data.</p>
+      <p>Visual Studio Code themes are typically implemented as JSON files and are limited to defining editor color
+        schemes. However, this extension significantly exceeds that expected functionality by executing PowerShell
+        scripts, indicating malicious behavior.</p>
+      <p>The malicious extension subsequently downloads a ZIP archive from the C2 domain
+        <code>syn1112223334445556667778889990[.]org</code>. By abusing a DLL hijacking technique, the malware leverages
+        the execution of <code>Lightshot.exe</code>, which loads the malicious DLL instead of the legitimate one,
+        ultimately deploying the Evelyn Stealer payload.</p>
+      <div class="report-img-block">
+        <img src="images/EvelynStealer/evelyn-vscode-ext.png" alt="Malicious VS Code extension behavior" />
+        <p class="img-caption">Figure 2: Malicious VS Code extension executing PowerShell and downloading payload</p>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>3. LightShot.dll (Downloader)</h2>
+      <p>After the VS Code extension retrieves the hijacked DLL, the malicious <code>LightShot.dll</code> enforces
+        single instance execution by ensuring that only one PowerShell process is active at a time. When a new
+        PowerShell process is spawned, it is created with the following characteristics:</p>
+      <ul class="report-list">
+        <li>Run without a visible window</li>
+        <li>Execute silently in the background</li>
+      </ul>
+      <p>Once this condition is satisfied, the DLL launches a hidden PowerShell process to download an additional
+        executable payload (the injector). The payload is delivered using a misleading file extension
+        <code>(.model)</code> to evade basic security filtering. The downloaded file is saved to the system's temporary
+        directory as <code>runtime.exe</code> and executed immediately. To prevent duplicate execution, the malware
+        creates a new mutex, ensuring only a single injector instance runs.</p>
+      <div class="report-img-block">
+        <img src="images/EvelynStealer/evelyn-lightshot.png" alt="LightShot.dll downloader behavior in IDA" />
+        <p class="img-caption">Figure 3: LightShot.dll — hidden PowerShell spawning and payload download logic</p>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>4. runtime.exe (Injector)</h2>
+      <p>The injector begins by loading all required Windows libraries necessary to perform the process hollowing
+        technique. It then creates a new legitimate Windows process (<code>grpconv.exe</code>) in a suspended state.
+        Once the process is created, the injector decrypts the embedded Evelyn Stealer payload and maps it into the
+        memory space of the target process. Finally, the suspended process is resumed, resulting in the execution of the
+        Evelyn Stealer payload under the context of the legitimate system process.</p>
+      <div class="report-img-block">
+        <img src="images/EvelynStealer/evelyn-injector.png" alt="Process hollowing via runtime.exe" />
+        <p class="img-caption">Figure 4: Process hollowing — grpconv.exe spawned in suspended state, payload decrypted
+          and mapped</p>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>5. Evelyn Stealer Payload</h2>
+      <p>Upon execution, the malware begins by dynamically resolving required Windows APIs. It then performs a series of
+        environment checks to determine whether it is running within a virtual machine, under a debugger, inside a
+        Remote Desktop session, or on a Hyper-V–based system.</p>
+      <p>Once the environment is deemed suitable, the malware retrieves the path to the user's <code>AppData</code>
+        directory and creates a dedicated subdirectory named <code>Evelyn</code> for staging and data storage. It then
+        proceeds to recover browser-related data and forcefully terminates all running browser processes to ensure
+        exclusive access to browser files and databases.</p>
+      <div class="report-img-block">
+        <img src="images/EvelynStealer/evelyn-antianalysis.png" alt="Anti-analysis checks in Evelyn Stealer" />
+        <p class="img-caption">Figure 5: Environment checks — VM, debugger, RDP, and Hyper-V detection</p>
+      </div>
+      <p>Furthermore, the malware searches for the file <code>abe_decrypt.dll</code> within the system's TEMP directory.
+        If the DLL is not found, it downloads it from a C2 FTP server (<code>server09.mentality.cloud</code>) using
+        hardcoded credentials (<code>admin_syn / Kortexian900...</code>). This DLL facilitates browser data decryption.
+      </p>
+      <p>Following this stage, the malware launches browsers in a highly controlled and stealthy configuration:</p>
+      <ul class="report-list">
+        <li>Headless execution mode</li>
+        <li>Disabling built-in browser security mechanisms</li>
+        <li>Disabling all extensions</li>
+        <li>Suppressing advertisements, audio output, and user interaction</li>
+        <li>Reducing the browser window to 1×1 pixels and positioning it off-screen</li>
+      </ul>
+      <div class="report-img-block">
+        <img src="images/EvelynStealer/evelyn-browser.png" alt="Headless browser abuse for credential extraction" />
+        <p class="img-caption">Figure 6: Headless browser credential extraction — cookies, tokens, session artifacts</p>
+      </div>
+      <p>Subsequently, the malware captures desktop screenshots and performs extensive system reconnaissance, harvesting
+        cryptocurrency wallets, Telegram session data, gaming sessions (Steam and Epic Games), Discord tokens, Wi-Fi
+        credentials, VPN configurations, detailed system information, and a list of running processes.</p>
+      <p>After completing data collection, the malware aggregates the stolen information into a single compressed
+        archive named with victim-specific metadata:</p>
+      <pre
+        class="code-block">{COUNTRY_CODE}-{IP_ADDRESS}-{USERNAME}-{OS_VERSION}-{CRYPTO_FOUND}-{PAYPAL_FOUND}-{CRYPTO_WEBSITES}-{RAM_INFO}-{GPU_INFO}-{METAMASK}-{PHANTOM}-{TRUSTWALLET}-{OTHER_WALLETS}-{TIMESTAMP}.zip</pre>
+      <div class="report-img-block">
+        <img src="images/EvelynStealer/evelyn-exfil.png" alt="Data exfiltration to C2" />
+        <p class="img-caption">Figure 7: Exfiltration archive naming convention and C2 upload</p>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>6. IOCs</h2>
+      <div class="ioc-block" style="margin-top:1rem;">
+        <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>
+        <table class="ioc-table ioc-report-table">
+          <thead>
+            <tr>
+              <th>TYPE</th>
+              <th>INDICATOR</th>
+              <th>DESCRIPTION</th>
+              <th>CONFIDENCE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-type="SHA256" data-confidence="HIGH" data-family="EvelynStealer">
+              <td style="color:var(--blue)">SHA256</td>
+              <td class="ioc-hash">369479bd9a248c9448705c222d81ff1a0143343a138fc38fc0ea00f54fcc1598</td>
+              <td>LightShot.dll</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="SHA256" data-confidence="HIGH" data-family="EvelynStealer">
+              <td style="color:var(--blue)">SHA256</td>
+              <td class="ioc-hash">e77bdfcc5bb6c120f2eb60cdffbe247ae2a09c9043640bfdd34d6e412782eec8</td>
+              <td>runtime.exe (Injector)</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="SHA256" data-confidence="HIGH" data-family="EvelynStealer">
+              <td style="color:var(--blue)">SHA256</td>
+              <td class="ioc-hash">74e43a0175179a0a04361faaaaf05eb1e6b84adca69e4f446ef82c0a5d1923d5</td>
+              <td>abe_decrypt.dll</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="HIGH" data-family="EvelynStealer">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">syn1112223334445556667778889990[.]org</td>
+              <td>C2 — HTTP</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="HIGH" data-family="EvelynStealer">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">server09.mentality.cloud</td>
+              <td>C2 — FTP exfil server</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>7. YARA Rules</h2>
+      <p>Injector detection rule:</p>
+      <pre class="code-block">rule Evelyn_Injector
+{
+    meta:
+        description = "Detects Evelyn Stealer injector (runtime.exe)"
+        author      = "SalahEldin Fikri (Mr_MaTriX)"
+    strings:
+        $s1  = "[*] Process Hollowing Complete!"
+        $s2  = "[*] Resume Thread!"
+        $s3  = "[*] Destination process created!"
+        $s4  = "[*] Decrypting embedded payload..."
+        $s5  = "[-] Failed writing header!"
+        $s6  = "[-] Failed unmapping target ImageBase!"
+        $s7  = "[*] Successfully loaded all required APIs"
+    condition:
+        uint16(0) == 0x5A4D and filesize &lt; 500KB and 5 of ($s*)
+}</pre>
+
+      <p>Stealer detection rule:</p>
+      <pre class="code-block">rule Evelyn_Stealer
+{
+    meta:
+        description = "Detects Evelyn Stealer payload"
+        author      = "SalahEldin Fikri (Mr_MaTriX)"
+    strings:
+        $m1 = "[-] All upload attempts failed - data saved locally in Evelyn folder"
+        $m2 = "[*] Starting Evelyn Browser Extractor..."
+        $m3 = "[-] ERROR: Failed to create Evelyn folder"
+        $s1 = "[*] Downloading abe_decrypt.dll from FTP server..."
+        $s2 = "abe_decrypt.dll" wide
+        $s3 = "[*] Stealing Telegram session..."
+        $s4 = "[*] Stealing Steam session..."
+        $s5 = "[*] Capturing screenshot..."
+        $s6 = "[*] Killing existing browser processes..."
+        $s7 = "[+] WiFi profiles stolen successfully"
+    condition:
+        uint16(0) == 0x5A4D and filesize &lt; 300KB and (any of ($m*)) and (5 of ($s*))
+}</pre>
+    </div>
+
+    <div class="report-section">
+      <h2>8. MITRE ATT&amp;CK</h2>
+      <table class="ioc-table" style="margin-top:1rem;">
+        <thead>
+          <tr>
+            <th>TACTIC</th>
+            <th>TECHNIQUE ID</th>
+            <th>NAME</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Initial Access</td>
+            <td>T1566.001</td>
+            <td>Phishing: Attachment</td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>T1059.001</td>
+            <td>PowerShell</td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>T1106</td>
+            <td>Native API</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>T1027</td>
+            <td>Obfuscated Files or Information</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>T1564.003</td>
+            <td>Hidden Window</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>T1497.001</td>
+            <td>Virtualization/Sandbox Evasion</td>
+          </tr>
+          <tr>
+            <td>Privilege Abuse</td>
+            <td>T1055.012</td>
+            <td>Process Hollowing</td>
+          </tr>
+          <tr>
+            <td>Credential Access</td>
+            <td>T1555</td>
+            <td>Credentials from Password Stores</td>
+          </tr>
+          <tr>
+            <td>Collection</td>
+            <td>T1113</td>
+            <td>Screen Capture</td>
+          </tr>
+          <tr>
+            <td>Exfiltration</td>
+            <td>T1041</td>
+            <td>Exfiltration Over C2 Channel</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="report-section">
+      <h2>References</h2>
+      <ul class="report-list">
+        <li><a href="https://www.koi.ai/blog/the-vs-code-malware-that-captures-your-screen" target="_blank">Koi.ai — The
+            VS Code malware that captures your screen</a></li>
+        <li><a href="https://www.trendmicro.com/en_us/research/26/a/analysis-of-the-evelyn-stealer-campaign.html"
+            target="_blank">TrendMicro — Analysis of the Evelyn Stealer Campaign</a></li>
+        <li><a href="https://thehackernews.com/2026/01/evelyn-stealer-malware-abuses-vs-code.html" target="_blank">The
+            Hacker News — Evelyn Stealer Malware Abuses VS Code</a></li>
+      </ul>
+    </div>
+
+    <div class="report-footer">
+      <a href="../reports.html" class="read-more">&lt; Back to all reports</a>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">All findings shared for educational &amp;
+        defensive purposes only.</span>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/report-page.js"></script>
+</body>
+
+</html>

@@ -11,10 +11,10 @@ const SITE_CONFIG = {
 
   certifications: ["Practical_Malware_Analysis", "Effective_Threat_Investigation"],
 
-  skills: ["Malware Analysis", "Reverse Engineering", "YARA", "IDA Pro", "x64dbg", "Threat Intelligence", "DFIR", "x86 Assembly", "Python", "C/C++"],
+  skills: ["Malware Analysis", "Reverse Engineering", "YARA", "IDA Pro", "x64dbg", "Threat Intelligence", "x86 Assembly", "Python", "C/C++"],
 
   links: {
-    twitter: "",
+    twitter: "https://x.com/Sir_SalahEldin",
     github: "https://github.com/SalahEldinKamil",
     linkedin: "https://www.linkedin.com/in/salaheldin-fikri-kamil-1ab233218/",
     email: "mailto:salaheldin.fikrikamil@gmail.com",

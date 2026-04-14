@@ -1,82 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SecBlog — Malware & Threat Intelligence Research</title>
-<meta name="description" content="Independent malware analysis, threat intelligence, and cybersecurity research."/>
-<link rel="stylesheet" href="assets/css/style.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SecBlog — Malware & Threat Intelligence Research</title>
+  <meta name="description" content="Independent malware analysis, threat intelligence, and cybersecurity research." />
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
+
 <body>
 
-<nav>
-  <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="reports.html">Reports</a>
-    <a href="ioc-feed.html">IOC Feed</a>
-    <a href="about.html">About</a>
-  </div>
-  <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
-</nav>
-
-<div class="hero">
-  <div class="hero-tag"><span class="dot"></span> LIVE — THREAT RESEARCH BLOG</div>
-  <h1>Malware Analysis &<br/><em>Threat Intelligence</em><br/>Reports</h1>
-  <p>In-depth reverse engineering, malware teardowns, and adversary intelligence — written by a practitioner, for the community.</p>
-  <div class="hero-stats">
-    <div class="stat"><div class="stat-num" id="report-count">0</div><div class="stat-label">REPORTS</div></div>
-    <div class="stat"><div class="stat-num">—</div><div class="stat-label">IOCs SHARED</div></div>
-    <div class="stat"><div class="stat-num">—</div><div class="stat-label">MALWARE FAMILIES</div></div>
-  </div>
-</div>
-
-<div class="ticker">
-  <div class="ticker-inner" id="ticker-inner">
-    <span class="ticker-item"><span class="label">BLOG</span> Welcome to my threat research blog</span>
-    <span class="ticker-item"><span class="label">TOPIC</span> Malware Analysis · Threat Intel · Reverse Engineering</span>
-    <span class="ticker-item"><span class="label">NEW</span> First report coming soon</span>
-    <span class="ticker-item"><span class="label">BLOG</span> Welcome to my threat research blog</span>
-    <span class="ticker-item"><span class="label">TOPIC</span> Malware Analysis · Threat Intel · Reverse Engineering</span>
-    <span class="ticker-item"><span class="label">NEW</span> First report coming soon</span>
-  </div>
-</div>
-
-<div class="section">
-  <div class="section-header">
-    <span class="section-title">// LATEST REPORTS</span>
-    <a href="reports.html" class="view-all">view all →</a>
-  </div>
-  <div class="posts-grid" id="posts-grid">
-    <!-- Reports are loaded from reports/index.js -->
-  </div>
-  <div id="no-reports" style="display:none;padding:3rem 0;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);">
-    &gt;_ no reports yet. <a href="HOW-TO-ADD-REPORT.md" style="color:var(--green);">add your first report →</a>
-  </div>
-</div>
-
-<div class="about-band">
-  <div class="about-inner">
-    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-      <img src="assets/profile.jpg" alt="SalahEldin Kamil" style="width:110px;height:110px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid #00ff9d;"/>
-      <div class="badge-row" style="justify-content:center;" id="cert-badges"></div>
+  <nav>
+    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="reports.html">Reports</a>
+      <a href="ioc-feed.html">IOC Feed</a>
+      <a href="about.html">About</a>
     </div>
-    <div>
-      <div class="about-name" id="author-name">Your Name</div>
-      <div class="about-title">CYBERSECURITY ANALYST / MALWARE ANALYST</div>
-      <div class="about-bio" id="author-bio">Edit config.js to add your name, bio, and certifications.</div>
-      <div class="badge-row" id="skill-badges"></div>
+    <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-tag"><span class="dot"></span> LIVE — THREAT RESEARCH BLOG</div>
+    <h1>Malware Analysis &<br /><em>Threat Intelligence</em><br />Reports</h1>
+    <p>In-depth reverse engineering, malware teardowns, and adversary intelligence — written by a practitioner, for the
+      community.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num" id="report-count">0</div>
+        <div class="stat-label">REPORTS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">—</div>
+        <div class="stat-label">IOCs SHARED</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">—</div>
+        <div class="stat-label">MALWARE FAMILIES</div>
+      </div>
     </div>
   </div>
-</div>
 
-<footer>
-  <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
-  <div class="footer-links" id="footer-links"></div>
-</footer>
+  <div class="ticker">
+    <div class="ticker-inner" id="ticker-inner">
+      <span class="ticker-item"><span class="label">BLOG</span> Welcome to my threat research blog</span>
+      <span class="ticker-item"><span class="label">TOPIC</span> Malware Analysis · Threat Intel · Reverse
+        Engineering</span>
+      <span class="ticker-item"><span class="label">NEW</span> First report coming soon</span>
+      <span class="ticker-item"><span class="label">BLOG</span> Welcome to my threat research blog</span>
+      <span class="ticker-item"><span class="label">TOPIC</span> Malware Analysis · Threat Intel · Reverse
+        Engineering</span>
+      <span class="ticker-item"><span class="label">NEW</span> First report coming soon</span>
+    </div>
+  </div>
 
-<script src="assets/js/config.js"></script>
-<script src="assets/js/reports-data.js"></script>
-<script src="assets/js/main.js"></script>
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">// LATEST REPORTS</span>
+      <a href="secblog/reports.html" class="view-all">view all →</a>
+    </div>
+    <div class="posts-grid" id="posts-grid">
+      <!-- Reports are loaded from reports/index.js -->
+    </div>
+    <div id="no-reports"
+      style="display:none;padding:3rem 0;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);">
+      &gt;_ no reports yet. <a href="HOW-TO-ADD-REPORT.md" style="color:var(--green);">add your first report →</a>
+    </div>
+  </div>
+
+  <div class="about-band">
+    <div class="about-inner">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <img src="assets/profile.jpg" alt="SalahEldin Kamil"
+          style="width:110px;height:110px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid #00ff9d;" />
+        <div class="badge-row" style="justify-content:center;" id="cert-badges"></div>
+      </div>
+      <div>
+        <div class="about-name" id="author-name">Your Name</div>
+        <div class="about-title">CYBERSECURITY ANALYST / MALWARE ANALYST</div>
+        <div class="about-bio" id="author-bio">Edit config.js to add your name, bio, and certifications.</div>
+        <div class="badge-row" id="skill-badges"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/reports-data.js"></script>
+  <script src="assets/js/main.js"></script>
 </body>
+
 </html>

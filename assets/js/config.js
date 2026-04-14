@@ -15,7 +15,7 @@ const SITE_CONFIG = {
 
   links: {
     twitter: "https://x.com/Sir_SalahEldin",
-    github: "https://github.com/SalahEldinKamil",
+    github: "https://github.com/SalahEldinFikri",
     linkedin: "https://www.linkedin.com/in/salaheldin-fikri-kamil-1ab233218/",
     email: "mailto:salaheldin.fikrikamil@gmail.com",
   },

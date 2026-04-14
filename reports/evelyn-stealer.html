@@ -74,7 +74,8 @@
       <p>The malicious extension subsequently downloads a ZIP archive from the C2 domain
         <code>syn1112223334445556667778889990[.]org</code>. By abusing a DLL hijacking technique, the malware leverages
         the execution of <code>Lightshot.exe</code>, which loads the malicious DLL instead of the legitimate one,
-        ultimately deploying the Evelyn Stealer payload.</p>
+        ultimately deploying the Evelyn Stealer payload.
+      </p>
       <div class="report-img-block">
         <img src="images/EvelynStealer/evelyn-vscode-ext.png" alt="Malicious VS Code extension behavior" />
         <p class="img-caption">Figure 2: Malicious VS Code extension executing PowerShell and downloading payload</p>
@@ -94,7 +95,8 @@
         executable payload (the injector). The payload is delivered using a misleading file extension
         <code>(.model)</code> to evade basic security filtering. The downloaded file is saved to the system's temporary
         directory as <code>runtime.exe</code> and executed immediately. To prevent duplicate execution, the malware
-        creates a new mutex, ensuring only a single injector instance runs.</p>
+        creates a new mutex, ensuring only a single injector instance runs.
+      </p>
       <div class="report-img-block">
         <img src="images/EvelynStealer/evelyn-lightshot.png" alt="LightShot.dll downloader behavior in IDA" />
         <p class="img-caption">Figure 3: LightShot.dll — hidden PowerShell spawning and payload download logic</p>
@@ -215,15 +217,23 @@
         description = "Detects Evelyn Stealer injector (runtime.exe)"
         author      = "SalahEldin Fikri (Mr_MaTriX)"
     strings:
-        $s1  = "[*] Process Hollowing Complete!"
-        $s2  = "[*] Resume Thread!"
-        $s3  = "[*] Destination process created!"
-        $s4  = "[*] Decrypting embedded payload..."
-        $s5  = "[-] Failed writing header!"
-        $s6  = "[-] Failed unmapping target ImageBase!"
-        $s7  = "[*] Successfully loaded all required APIs"
+        $s1  = "[*] Process Hollowing Complete!"  
+        $s2  = "[*] Resume Thread!"  
+        $s3  = "[*] NewEntryPoint : 0x%p"  
+        $s4  = "[*] Setting thread context!"  
+        $s5  = "[*] Destination process section unmapping success!"  
+        $s6  = "[-] Failed writing header!"
+        $s7  = "[*] Destination process created!"
+        $s8  = "[*] Decrypting embedded payload..."
+        $s9  = "[*] Encrypted payload size: %d bytes"
+        $s10 = "[*] Decrypted payload size: %d bytes"
+        $s11 = "[-] Failed unmapping target ImageBase!"
+        $s12 = "[-] Failed to decrypt embedded payload!"
+        $s13 = "[-] Failed resuming thread!"
+        $s14 = "[-] Section data writing failed!"
+        $s15 = "[*] Successfully loaded all required APIs"
     condition:
-        uint16(0) == 0x5A4D and filesize &lt; 500KB and 5 of ($s*)
+        uint16(0) == 0x5A4D and filesize &lt; 500KB and 10 of ($s*)
 }</pre>
 
       <p>Stealer detection rule:</p>
@@ -233,18 +243,36 @@
         description = "Detects Evelyn Stealer payload"
         author      = "SalahEldin Fikri (Mr_MaTriX)"
     strings:
-        $m1 = "[-] All upload attempts failed - data saved locally in Evelyn folder"
-        $m2 = "[*] Starting Evelyn Browser Extractor..."
-        $m3 = "[-] ERROR: Failed to create Evelyn folder"
-        $s1 = "[*] Downloading abe_decrypt.dll from FTP server..."
-        $s2 = "abe_decrypt.dll" wide
-        $s3 = "[*] Stealing Telegram session..."
-        $s4 = "[*] Stealing Steam session..."
-        $s5 = "[*] Capturing screenshot..."
-        $s6 = "[*] Killing existing browser processes..."
-        $s7 = "[+] WiFi profiles stolen successfully"
+        $m1 = "[-] All upload attempts failed - data saved locally in Evelyn folder" 
+        $m2 = "[*] Copying wallets to Evelyn\\Wallets..." 
+        $m3 = "[*] Starting Evelyn Browser Extractor..."
+        $m4 = "[-] ERROR: Failed to create Evelyn folder"
+        $m5 = "[+] Evelyn folder: %s"
+        $m6 = "[*] Copying wallets to Evelyn\\Wallets..."
+        $m7 = "Evelyn" wide
+
+        $s1  = "[*] Downloading abe_decrypt.dll from FTP server..."  
+        $s2  = "[-] ERROR: abe_decrypt.dll not found!"  
+        $s3  = "abe_decrypt.dll"  wide
+        $s4  = "/public_html/abe_decrypt.dll"  wide
+        $s5  = "  [*] Found Exodus wallet"
+        $s6  = "  [*] Found Atomic wallet"
+        $s7  = "[*] Stealing Telegram session..."
+        $s8  = "[*] Stealing Steam session..."
+        $s9  = "[*] Stealing Epic Games session..."
+        $s10 = "[*] Stealing Ubisoft Connect session..."
+        $s11 = "[*] Stealing FileZilla credentials..."
+        $s12 = "[*] Stealing VPN configurations..."
+        $s13 = "[*] Stealing clipboard data..."
+        $s14 = "[*] Searching for sensitive files..."
+        $s15 = "[*] Capturing running processes..."
+        $s16 = "[*] Capturing screenshot..."
+        $s17 = "[*] Killing existing browser processes..."
+        $s18 = "[+] WiFi profiles stolen successfully"
+        $s19 = "[+] Chrome injection successful"
+        $s20 = "[+] Edge injection successful"
     condition:
-        uint16(0) == 0x5A4D and filesize &lt; 300KB and (any of ($m*)) and (5 of ($s*))
+        uint16(0) == 0x5A4D and filesize &lt; 300KB and (any of ($m*)) and (10 of ($s*))
 }</pre>
     </div>
 

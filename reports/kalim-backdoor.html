@@ -47,9 +47,7 @@
 
     <div class="report-section">
       <h2>1. What is a Backdoor?</h2>
-      <p>A backdoor is a hidden method to access a system that bypasses normal authentication and security controls.
-        Unlike typical malware that executes a single task, a backdoor provides persistent, covert remote access to the
-        attacker, enabling ongoing command execution and data exfiltration.</p>
+      <p>A backdoor is a hidden method to access a system that bypasses normal authentication and security controls.</p>
     </div>
 
     <div class="report-section">
@@ -72,6 +70,7 @@
         DLLs: <code>KERNEL32.dll</code>, <code>USER32.dll</code>, <code>ADVAPI32.dll</code>, <code>SHELL32.dll</code>,
         <code>ole32.dll</code>, and <code>WININET.dll</code>.
       </p>
+      <img src="images/KalimBackdoor/kalim-importss.png" alt="imports from DIE" />
       <p>Several imports are particularly noteworthy:</p>
       <ul class="report-list">
         <li>Networking APIs from <code>WININET.dll</code> — C2 communication</li>
@@ -128,15 +127,16 @@
           data</li>
       </ul>
       <p>The first two functions handle authentication and HTTP POST request construction for authenticated data
-        transmission. The third function receives commands from the C2 server and determines the next action — spawning
-        a hidden command shell or uploading collected data.</p>
+        transmission.</p>
       <div class="report-img-block">
         <img src="images/KalimBackdoor/kalim-c2-logic.png" alt="C2 communication three-layer architecture" />
         <p class="img-caption">Figure 6: C2 architecture — three-layer design: fingerprint → encrypt → transmit to
           moodleuni[.]com</p>
       </div>
+      <p> The third function receives commands from the C2 server and determines the next action — spawning
+        a hidden command shell or uploading collected data.</p>
       <div class="report-img-block">
-        <img src="images/kalim-c2-commands.png" alt="C2 command handling — shell or upload" />
+        <img src="images/KalimBackdoor/kalim-c2-commands.png" alt="C2 command handling — shell or upload" />
         <p class="img-caption">Figure 7: Command dispatch — C2 response triggers shell spawn or data upload</p>
       </div>
 
@@ -148,16 +148,17 @@ CREATE_UNICODE_ENVIRONMENT = 0x00000400
 STARTF_USESTDHANDLES   (dwFlags |= 0x100)</pre>
       <p>The first pipe reads output from the shell; the second pipe writes commands to it. After creation, the shell is
         assigned to the job object and enters a pending state waiting for commands from the C2.</p>
+
+      <div class="report-img-block">
+        <img src="images/KalimBackdoor/kalim-shell-thread.png" alt="Hidden CMD shell creation and pipe setup" />
+        <p class="img-caption">Figure 8: Thread 1 — hidden CMD process with dual-pipe I/O and job object control</p>
+      </div>
       <p>The shell handles three control states via shared memory:</p>
       <ul class="report-list">
         <li><strong>Pending</strong> — Normal execution, wait for command</li>
         <li><strong>Terminate</strong> — Kill shell and cleanup, fully destroy and reset</li>
         <li><strong>Ctrlc</strong> — Force kill any remaining child processes</li>
       </ul>
-      <div class="report-img-block">
-        <img src="images/KalimBackdoor/kalim-shell-thread.png" alt="Hidden CMD shell creation and pipe setup" />
-        <p class="img-caption">Figure 8: Thread 1 — hidden CMD process with dual-pipe I/O and job object control</p>
-      </div>
       <div class="report-img-block">
         <img src="images/KalimBackdoor/kalim-shell-control.png" alt="Shell control state machine" />
         <p class="img-caption">Figure 9: Shell control flow — pending/terminate/ctrlc states via shared memory</p>

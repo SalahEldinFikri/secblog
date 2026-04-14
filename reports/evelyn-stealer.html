@@ -160,6 +160,23 @@
     </div>
 
     <div class="report-section">
+      <h2>6. Executive Summary</h2>
+      <p>Evelyn Stealer is a multi stage information stealing malware campaign targeting software developers through
+        malicious Visual Studio Code extensions. The infection chain begins with a trojanized VS Code extension that
+        downloads a hijacked DLL, which subsequently deploys a PowerShell based dropper. The dropper retrieves an
+        injector payload disguised with a misleading file extension and executes it stealthily.</p>
+      <p>The injector performs process hollowing by spawning a legitimate Windows process (grpconv.exe) in a suspended
+        state, decrypting and injecting the Evelyn Stealer payload, and resuming execution under the context of the
+        trusted process. The stealer employs extensive anti-analysis and evasion techniques, including virtual machine
+        detection, debugger checks, Hyper-V detection, and Remote Desktop session checks.</p>
+      <p>Once active, Evelyn Stealer conducts broad data harvesting, targeting browser credentials, session tokens,
+        cryptocurrency wallets, messaging platforms, gaming clients, VPN and Wi-Fi credentials, system information,
+        running processes, and desktop screenshots. The malware abuses headless browser execution to extract browser
+        data while remaining invisible to the user. Collected data is compressed into a metadata rich archive and
+        exfiltrated to attacker controlled C2 infrastructure.</p>
+    </div>
+
+    <div class="report-section">
       <h2>6. IOCs</h2>
       <div class="ioc-block" style="margin-top:1rem;">
         <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>

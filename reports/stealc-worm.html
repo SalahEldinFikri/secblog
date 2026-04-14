@@ -149,6 +149,25 @@
     </div>
 
     <div class="report-section">
+      <h2>6. Executive Summary</h2>
+      <p>A Windows based worm that employs multiple propagation vectors, persistence mechanisms, and a financially
+        motivated payload. The malware is designed to aggressively spread across infected systems, removable media, and
+        local networks while maintaining stealth and stability by avoiding critical system components.</p>
+      <p>Upon execution, the worm propagates through user accessible directories, removable devices such as USB drives
+        and CDs, and accessible network shares within the local environment. To ensure continued execution, it
+        implements multiple persistence techniques, including the creation of deceptive shortcut files via COM abuse
+        and, when administrative privileges are available, registry based file association hijacking.</p>
+      <p>In addition to its propagation and persistence capabilities, the malware functions as a cryptocurrency
+        clipboard hijacker targeting Bitcoin, Ethereum, and TRON wallets. By continuously monitoring clipboard content,
+        the malware detects copied cryptocurrency addresses and replaces them with attacker controlled addresses,
+        silently redirecting transactions without the victim’s knowledge.</p>
+      <p>The malware also incorporates a dropper component that connects to a remote server to download and execute
+        additional payloads, allowing the attacker to update or extend functionality dynamically. Encrypted payloads and
+        runtime decryption further contribute to defense evasion and hinder static analysis.</p>
+    </div>
+
+
+    <div class="report-section">
       <h2>6. IOCs</h2>
       <div class="ioc-block" style="margin-top:1rem;">
         <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>

@@ -1,45 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Reports — SecBlog</title>
-<link rel="stylesheet" href="assets/css/style.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports — SecBlog</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
+
 <body>
 
-<nav>
-  <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="reports.html">Reports</a>
-    <a href="ioc-feed.html">IOC Feed</a>
-    <a href="about.html">About</a>
+  <nav>
+    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="reports.html">Reports</a>
+      <a href="ioc-feed.html">IOC Feed</a>
+      <a href="achievements.html">Achievements</a>
+      <a href="about.html">About</a>
+    </div>
+    <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="section" style="padding-top:3rem;">
+    <div class="section-header">
+      <span class="section-title">// ALL REPORTS</span>
+      <span id="report-total" style="font-family:var(--mono);font-size:12px;color:var(--muted);"></span>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;" id="filter-bar">
+      <button class="filter-btn active" data-tag="ALL">ALL</button>
+    </div>
+
+    <div class="posts-grid" id="posts-grid"></div>
+    <div id="no-reports"
+      style="display:none;padding:3rem 0;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);">
+      &gt;_ no reports found.</div>
   </div>
-  <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
-</nav>
 
-<div class="section" style="padding-top:3rem;">
-  <div class="section-header">
-    <span class="section-title">// ALL REPORTS</span>
-    <span id="report-total" style="font-family:var(--mono);font-size:12px;color:var(--muted);"></span>
-  </div>
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
 
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;" id="filter-bar">
-    <button class="filter-btn active" data-tag="ALL">ALL</button>
-  </div>
-
-  <div class="posts-grid" id="posts-grid"></div>
-  <div id="no-reports" style="display:none;padding:3rem 0;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);">&gt;_ no reports found.</div>
-</div>
-
-<footer>
-  <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
-  <div class="footer-links" id="footer-links"></div>
-</footer>
-
-<script src="assets/js/config.js"></script>
-<script src="assets/js/reports-data.js"></script>
-<script src="assets/js/reports-page.js"></script>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/reports-data.js"></script>
+  <script src="assets/js/reports-page.js"></script>
 </body>
+
 </html>

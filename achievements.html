@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Achievements — SecBlog</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    .achieve-hero {
+      padding: 3rem 2rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .achieve-hero-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--green);
+      letter-spacing: 2px;
+      margin-bottom: .75rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .achieve-hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: .75rem;
+    }
+
+    .achieve-hero p {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    .achieve-section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 2rem 0;
+    }
+
+    .achieve-section-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--green);
+      letter-spacing: 2px;
+      margin-bottom: 1.25rem;
+      padding-bottom: .6rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* CTF Awards */
+    .awards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .award-row {
+      background: var(--surface);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: background .15s;
+    }
+
+    .award-row:hover {
+      background: var(--surface2);
+    }
+
+    .award-place {
+      font-family: var(--mono);
+      font-size: 13px;
+      min-width: 60px;
+      font-weight: 700;
+    }
+
+    .place-1 {
+      color: var(--green);
+    }
+
+    .place-2 {
+      color: #f59e0b;
+    }
+
+    .place-3 {
+      color: #cd7f32;
+    }
+
+    .place-other {
+      color: var(--muted);
+    }
+
+    .award-info {
+      flex: 1;
+    }
+
+    .award-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .award-host {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .award-date {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .award-badge {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 2px;
+      letter-spacing: .5px;
+      white-space: nowrap;
+    }
+
+    .badge-gold {
+      background: rgba(245, 158, 11, .12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, .3);
+    }
+
+    .badge-green {
+      background: rgba(0, 255, 157, .08);
+      color: var(--green);
+      border: 1px solid rgba(0, 255, 157, .25);
+    }
+
+    .badge-blue {
+      background: rgba(56, 189, 248, .1);
+      color: var(--blue);
+      border: 1px solid rgba(56, 189, 248, .25);
+    }
+
+    /* Cert cards */
+    .certs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .cert-card {
+      background: var(--surface);
+      padding: 1.5rem;
+      transition: background .15s;
+    }
+
+    .cert-card:hover {
+      background: var(--surface2);
+    }
+
+    .cert-icon {
+      font-family: var(--mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: .75rem;
+      letter-spacing: -1px;
+    }
+
+    .cert-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .cert-issuer {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-bottom: .75rem;
+    }
+
+    .cert-date {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .cert-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: .75rem;
+    }
+
+    .cert-topic {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 7px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 2px;
+    }
+
+    /* Skills */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .skill-block {
+      background: var(--surface);
+      padding: 1.25rem 1.5rem;
+    }
+
+    .skill-category {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--green);
+      letter-spacing: 1px;
+      margin-bottom: .75rem;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .skill-tag {
+      font-size: 12px;
+      padding: 4px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 2px;
+    }
+
+    /* Volunteering */
+    .vol-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      margin-bottom: 3rem;
+    }
+
+    .vol-row {
+      background: var(--surface);
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: start;
+      transition: background .15s;
+    }
+
+    .vol-row:hover {
+      background: var(--surface2);
+    }
+
+    .vol-role {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .vol-org {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+
+    .vol-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .vol-period {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    @media(max-width:600px) {
+      .award-row {
+        flex-wrap: wrap;
+        gap: .5rem;
+      }
+
+      .award-date {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="reports.html">Reports</a>
+      <a href="ioc-feed.html">IOC Feed</a>
+      <a href="achievements.html" class="active">Achievements</a>
+      <a href="about.html">About</a>
+    </div>
+    <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="achieve-hero">
+    <div class="achieve-hero-tag"><span class="dot"></span> AWARDS · CERTIFICATIONS · SKILLS</div>
+    <h1>Achievements &amp; <span style="color:#00ff9d;">Certifications</span></h1>
+    <p>CTF placements, training certifications, technical skills, and community contributions in the cybersecurity
+      field.</p>
+  </div>
+
+  <!-- CTF Awards -->
+  <div class="achieve-section">
+    <div class="achieve-section-title">// CTF &amp; COMPETITION AWARDS</div>
+    <div class="awards-list">
+
+      <div class="award-row">
+        <span class="award-place place-1">#1 MENA</span>
+        <div class="award-info">
+          <div class="award-name">CSAW24 CTF Qualifications</div>
+          <div class="award-host">csaw.io &nbsp;·&nbsp; 14th Place Globally</div>
+        </div>
+        <span class="award-badge badge-gold">MENA CHAMPION</span>
+        <span class="award-date">09/2024</span>
+      </div>
+
+      <div class="award-row">
+        <span class="award-place place-3">#3</span>
+        <div class="award-info">
+          <div class="award-name">ICMTC-CSC CTF Finals 2024</div>
+          <div class="award-host">Military Technical College &amp; EG-CERT &nbsp;·&nbsp; 6th in Quals</div>
+        </div>
+        <span class="award-badge badge-blue">FINALS</span>
+        <span class="award-date">07/2024</span>
+      </div>
+
+      <div class="award-row">
+        <span class="award-place place-3">#3</span>
+        <div class="award-info">
+          <div class="award-name">NahamCon CTF 2024</div>
+          <div class="award-host">JustHacking</div>
+        </div>
+        <span class="award-badge badge-blue">INTERNATIONAL</span>
+        <span class="award-date">05/2024</span>
+      </div>
+
+      <div class="award-row">
+        <span class="award-place place-2">#2</span>
+        <div class="award-info">
+          <div class="award-name">Cyber Champions CTF Quals</div>
+          <div class="award-host">Zinad IT &amp; Information Technology Institute</div>
+        </div>
+        <span class="award-badge badge-green">QUALS</span>
+        <span class="award-date">03/2024</span>
+      </div>
+
+      <div class="award-row">
+        <span class="award-place place-other">#80</span>
+        <div class="award-info">
+          <div class="award-name">BHMEA2023 CTF Finals</div>
+          <div class="award-host">BlackHat MEA &amp; NEOM &nbsp;·&nbsp; 34th in Quals</div>
+        </div>
+        <span class="award-badge badge-blue">FINALS</span>
+        <span class="award-date">11/2023</span>
+      </div>
+
+      <div class="award-row">
+        <span class="award-place place-2">#2</span>
+        <div class="award-info">
+          <div class="award-name">ITI &amp; CyberTalents CTF</div>
+          <div class="award-host">Information Technology Institute &amp; CyberTalents</div>
+        </div>
+        <span class="award-badge badge-green">LOCAL</span>
+        <span class="award-date">09/2023</span>
+      </div>
+
+      <div class="award-row">
+        <span class="award-place place-other">#34</span>
+        <div class="award-info">
+          <div class="award-name">ASCWarGames Qualification CTF</div>
+          <div class="award-host">ASCWarGames</div>
+        </div>
+        <span class="award-badge badge-blue">QUALS</span>
+        <span class="award-date">08/2023</span>
+      </div>
+
+      <div class="award-row">
+        <span class="award-place place-other">#5</span>
+        <div class="award-info">
+          <div class="award-name">IEEE Victoris 2.0 CTF</div>
+          <div class="award-host">Institute of Electrical and Electronics Engineers (IEEE)</div>
+        </div>
+        <span class="award-badge badge-green">LOCAL</span>
+        <span class="award-date">2023</span>
+      </div>
+
+      <div class="award-row">
+        <span class="award-place place-other">#43</span>
+        <div class="award-info">
+          <div class="award-name">Google Code Jam — Problem Solving</div>
+          <div class="award-host">Google</div>
+        </div>
+        <span class="award-badge badge-blue">INTERNATIONAL</span>
+        <span class="award-date">2022</span>
+      </div>
+
+      <div class="award-row">
+        <span class="award-place place-other">#54</span>
+        <div class="award-info">
+          <div class="award-name">ICPC Egyptian Collegiate Programming Contest</div>
+          <div class="award-host">The International Collegiate Programming Contest</div>
+        </div>
+        <span class="award-badge badge-blue">NATIONAL</span>
+        <span class="award-date">08/2021</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Certifications / Training -->
+  <div class="achieve-section">
+    <div class="achieve-section-title">// CERTIFICATIONS &amp; TRAINING</div>
+    <div class="certs-grid">
+
+      <div class="cert-card">
+        <div class="cert-icon">MAA</div>
+        <div class="cert-name">Advanced Malware Analysis</div>
+        <div class="cert-issuer">MaharaTech — ITI Learning Platform</div>
+        <div class="cert-date">09/2024</div>
+        <div class="cert-topics">
+          <span class="cert-topic">x64dbg</span>
+          <span class="cert-topic">IDA Pro</span>
+          <span class="cert-topic">Anti-debugging</span>
+          <span class="cert-topic">.NET / Java</span>
+          <span class="cert-topic">Android APK</span>
+          <span class="cert-topic">Deobfuscation</span>
+        </div>
+      </div>
+
+      <div class="cert-card">
+        <div class="cert-icon">MRE</div>
+        <div class="cert-name">Malware Reverse Engineering</div>
+        <div class="cert-issuer">MaharaTech — ITI Learning Platform</div>
+        <div class="cert-date">08/2024</div>
+        <div class="cert-topics">
+          <span class="cert-topic">Windows Internals</span>
+          <span class="cert-topic">x86 Assembly</span>
+          <span class="cert-topic">Stack Layout</span>
+          <span class="cert-topic">Disassembly</span>
+        </div>
+      </div>
+
+      <div class="cert-card">
+        <div class="cert-icon">CNF</div>
+        <div class="cert-name">Computer Network Fundamentals</div>
+        <div class="cert-issuer">MaharaTech — ITI Learning Platform</div>
+        <div class="cert-date">02/2024</div>
+        <div class="cert-topics">
+          <span class="cert-topic">Computer networking fundamentals</span>
+          <span class="cert-topic">Network topologies</span>
+          <span class="cert-topic">Network classifications</span>
+        </div>
+      </div>
+
+      <div class="cert-card">
+        <div class="cert-icon">MAF</div>
+        <div class="cert-name">Malware Analysis Fundamentals</div>
+        <div class="cert-issuer">MaharaTech — ITI Learning Platform</div>
+        <div class="cert-date">12/2023</div>
+        <div class="cert-topics">
+          <span class="cert-topic">Static analysis</span>
+          <span class="cert-topic">Dynamic analysis</span>
+          <span class="cert-topic">Network analysis</span>
+        </div>
+      </div>
+
+
+      <div class="cert-card">
+        <div class="cert-icon">CSB</div>
+        <div class="cert-name">Cyber Security Bootcamp</div>
+        <div class="cert-issuer">ITI — Sponsored by Zinad IT</div>
+        <div class="cert-date">02/2024 – 03/2024 · Cairo, Egypt</div>
+        <div class="cert-topics">
+          <span class="cert-topic">Network Attacks</span>
+          <span class="cert-topic">Web Attacks</span>
+          <span class="cert-topic">Forensics</span>
+          <span class="cert-topic">Cryptography</span>
+          <span class="cert-topic">Reverse Engineering</span>
+          <span class="cert-topic">CTF</span>
+        </div>
+      </div>
+
+      <div class="cert-card">
+        <div class="cert-icon">CTT</div>
+        <div class="cert-name">CyberTalents Trainee</div>
+        <div class="cert-issuer">ITI — Sponsored by CyberTalents</div>
+        <div class="cert-date">08/2023 – 09/2023 · Cairo, Egypt</div>
+        <div class="cert-topics">
+          <span class="cert-topic">Intro to CyberSec</span>
+          <span class="cert-topic">Network Attacks</span>
+          <span class="cert-topic">Forensics</span>
+          <span class="cert-topic">Cryptography</span>
+          <span class="cert-topic">Reverse Engineering</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Technical Skills -->
+  <div class="achieve-section">
+    <div class="achieve-section-title">// TECHNICAL SKILLS</div>
+    <div class="skills-grid">
+
+      <div class="skill-block">
+        <div class="skill-category">MALWARE ANALYSIS</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Static Analysis</span>
+          <span class="skill-tag">Dynamic Analysis</span>
+          <span class="skill-tag">YARA</span>
+          <span class="skill-tag">Sandbox</span>
+        </div>
+      </div>
+
+      <div class="skill-block">
+        <div class="skill-category">REVERSE ENGINEERING</div>
+        <div class="skill-tags">
+          <span class="skill-tag">IDA Pro</span>
+          <span class="skill-tag">x64dbg</span>
+          <span class="skill-tag">x86/x64 Assembly</span>
+        </div>
+      </div>
+
+      <div class="skill-block">
+        <div class="skill-category">THREAT INTELLIGENCE</div>
+        <div class="skill-tags">
+          <span class="skill-tag">MITRE ATT&CK</span>
+          <span class="skill-tag">IOC Extraction</span>
+          <span class="skill-tag">Threat Hunting</span>
+        </div>
+      </div>
+
+      <div class="skill-block">
+        <div class="skill-category">SECURITY OPERATIONS</div>
+        <div class="skill-tags">
+          <span class="skill-tag">EDR / EPP</span>
+          <span class="skill-tag">SEIM Solutions(Qradar ,Splunk,Elastic)</span>
+          <span class="skill-tag">Phishing Analysis</span>
+        </div>
+      </div>
+
+      <div class="skill-block">
+        <div class="skill-category">DEVELOPMENT</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">C / C++</span>
+          <span class="skill-tag">Linux Bash</span>
+          <span class="skill-tag">OOP</span>
+        </div>
+      </div>
+
+      <div class="skill-block">
+        <div class="skill-category">OTHER</div>
+        <div class="skill-tags">
+          <span class="skill-tag">OS Internals</span>
+          <span class="skill-tag">Wireshark</span>
+          <span class="skill-tag">LLM</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Volunteering -->
+  <div class="achieve-section">
+    <div class="achieve-section-title">// VOLUNTEERING &amp; COMMUNITY</div>
+    <div class="vol-list">
+
+      <div class="vol-row">
+        <div>
+          <div class="vol-role">Member — 0xL4ugh Team</div>
+          <div class="vol-org">0xL4ugh CTF Team</div>
+          <div class="vol-desc">Creating internal and external CTFs, participating in major competitions inside and
+            outside Egypt.</div>
+        </div>
+        <div class="vol-period">Present</div>
+      </div>
+
+      <div class="vol-row">
+        <div>
+          <div class="vol-role">Cyber Security Reverse &amp; Malware Analysis Head</div>
+          <div class="vol-org">CAT Reloaded</div>
+          <div class="vol-desc">Helped a group of cybersecurity students sharpen their skills through roadmap guidance,
+            technical sessions, and task supervision.</div>
+        </div>
+        <div class="vol-period">09/2022 – 2024</div>
+      </div>
+
+      <div class="vol-row">
+        <div>
+          <div class="vol-role">Technical Mentor &amp; Media Head</div>
+          <div class="vol-org">ICPC Mansoura — International Collegiate Programming Contest</div>
+          <div class="vol-desc">Provided technical sessions for CS and non-CS students. Managed volunteers and social
+            media for one of ICPC's communities in the Africa &amp; Arabia Region.</div>
+        </div>
+        <div class="vol-period">08/2020 – 08/2023</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/about-page.js"></script>
+</body>
+
+</html>

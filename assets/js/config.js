@@ -16,8 +16,8 @@ const SITE_CONFIG = {
   // Short bio
   bio: "Cybersecurity professional specializing in malware analysis and SOC operations, with hands-on experience in malware reverse engineering, YARA rules creation, and alert investigation. Passionate about reverse engineering, threat intelligence, and continuous learning, with a strong drive to protect systems and support effective security operations.",
 
-  // Your books (shown as badges)
-  books: ["Practical Malware Analysis", "Effective_Threat_Investigation"],
+  // Your certifications (shown as badges)
+  certifications: ["Practical Malware Analysis", "Effective_Threat_Investigation"],
 
   // Your skill tags
   skills: ["Reverse Engineering", "Malware Analysis", "Threat Intelligence", "DFIR", "YARA"],

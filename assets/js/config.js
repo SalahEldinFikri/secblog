@@ -9,7 +9,7 @@ const SITE_CONFIG = {
   title: "Cybersecurity Analyst / Malware Analyst",
   bio: "Cybersecurity professional specializing in malware analysis and SOC operations, with hands-on experience in malware reverse engineering, YARA rules creation, and alert investigation. Passionate about reverse engineering, threat intelligence, and continuous learning.",
 
-  certifications: ["Practical_Malware_Analysis", "Effective_Threat_Investigation"],
+  certifications: ["Books:", "Practical_Malware_Analysis", "Effective_Threat_Investigation"],
 
   skills: ["Malware Analysis", "Reverse Engineering", "YARA", "IDA Pro", "x64dbg", "Threat Intelligence", "x86 Assembly", "Python", "C/C++"],
 

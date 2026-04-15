@@ -34,6 +34,7 @@ const REPORTS = [
     readTime: "14 MIN READ",
     excerpt: "Analysis of a malicious PDF exploiting an Adobe Reader zero-day. JSFuck obfuscation, hidden AcroForm payload, AES-CTR decryption, and covert C2 via abused PDF RSS APIs.",
     iocs: [
+      { type: "SHA256", indicator: "65dca34b04416f9a113f09718cbe51e11fd58e7287b7863e37f393ed4d25dde7", family: "PDF Sample", confidence: "HIGH" },
       { type: "IP", indicator: "169.40.2.68:45191", family: "AdobeReaderZeroDay", confidence: "HIGH" },
     ],
   },
@@ -47,7 +48,7 @@ const REPORTS = [
     readTime: "15 MIN READ",
     excerpt: "Multi-stage stealer targeting software developers via malicious VS Code extensions. Uses DLL hijacking, process hollowing into grpconv.exe, and headless browser abuse to harvest credentials, crypto wallets, and Telegram sessions.",
     iocs: [
-      { type: "SHA256", indicator: "369479bd9a248c9448705c222d81ff1a0143343a138fc38fc0ea00f54fcc1598", family: "EvelynStealer", confidence: "HIGH" },
+      { type: "SHA256", indicator: "369479bd9a248c9448705c222d81ff1a0143343a138fc38fc0ea00f54fcc1598", family: "LightShot.dll", confidence: "HIGH" },
       { type: "SHA256", indicator: "e77bdfcc5bb6c120f2eb60cdffbe247ae2a09c9043640bfdd34d6e412782eec8", family: "EvelynStealer", confidence: "HIGH" },
       { type: "DOMAIN", indicator: "syn1112223334445556667778889990[.]org", family: "EvelynStealer", confidence: "HIGH" },
       { type: "DOMAIN", indicator: "server09.mentality.cloud", family: "EvelynStealer", confidence: "HIGH" },

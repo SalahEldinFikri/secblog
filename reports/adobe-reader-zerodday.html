@@ -8,6 +8,14 @@
   <link rel="stylesheet" href="../assets/css/style.css" />
   <link rel="stylesheet" href="../assets/css/report.css" />
 </head>
+<style>
+  code {
+    background-color: #053800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+</style>
 
 <body>
 
@@ -134,8 +142,10 @@
     <div class="report-section">
       <h2>3. JavaScript Obfuscation — JSFuck Style</h2>
       <p>The extracted JavaScript code was heavily obfuscated using JSFuck-style techniques, making it difficult to
-        interpret directly. The script relied on complex expressions such as <code>({}+[])</code>, <code>+!+[]</code>,
-        and dynamic string construction to conceal its functionality.</p>
+        interpret directly. The script relied on complex expressions such as <code><b>({}+[])</b></code>,
+        <code><b>+!+[]</b></code>,
+        and dynamic string construction to conceal its functionality.
+      </p>
       <p>To better understand the behavior, the code was deobfuscated with the assistance of AI, resulting in a
         simplified and readable version of the script.</p>
       <div class="report-img-block">
@@ -143,14 +153,18 @@
         <p class="img-caption">Figure 4: JSFuck-style obfuscation — ({}+[]), +!+[] expressions conceal the actual logic
         </p>
       </div>
-      <p>The script begins by delaying execution using <code>app.setTimeOut</code> for 500 milliseconds — a common
+      <p>The script begins by delaying execution using <code><b>app.setTimeOut</b></code> for 500 milliseconds — a
+        common
         evasion technique to bypass sandbox and automated analysis environments. It then retrieves hidden data from a
-        PDF form field using <code>getField(...).value</code>, indicating that the payload is not directly embedded in
+        PDF form field using <code><b>getField(...).value</b></code>, indicating that the payload is not directly
+        embedded in
         the visible JavaScript but stored elsewhere within the document. The retrieved data is processed using
-        <code>util.stringFromStream</code> and <code>SOAP.streamDecode</code> to convert and decode the data into a
+        <code><b>util.stringFromStream</b></code> and <code><b>SOAP.streamDecode</b></code> to convert and decode the
+        data into a
         usable format.
       </p>
-      <p>Further analysis of the <code>/AcroForm</code> object revealed a Base64-encoded string stored within a form
+      <p>Further analysis of the <code><b>/AcroForm</b></code> object revealed a Base64-encoded string stored within a
+        form
         field value. This encoded data represents the next stage of the payload, decoded and processed at runtime.</p>
       <div class="report-img-block">
         <img src="images/adobepdf/pdf-acroform.png" alt="AcroForm object with Base64-encoded payload" />
@@ -188,7 +202,8 @@
         critical values. The code accesses this array through a string-mapping function, allowing it to dynamically
         resolve important data at runtime rather than storing it in clear text.</p>
       <p>This array contains API names, system paths, error messages, and network-related strings. At index 557, the
-        array stores the C2 server address <code>169[.]40[.]2[.]68[:]45191</code>. By referencing this index through the
+        array stores the C2 server address <code><b>169[.]40[.]2[.]68[:]45191</b></code>. By referencing this index
+        through the
         mapping function, the malware reconstructs the full C2 URL dynamically during execution.</p>
       <pre class="code-block">// Excerpt from obfuscated lookup array (index 557 highlighted)
 var _0x25ecb7 = [
@@ -248,7 +263,8 @@ var _0x25ecb7 = [
     <!-- Polling -->
     <div class="report-section">
       <h2>6. Continuous Polling &amp; Downloader Role</h2>
-      <p>The use of <code>RSS.addFeed()</code> and <code>RSS.getFeeds()</code> indicates an attempt to leverage built-in
+      <p>The use of <code><b>RSS.addFeed()</b></code> and <code><b>RSS.getFeeds()</b></code> indicates an attempt to
+        leverage built-in
         PDF networking capabilities for covert C2 communication, enabling the malware to dynamically fetch and execute
         additional payloads without triggering standard network monitoring.</p>
       <div class="report-img-block">
@@ -276,8 +292,10 @@ var _0x25ecb7 = [
         This payload is decoded, further deobfuscated, and processed through additional stages, including AES decryption
         and decompression, to reconstruct the final malicious code at runtime.
         The malware establishes communication with a hardcoded command-and-control (C2) server at
-        169[.]40[.]2[.]68[:]45191, sending system information such as operating system, platform, and viewer details. It
-        abuses legitimate PDF APIs, including RSS.addFeed() and RSS.getFeeds(), to perform covert network communication
+        <b>169[.]40[.]2[.]68[:]45191</b>, sending system information such as operating system, platform, and viewer
+        details. It
+        abuses legitimate PDF APIs, including <b>RSS.addFeed()</b> and <b>RSS.getFeeds()</b>, to perform covert network
+        communication
         and retrieve additional payloads.
         Overall, the sample demonstrates a sophisticated, multi-layered infection chain that combines obfuscation,
         encryption, and dynamic execution techniques to evade detection and execute malicious code on the target system.

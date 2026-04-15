@@ -292,9 +292,11 @@ var _0x25ecb7 = [
         This payload is decoded, further deobfuscated, and processed through additional stages, including AES decryption
         and decompression, to reconstruct the final malicious code at runtime.
         The malware establishes communication with a hardcoded command-and-control (C2) server at
-        <b>169[.]40[.]2[.]68[:]45191</b>, sending system information such as operating system, platform, and viewer
+        <code><b>169[.]40[.]2[.]68[:]45191</b></code>, sending system information such as operating system, platform,
+        and viewer
         details. It
-        abuses legitimate PDF APIs, including <b>RSS.addFeed()</b> and <b>RSS.getFeeds()</b>, to perform covert network
+        abuses legitimate PDF APIs, including <code><b>RSS.addFeed()</b></code> and <code><b>RSS.getFeeds()</b></code>,
+        to perform covert network
         communication
         and retrieve additional payloads.
         Overall, the sample demonstrates a sophisticated, multi-layered infection chain that combines obfuscation,

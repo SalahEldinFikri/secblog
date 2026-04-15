@@ -35,7 +35,7 @@ const REPORTS = [
     excerpt: "Analysis of a malicious PDF exploiting an Adobe Reader zero-day. JSFuck obfuscation, hidden AcroForm payload, AES-CTR decryption, and covert C2 via abused PDF RSS APIs.",
     iocs: [
       { type: "SHA256", indicator: "65dca34b04416f9a113f09718cbe51e11fd58e7287b7863e37f393ed4d25dde7", family: "PDF Sample", confidence: "HIGH" },
-      { type: "IP", indicator: "169.40.2.68:45191", family: "AdobeReaderZeroDay", confidence: "HIGH" },
+      { type: "IP", indicator: "169.40.2.68:45191", family: "C2 AdobeReaderZeroDay", confidence: "HIGH" },
     ],
   },
 
@@ -51,7 +51,7 @@ const REPORTS = [
       { type: "SHA256", indicator: "369479bd9a248c9448705c222d81ff1a0143343a138fc38fc0ea00f54fcc1598", family: "LightShot.dll", confidence: "HIGH" },
       { type: "SHA256", indicator: "e77bdfcc5bb6c120f2eb60cdffbe247ae2a09c9043640bfdd34d6e412782eec8", family: "EvelynStealer", confidence: "HIGH" },
       { type: "DOMAIN", indicator: "syn1112223334445556667778889990[.]org", family: "EvelynStealer", confidence: "HIGH" },
-      { type: "DOMAIN", indicator: "server09.mentality.cloud", family: "EvelynStealer", confidence: "HIGH" },
+      { type: "DOMAIN", indicator: "server09.mentality.cloud", family: "C2 EvelynStealer", confidence: "HIGH" },
     ],
   },
 
@@ -65,7 +65,7 @@ const REPORTS = [
     excerpt: "Stealc-family Windows worm spreading via USB, network shares, and local directories. Deploys COM-based persistence, registry file-association hijacking, and a cryptocurrency clipboard hijacker targeting BTC, ETH, and TRON.",
     iocs: [
       { type: "SHA256", indicator: "aad0a60cb86e3a56bcd356c6559b92c4dc4a1a960f409fb499cf76c9b5409fdb", family: "StealcWorm", confidence: "HIGH" },
-      { type: "IP", indicator: "62.60.226.159", family: "StealcWorm", confidence: "HIGH" },
+      { type: "IP", indicator: "62.60.226.159", family: "C2 StealcWorm", confidence: "HIGH" },
     ],
   },
 
@@ -79,8 +79,8 @@ const REPORTS = [
     excerpt: "64-bit DLL backdoor attributed to MuddyWater. Establishes persistence via COM-based startup shortcut, then performs host fingerprinting, encrypted C2 comms with moodleuni[.]com, remote shell execution, and HTTPS data exfiltration.",
     iocs: [
       { type: "SHA256", indicator: "0c8071494bc155c96f2cee998200f63efffcb5a064c021de0925504271806229", family: "Kalim", confidence: "HIGH" },
-      { type: "DOMAIN", indicator: "moodleuni[.]com", family: "Kalim", confidence: "HIGH" },
-      { type: "IP", indicator: "150.171.27.12", family: "Kalim", confidence: "MEDIUM" },
+      { type: "DOMAIN", indicator: "moodleuni[.]com", family: "C2 Kalim", confidence: "HIGH" },
+      { type: "IP", indicator: "150.171.27.12", family: "C2 Kalim", confidence: "MEDIUM" },
     ],
   },
 

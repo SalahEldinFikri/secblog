@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adobe Reader Zero-Day — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../reports.html">Reports</a>
+      <a href="../ioc-feed.html">IOC Feed</a>
+      <a href="../achievements.html">Achievements</a>
+      <a href="../about.html">About</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+    <div class="report-breadcrumb"><a href="../reports.html">&lt; All Reports</a></div>
+
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-vuln">ZERO-DAY</span>
+        <span class="tag-pill tag-malware">PDF ANALYSIS</span>
+      </div>
+      <h1 class="report-title">Adobe Reader Zero-Day: Analysis of a Malicious PDF with Embedded JavaScript &amp;
+        Multi-Stage Payload</h1>
+      <div class="report-meta">
+        <span>📅 2026-04-07</span>
+        <span>⏱ 14 MIN READ</span>
+        <span>✍ SalahEldin Kamil</span>
+        <span class="sev sev-crit">CRITICAL</span>
+      </div>
+      <div class="report-summary">
+        For the past few months, hackers have been exploiting an Adobe Reader zero-day to gather and exfiltrate
+        information. Security researcher Haifei Li discovered a malicious PDF and asked the community to help analyze
+        it. This report documents the findings: embedded JSFuck-obfuscated JavaScript, a hidden AcroForm payload,
+        multi-layer AES-CTR decryption, and covert C2 communication via abused PDF RSS APIs.
+      </div>
+    </div>
+
+    <!-- Key Findings -->
+    <div class="report-section">
+      <h2>1. Key Findings</h2>
+      <div class="report-img-block">
+        <img src="images/adobepdf/pdf-overview.png" alt="Malicious PDF overview and structure" />
+        <p class="img-caption">Figure 1: Malicious PDF overview — embedded JavaScript, AcroForm payload, and C2
+          structure</p>
+      </div>
+      <table class="ioc-table" style="margin-top:1rem;">
+        <thead>
+          <tr>
+            <th>FINDING</th>
+            <th>DETAIL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--red)">Embedded JavaScript</td>
+            <td>Executes automatically, initiates multi-stage infection chain</td>
+          </tr>
+          <tr>
+            <td style="color:var(--red)">Heavy Obfuscation</td>
+            <td>JSFuck-style techniques and string-mapping function to hide indicators</td>
+          </tr>
+          <tr>
+            <td style="color:var(--amber)">Hidden Payload in AcroForm</td>
+            <td>Base64-encoded data stored in form field (btn1), retrieved at runtime</td>
+          </tr>
+          <tr>
+            <td style="color:var(--amber)">Multi-layer Decoding</td>
+            <td>Base64 → byte conversion → AES-CTR decryption → zlib/deflate decompression</td>
+          </tr>
+          <tr>
+            <td style="color:var(--red)">C2 Communication</td>
+            <td>Hardcoded endpoint: <span class="ioc-ip">169[.]40[.]2[.]68[:]45191</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--blue)">System Fingerprinting</td>
+            <td>Collects OS, Adobe Reader version, platform, and environment details</td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted)">Stealth &amp; Evasion</td>
+            <td>Hides PDF layers (getOCGs), delays execution (setTimeOut)</td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted)">Continuous Polling</td>
+            <td>setInterval repeatedly checks for and processes incoming payload data</td>
+          </tr>
+          <tr>
+            <td style="color:var(--red)">Dynamic Execution</td>
+            <td>Final payload executed via runtime eval: <code>eval(global.final_js)</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Static Analysis -->
+    <div class="report-section">
+      <h2>2. Static Analysis — pdfid.py &amp; pdf-parser.py</h2>
+      <p>Using <code>pdfid.py</code> to perform initial static analysis of the PDF sample provided an overview of the
+        file structure and highlighted the presence of suspicious elements. The analysis revealed:</p>
+      <pre class="code-block">/JavaScript: 2
+/JS:         1
+/AcroForm:   1</pre>
+      <p>These are strong indicators of embedded scripts and hidden payload storage.</p>
+      <div class="report-img-block">
+        <img src="images/adobepdf/pdf-pdfid.png" alt="pdfid.py output showing JavaScript and AcroForm" />
+        <p class="img-caption">Figure 2: pdfid.py output — JavaScript and AcroForm objects flagged as suspicious</p>
+      </div>
+      <p>Using <code>pdf-parser.py</code>, I enumerated the PDF objects and identified the specific object IDs
+        containing <code>/JS</code>, <code>/JavaScript</code>, and <code>/AcroForm</code>:</p>
+      <ul class="report-list">
+        <li><code>/JS</code> found in object 9 — contains heavily obfuscated JavaScript code</li>
+        <li><code>/JavaScript</code> found in objects 3 and 9 — entry references object 9</li>
+        <li><code>/AcroForm</code> found in object 1 — entry points to object 2</li>
+      </ul>
+      <div class="report-img-block">
+        <img src="images/adobepdf/pdf-parser.png" alt="pdf-parser.py object enumeration results" />
+        <p class="img-caption">Figure 3: pdf-parser.py — object IDs mapped to JS, JavaScript, and AcroForm entries</p>
+      </div>
+    </div>
+
+    <!-- Obfuscation -->
+    <div class="report-section">
+      <h2>3. JavaScript Obfuscation — JSFuck Style</h2>
+      <p>The extracted JavaScript code was heavily obfuscated using JSFuck-style techniques, making it difficult to
+        interpret directly. The script relied on complex expressions such as <code>({}+[])</code>, <code>+!+[]</code>,
+        and dynamic string construction to conceal its functionality.</p>
+      <p>To better understand the behavior, the code was deobfuscated with the assistance of AI, resulting in a
+        simplified and readable version of the script.</p>
+      <div class="report-img-block">
+        <img src="images/adobepdf/pdf-obfuscated.png" alt="JSFuck-style obfuscated JavaScript in the PDF" />
+        <p class="img-caption">Figure 4: JSFuck-style obfuscation — ({}+[]), +!+[] expressions conceal the actual logic
+        </p>
+      </div>
+      <p>The script begins by delaying execution using <code>app.setTimeOut</code> for 500 milliseconds — a common
+        evasion technique to bypass sandbox and automated analysis environments. It then retrieves hidden data from a
+        PDF form field using <code>getField(...).value</code>, indicating that the payload is not directly embedded in
+        the visible JavaScript but stored elsewhere within the document. The retrieved data is processed using
+        <code>util.stringFromStream</code> and <code>SOAP.streamDecode</code> to convert and decode the data into a
+        usable format.
+      </p>
+      <p>Further analysis of the <code>/AcroForm</code> object revealed a Base64-encoded string stored within a form
+        field value. This encoded data represents the next stage of the payload, decoded and processed at runtime.</p>
+      <div class="report-img-block">
+        <img src="images/adobepdf/pdf-acroform.png" alt="AcroForm object with Base64-encoded payload" />
+        <p class="img-caption">Figure 5: AcroForm object — Base64-encoded second-stage payload hidden in form field btn1
+        </p>
+      </div>
+    </div>
+
+    <!-- Multi-layer decoding -->
+    <div class="report-section">
+      <h2>4. Multi-Layer Decoding &amp; Encryption</h2>
+      <p>With the help of CyberChef and AI-assisted analysis, I deobfuscated and reconstructed the JavaScript code into
+        a near-readable form. After decoding the Base64-encoded data, the resulting output reveals a second-stage
+        JavaScript payload that remains heavily obfuscated.</p>
+      <p>This decoded script introduces more advanced mechanisms:</p>
+      <ul class="report-list">
+        <li>String mapping via a large lookup array</li>
+        <li>Byte manipulation routines</li>
+        <li>AES-CTR decryption of the encrypted payload</li>
+        <li>zlib/deflate decompression of the decrypted output</li>
+      </ul>
+      <p>This confirms that the Base64 layer is only the first step in a multi-stage execution chain designed to hide
+        the actual malicious functionality until runtime.</p>
+      <div class="report-img-block">
+        <img src="images/adobepdf/pdf-multilayer.png" alt="Multi-layer decoding and AES-CTR decryption logic" />
+        <p class="img-caption">Figure 6: Second-stage payload — string mapping, AES-CTR decryption, and zlib
+          decompression chain</p>
+      </div>
+    </div>
+
+    <!-- C2 -->
+    <div class="report-section">
+      <h2>5. C2 Communication &amp; System Fingerprinting</h2>
+      <p>During further analysis, I identified a large obfuscated array used by the malware as a lookup table for
+        critical values. The code accesses this array through a string-mapping function, allowing it to dynamically
+        resolve important data at runtime rather than storing it in clear text.</p>
+      <p>This array contains API names, system paths, error messages, and network-related strings. At index 557, the
+        array stores the C2 server address <code>169[.]40[.]2[.]68[:]45191</code>. By referencing this index through the
+        mapping function, the malware reconstructs the full C2 URL dynamically during execution.</p>
+      <pre class="code-block">// Excerpt from obfuscated lookup array (index 557 highlighted)
+var _0x25ecb7 = [
+  ...
+  '169.40.2.68:45191',   // index 557 — C2 server address
+  '_UNSUPPORTED',
+  'invalid counter value (must be an integer)',
+  ...
+  'http://',             // protocol prefix
+  '?language=',          // fingerprint param
+  '/c/windows/system32/ntdll.dll',
+  ...
+  '&platform=',
+  '&viewerVersion=',
+  '&pdfFile=',
+  '&activeDocs=',
+  '&errs=',
+  ...
+];</pre>
+      <p>The malware collects and transmits the following system information to the C2 server:</p>
+      <table class="ioc-table" style="margin-top:1rem;">
+        <thead>
+          <tr>
+            <th>PARAMETER</th>
+            <th>VALUE COLLECTED</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>language</code></td>
+            <td>System language</td>
+          </tr>
+          <tr>
+            <td><code>platform</code></td>
+            <td>Windows version (WIN7 / WIN8.1 / WIN11)</td>
+          </tr>
+          <tr>
+            <td><code>viewerVersion</code></td>
+            <td>Adobe Reader version string</td>
+          </tr>
+          <tr>
+            <td><code>pdfFile</code></td>
+            <td>Current PDF file path</td>
+          </tr>
+          <tr>
+            <td><code>activeDocs</code></td>
+            <td>Number of open documents</td>
+          </tr>
+          <tr>
+            <td><code>errs</code></td>
+            <td>Error log / environment anomalies</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Polling -->
+    <div class="report-section">
+      <h2>6. Continuous Polling &amp; Downloader Role</h2>
+      <p>The use of <code>RSS.addFeed()</code> and <code>RSS.getFeeds()</code> indicates an attempt to leverage built-in
+        PDF networking capabilities for covert C2 communication, enabling the malware to dynamically fetch and execute
+        additional payloads without triggering standard network monitoring.</p>
+      <div class="report-img-block">
+        <img src="images/adobepdf/pdf-rss-c2.png" alt="RSS.addFeed and RSS.getFeeds used for C2 polling" />
+        <p class="img-caption">Figure 7: Abused PDF RSS APIs — addFeed and getFeeds used as covert C2 polling channel
+        </p>
+      </div>
+      <p>Haifei Li reported that on 7 April 2026, the C2 server was still reachable but did not return a payload,
+        indicating the use of victim filtering techniques — the attacker selectively delivers payloads only to specific
+        targets.</p>
+      <div class="report-img-block">
+        <img src="images/adobepdf/pdf-c2-live.png" alt="C2 server still active on April 7 2026" />
+        <p class="img-caption">Figure 8: C2 server active as of April 7 2026 — no payload returned, suggesting victim
+          filtering</p>
+      </div>
+    </div>
+
+    <!-- Execution Flow -->
+    <div class="report-section">
+      <h2>7. Executive Summary</h2>
+      <p>This report analyzes a malicious PDF file that leverages embedded JavaScript to execute a multi-stage malware
+        delivery process. The document uses advanced obfuscation techniques and hidden storage within AcroForm fields to
+        conceal its payload and evade static analysis.
+        Upon opening, the PDF executes obfuscated JavaScript that retrieves a Base64-encoded payload from a form field.
+        This payload is decoded, further deobfuscated, and processed through additional stages, including AES decryption
+        and decompression, to reconstruct the final malicious code at runtime.
+        The malware establishes communication with a hardcoded command-and-control (C2) server at
+        169[.]40[.]2[.]68[:]45191, sending system information such as operating system, platform, and viewer details. It
+        abuses legitimate PDF APIs, including RSS.addFeed() and RSS.getFeeds(), to perform covert network communication
+        and retrieve additional payloads.
+        Overall, the sample demonstrates a sophisticated, multi-layered infection chain that combines obfuscation,
+        encryption, and dynamic execution techniques to evade detection and execute malicious code on the target system.
+      </p>
+      <pre class="code-block">[PDF Opened]
+      ↓
+[JavaScript Triggered]
+      ↓
+[Delay Execution — app.setTimeOut(500ms)]
+      ↓
+[Read Data from AcroForm field: btn1]
+      ↓
+[Base64 Decode Payload]
+      ↓
+[Deobfuscate JavaScript — string mapping]
+      ↓
+[Hide PDF Layers — getOCGs() stealth]
+      ↓
+[Initialize Global Variables]
+      ↓
+[Build C2 URL — 169[.]40[.]2[.]68[:]45191]
+      ↓
+[Send System Fingerprint — OS, version, platform]
+      ↓
+[Start Polling Loop — setInterval]
+      ↓
+  ┌──────────────────────────────────┐
+  │   Check for Response from C2     │
+  └─────────────┬────────────────────┘
+                ↓
+     [If Data + Key Received]
+                ↓
+     [Convert HEX → Bytes]
+                ↓
+     [AES-CTR Decryption]
+                ↓
+     [Convert Bytes → String]
+                ↓
+     [Decompress — zlib Inflate]
+                ↓
+     [Execute Final Payload — eval(global.final_js)]
+                ↓
+            [END]
+
+     OR (if no payload received)
+                ↓
+     [Retry Connection to C2]
+                ↺ (loop continues)</pre>
+    </div>
+
+    <!-- IOCs -->
+    <div class="report-section">
+      <h2>8. IOCs</h2>
+      <div class="ioc-block" style="margin-top:1rem;">
+        <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>
+        <table class="ioc-table ioc-report-table">
+          <thead>
+            <tr>
+              <th>TYPE</th>
+              <th>INDICATOR</th>
+              <th>DESCRIPTION</th>
+              <th>CONFIDENCE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-type="IP" data-confidence="HIGH" data-family="AdobeReaderZeroDay">
+              <td style="color:var(--amber)">IP</td>
+              <td class="ioc-ip">169.40.2.68:45191</td>
+              <td>Hardcoded C2 server</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="EXEC" data-confidence="HIGH" data-family="AdobeReaderZeroDay">
+              <td style="color:var(--red)">EXEC</td>
+              <td style="color:var(--text);font-family:var(--mono);font-size:12px;">eval(global.final_js);</td>
+              <td>Dynamic payload execution</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="API" data-confidence="HIGH" data-family="AdobeReaderZeroDay">
+              <td style="color:var(--blue)">API</td>
+              <td style="font-family:var(--mono);font-size:12px;">RSS.addFeed / RSS.getFeeds</td>
+              <td>Abused PDF API for C2 comms</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="API" data-confidence="HIGH" data-family="AdobeReaderZeroDay">
+              <td style="color:var(--blue)">API</td>
+              <td style="font-family:var(--mono);font-size:12px;">getField("btn1").value</td>
+              <td>Hidden payload retrieval from AcroForm</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="PATH" data-confidence="MEDIUM" data-family="AdobeReaderZeroDay">
+              <td style="color:var(--muted)">PATH</td>
+              <td style="font-family:var(--mono);font-size:11px;">/c/Windows/System32/bootsvc.dll</td>
+              <td>Suspicious path referenced in array</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MITRE -->
+    <div class="report-section">
+      <h2>9. MITRE ATT&amp;CK</h2>
+      <table class="ioc-table" style="margin-top:1rem;">
+        <thead>
+          <tr>
+            <th>TACTIC</th>
+            <th>TECHNIQUE ID</th>
+            <th>NAME</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Initial Access</td>
+            <td>T1566.001</td>
+            <td>Phishing: Spearphishing Attachment</td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>T1059.007</td>
+            <td>JavaScript</td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>T1204.002</td>
+            <td>User Execution: Malicious File</td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>T1059</td>
+            <td>Command and Scripting Interpreter</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>T1027</td>
+            <td>Obfuscated Files or Information</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>T1140</td>
+            <td>Deobfuscate/Decode Files or Information</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>T1027.002</td>
+            <td>Software Packing</td>
+          </tr>
+          <tr>
+            <td>Discovery</td>
+            <td>T1082</td>
+            <td>System Information Discovery</td>
+          </tr>
+          <tr>
+            <td>Command &amp; Control</td>
+            <td>T1071.001</td>
+            <td>Application Layer Protocol: HTTP</td>
+          </tr>
+          <tr>
+            <td>Command &amp; Control</td>
+            <td>T1105</td>
+            <td>Ingress Tool Transfer</td>
+          </tr>
+          <tr>
+            <td>Command &amp; Control</td>
+            <td>T1571</td>
+            <td>Non-Standard Port</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- References -->
+    <div class="report-section">
+      <h2>References</h2>
+      <ul class="report-list">
+        <li><a
+            href="https://securityaffairs.com/190558/hacking/malicious-pdf-reveals-active-adobe-reader-zero-day-in-the-wild.html"
+            target="_blank">Security Affairs — Malicious PDF reveals active Adobe Reader zero-day in the wild</a></li>
+        <li><a href="https://justhaifei1.blogspot.com/2026/04/expmon-detected-sophisticated-zero-day-adobe-reader.html"
+            target="_blank">Haifei Li — EXPMON detected sophisticated zero-day Adobe Reader</a></li>
+      </ul>
+    </div>
+
+    <div class="report-footer">
+      <a href="../reports.html" class="read-more">&lt; Back to all reports</a>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">All findings shared for educational &amp;
+        defensive purposes only.</span>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/report-page.js"></script>
+</body>
+
+</html>

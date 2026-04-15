@@ -26,6 +26,19 @@ const REPORTS = [
   // ── YOUR REPORTS ────────────────────────────────────────────────
 
   {
+    slug: "adobe-reader-zerodday",
+    title: "Adobe Reader Zero-Day: Malicious PDF with Embedded JavaScript & Multi-Stage Payload",
+    date: "2026-04-07",
+    tag: "VULN",
+    severity: "CRITICAL",
+    readTime: "14 MIN READ",
+    excerpt: "Analysis of a malicious PDF exploiting an Adobe Reader zero-day. JSFuck obfuscation, hidden AcroForm payload, AES-CTR decryption, and covert C2 via abused PDF RSS APIs.",
+    iocs: [
+      { type: "IP", indicator: "169.40.2.68:45191", family: "AdobeReaderZeroDay", confidence: "HIGH" },
+    ],
+  },
+
+  {
     slug: "evelyn-stealer",
     title: "Evelyn Stealer: Threat Analysis of a Developer-Focused Stealer Campaign",
     date: "2026-01-31",
@@ -59,7 +72,7 @@ const REPORTS = [
     slug: "kalim-backdoor",
     title: "Kalim Backdoor Malware Analysis Report",
     date: "2025-08-01",
-    tag: ["MALWARE", "ABT"],
+    tag: "APT",
     severity: "CRITICAL",
     readTime: "18 MIN READ",
     excerpt: "64-bit DLL backdoor attributed to MuddyWater. Establishes persistence via COM-based startup shortcut, then performs host fingerprinting, encrypted C2 comms with moodleuni[.]com, remote shell execution, and HTTPS data exfiltration.",

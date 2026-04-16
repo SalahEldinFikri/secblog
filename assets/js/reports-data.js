@@ -28,7 +28,7 @@ const REPORTS = [
   {
     slug: "adobe-reader-zerodday",
     title: "Adobe Reader Zero-Day: Malicious PDF with Embedded JavaScript & Multi-Stage Payload",
-    date: "2026-04-07",
+    date: "2026-04-15",
     tag: "VULN",
     severity: "CRITICAL",
     readTime: "14 MIN READ",

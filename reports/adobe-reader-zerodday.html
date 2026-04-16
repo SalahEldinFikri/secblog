@@ -193,6 +193,12 @@
         <p class="img-caption">Figure 6: Second-stage payload — string mapping, AES-CTR decryption, and zlib
           decompression chain</p>
       </div>
+
+    </div>
+
+    <!-- C2 -->
+    <div class="report-section">
+      <h2>5. C2 Communication &amp; System Fingerprinting</h2>
       <p>Fingerprints the victim machine — checks OS <code><b>(targets Win10)</b></code>, Reader version
         <code><b>(≥21)</b></code>, reader bitness <code><b>(64-bit)</b></code>, viewer type
         <code><b>("Reader")</b></code>, platform, and
@@ -206,7 +212,8 @@
             var os = getOS();                  // must be "WIN10"
             var is64bit = isReader64bit();     // must be true
                   </pre>
-      <p>Exfiltrates victim info to a C2 server at <code><b>169.40.2.68:45191</b></code> via RSS feed URLs, including
+      <p>Exfiltrates victim info to a C2 server at <code><b>169[.]40[.]2[.]68:45191</b></code> via RSS feed URLs,
+        including
         language, viewer
         version, platform, active doc count, PDF file path, and a random nonce.</p>
       <pre class="code-block">
@@ -292,71 +299,7 @@
         decrypted, decompressed, and executed dynamically. This final stage enables the delivery and execution of the
         attacker’s payload while cleaning up traces of the communication channel.
       </p>
-    </div>
 
-    <!-- C2 -->
-    <div class="report-section">
-      <h2>5. C2 Communication &amp; System Fingerprinting</h2>
-      <p>During further analysis, I identified a large obfuscated array used by the malware as a lookup table for
-        critical values. The code accesses this array through a string-mapping function, allowing it to dynamically
-        resolve important data at runtime rather than storing it in clear text.</p>
-      <p>This array contains API names, system paths, error messages, and network-related strings. At index 557, the
-        array stores the C2 server address <code><b>169[.]40[.]2[.]68[:]45191</b></code>. By referencing this index
-        through the
-        mapping function, the malware reconstructs the full C2 URL dynamically during execution.</p>
-      <pre class="code-block">// Excerpt from obfuscated lookup array (index 557 highlighted)
-var _0x25ecb7 = [
-  ...
-  '169.40.2.68:45191',   // index 557 — C2 server address
-  '_UNSUPPORTED',
-  'invalid counter value (must be an integer)',
-  ...
-  'http://',             // protocol prefix
-  '?language=',          // fingerprint param
-  '/c/windows/system32/ntdll.dll',
-  ...
-  '&platform=',
-  '&viewerVersion=',
-  '&pdfFile=',
-  '&activeDocs=',
-  '&errs=',
-  ...
-];</pre>
-      <p>The malware collects and transmits the following system information to the C2 server:</p>
-      <table class="ioc-table" style="margin-top:1rem;">
-        <thead>
-          <tr>
-            <th>PARAMETER</th>
-            <th>VALUE COLLECTED</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>language</code></td>
-            <td>System language</td>
-          </tr>
-          <tr>
-            <td><code>platform</code></td>
-            <td>Windows version (WIN7 / WIN8.1 / WIN11)</td>
-          </tr>
-          <tr>
-            <td><code>viewerVersion</code></td>
-            <td>Adobe Reader version string</td>
-          </tr>
-          <tr>
-            <td><code>pdfFile</code></td>
-            <td>Current PDF file path</td>
-          </tr>
-          <tr>
-            <td><code>activeDocs</code></td>
-            <td>Number of open documents</td>
-          </tr>
-          <tr>
-            <td><code>errs</code></td>
-            <td>Error log / environment anomalies</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
 
     <!-- Polling -->

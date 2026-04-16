@@ -73,7 +73,7 @@ const REPORTS = [
   {
     slug: "kalim-backdoor",
     title: "Kalim Backdoor Malware Analysis Report",
-    date: "2025-12-01",
+    date: "2025-12-12",
     tag: ["APT", "MALWARE"],
     severity: "CRITICAL",
     readTime: "18 MIN READ",

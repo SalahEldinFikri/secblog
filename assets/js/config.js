@@ -6,7 +6,7 @@ const SITE_CONFIG = {
 
   authorName: "SalahEldin Kamil",
   initials: "SK",
-  title: "Cybersecurity Analyst / Malware Analyst",
+  title: "Cybersecurity Researcher / Malware Analyst",
   bio: "Cybersecurity professional specializing in malware analysis and SOC operations, with hands-on experience in malware reverse engineering, YARA rules creation, and alert investigation. Passionate about reverse engineering, threat intelligence, and continuous learning.",
 
   certifications: ["Books:", "Practical_Malware_Analysis", "Effective_Threat_Investigation"],

@@ -36,6 +36,7 @@ const REPORTS = [
     iocs: [
       { type: "SHA256", indicator: "65dca34b04416f9a113f09718cbe51e11fd58e7287b7863e37f393ed4d25dde7", family: "PDF Sample", confidence: "HIGH" },
       { type: "IP", indicator: "169.40.2.68:45191", family: "C2 AdobeReaderZeroDay", confidence: "HIGH" },
+      { type: "URL", indicator: "http://169.40.2.68:45191/&lt;path&gt;?language=&viewerType=&version=&platform=&...", family: "C2 AdobeReaderZeroDay", confidence: "HIGH" },
     ],
   },
 

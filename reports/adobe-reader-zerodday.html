@@ -182,6 +182,24 @@
       <p>This decoded script introduces more advanced mechanisms:</p>
       <ul class="report-list">
         <li>String mapping via a large lookup array</li>
+        <pre class="code-block">
+var _0x25ecb7 = [
+  ...
+  '169.40.2.68:45191',   // index 557 — C2 server address
+  '_UNSUPPORTED',
+  'invalid counter value (must be an integer)',
+  ...
+  'http://',             // protocol prefix
+  '?language=',          // fingerprint param
+  '/c/windows/system32/ntdll.dll',
+  ...
+  '&platform=',
+  '&viewerVersion=',
+  '&pdfFile=',
+  '&activeDocs=',
+  '&errs=',
+  ...
+];</pre>
         <li>Byte manipulation routines</li>
         <li>AES-CTR decryption of the encrypted payload</li>
         <li>zlib/deflate decompression of the decrypted output</li>

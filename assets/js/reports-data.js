@@ -73,8 +73,8 @@ const REPORTS = [
   {
     slug: "kalim-backdoor",
     title: "Kalim Backdoor Malware Analysis Report",
-    date: "2025-08-01",
-    tag: "APT",
+    date: "2025-12-01",
+    tag: ["APT", "MALWARE"],
     severity: "CRITICAL",
     readTime: "18 MIN READ",
     excerpt: "64-bit DLL backdoor attributed to MuddyWater. Establishes persistence via COM-based startup shortcut, then performs host fingerprinting, encrypted C2 comms with moodleuni[.]com, remote shell execution, and HTTPS data exfiltration.",

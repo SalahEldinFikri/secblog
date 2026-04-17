@@ -6,6 +6,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IOC Feed — SecBlog</title>
   <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    .ioc-report-block {}
+
+    .ioc-report-heading {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      padding: 1rem 1.5rem;
+    }
+
+    .ioc-report-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    .ioc-report-title:hover {
+      color: var(--green);
+    }
+
+    .ioc-report-block .ioc-table {
+      border: 1px solid var(--border);
+      border-top: none;
+    }
+
+    .tag-pill {
+      margin-bottom: 0 !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -16,6 +47,7 @@
       <a href="index.html">Home</a>
       <a href="reports.html">Reports</a>
       <a href="ioc-feed.html">IOC Feed</a>
+      <a href="yara-feed.html">YARA Feed</a>
       <a href="achievements.html">Achievements</a>
       <a href="about.html">About</a>
     </div>
@@ -25,30 +57,16 @@
   <div class="section" style="padding-top:3rem;">
     <div class="section-header">
       <span class="section-title">// IOC FEED</span>
-      <button class="view-all" id="download-csv" style="cursor:pointer;">download CSV →</button>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span id="ioc-total" style="font-family:var(--mono);font-size:12px;color:var(--muted);"></span>
+        <button class="view-all" id="download-csv" style="cursor:pointer;">download all CSV →</button>
+      </div>
     </div>
 
-    <div class="ioc-block">
-      <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>
-      <div style="overflow-x:auto;">
-        <table class="ioc-table" id="ioc-table">
-          <thead>
-            <tr>
-              <th>TYPE</th>
-              <th>INDICATOR</th>
-              <th>MALWARE FAMILY</th>
-              <th>CONFIDENCE</th>
-              <th>SOURCE REPORT</th>
-              <th>DATE</th>
-            </tr>
-          </thead>
-          <tbody id="ioc-body"></tbody>
-        </table>
-      </div>
-      <div id="no-iocs"
-        style="display:none;padding:2rem;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);">
-        &gt;_ no IOCs yet. Add them inside your report files.</div>
-    </div>
+    <div id="ioc-container"></div>
+    <div id="no-iocs"
+      style="display:none;padding:3rem 0;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);">
+      &gt;_ no IOCs yet. Add them inside your report files.</div>
   </div>
 
   <footer>

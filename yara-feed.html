@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YARA Feed — SecBlog</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    .yara-block {
+      margin-bottom: 2.5rem;
+    }
+
+    .yara-report-heading {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom: 3px solid var(--green);
+      padding: 1rem 1.5rem;
+    }
+
+    .yara-report-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    .yara-report-title:hover {
+      color: var(--green);
+    }
+
+    .yara-rule-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      margin-bottom: 1px;
+    }
+
+    .yara-rule-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .75rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .yara-rule-header:hover {
+      background: var(--surface2);
+    }
+
+    .yara-rule-name {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .yara-rule-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .yara-rule-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .yara-copy-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 4px 10px;
+      cursor: pointer;
+      letter-spacing: .5px;
+      transition: all .15s;
+    }
+
+    .yara-copy-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .yara-copy-btn.copied {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .yara-chevron {
+      font-size: 12px;
+      color: var(--muted);
+      transition: transform .2s;
+    }
+
+    .yara-rule-body {
+      display: none;
+      padding: 0;
+    }
+
+    .yara-rule-body.open {
+      display: block;
+    }
+
+    .yara-rule-body pre {
+      margin: 0;
+      padding: 1.25rem 1.5rem;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.8;
+      overflow-x: auto;
+      white-space: pre;
+      background: var(--surface2);
+    }
+
+    .dl-all-btn {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      padding: 7px 16px;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+
+    .dl-all-btn:hover {
+      background: rgba(0, 255, 157, .08);
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-mini {
+      text-align: center;
+    }
+
+    .stat-mini-num {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .stat-mini-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    .tag-pill {
+      margin-bottom: 0 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="reports.html">Reports</a>
+      <a href="ioc-feed.html">IOC Feed</a>
+      <a href="yara-feed.html" class="active">YARA Feed</a>
+      <a href="achievements.html">Achievements</a>
+      <a href="about.html">About</a>
+    </div>
+    <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="section" style="padding-top:3rem;">
+    <div class="section-header">
+      <span class="section-title">// YARA FEED</span>
+      <button class="dl-all-btn" id="dl-all">⬇ download all .yar</button>
+    </div>
+
+    <div class="stats-row" id="yara-stats"></div>
+    <div id="yara-container"></div>
+    <div id="no-yara"
+      style="display:none;padding:3rem 0;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);">
+      &gt;_ no YARA rules yet. Add a yara array to your report entries in reports-data.js</div>
+  </div>
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/reports-data.js"></script>
+  <script>
+    (function () {
+      const container = document.getElementById('yara-container');
+      const noYara = document.getElementById('no-yara');
+      const statsEl = document.getElementById('yara-stats');
+      const dlAll = document.getElementById('dl-all');
+
+      const footerEl = document.getElementById('footer-links');
+      if (footerEl) {
+        const links = [];
+        if (SITE_CONFIG.links.twitter) links.push(`<a href="${SITE_CONFIG.links.twitter}" target="_blank">X</a>`);
+        if (SITE_CONFIG.links.github) links.push(`<a href="${SITE_CONFIG.links.github}"  target="_blank">GitHub</a>`);
+        if (SITE_CONFIG.links.email) links.push(`<a href="${SITE_CONFIG.links.email}">Contact</a>`);
+        footerEl.innerHTML = links.join('');
+      }
+
+      const reportsWithYara = REPORTS.filter(r => r.yara && r.yara.length);
+      if (!reportsWithYara.length) {
+        if (container) container.style.display = 'none';
+        if (noYara) noYara.style.display = 'block';
+        if (dlAll) dlAll.style.display = 'none';
+        return;
+      }
+
+      const totalRules = reportsWithYara.reduce((a, r) => a + r.yara.length, 0);
+
+      if (statsEl) {
+        statsEl.innerHTML = `
+      <div class="stat-mini"><div class="stat-mini-num">${totalRules}</div><div class="stat-mini-label">YARA RULES</div></div>
+      <div class="stat-mini"><div class="stat-mini-num">${reportsWithYara.length}</div><div class="stat-mini-label">REPORTS</div></div>
+    `;
+      }
+
+      function tagClass(tag) { const m = { MALWARE: 'tag-malware', THREAT: 'tag-threat', VULN: 'tag-vuln', APT: 'tag-apt' }; return m[tag] || 'tag-malware'; }
+      function sevClass(s) { const m = { CRITICAL: 'sev-crit', HIGH: 'sev-high', MEDIUM: 'sev-med', LOW: 'sev-med' }; return m[s] || 'sev-med'; }
+
+      const sorted = [...reportsWithYara].sort((a, b) => b.date.localeCompare(a.date));
+
+      if (container) {
+        container.innerHTML = sorted.map((r, ri) => `
+      <div class="yara-block">
+        <div class="yara-report-heading">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span class="tag-pill ${tagClass(r.tag)}">${r.tag}</span>
+            <span class="sev ${sevClass(r.severity)}">${r.severity}</span>
+            <a href="reports/${r.slug}.html" class="yara-report-title">${r.title}</a>
+          </div>
+          <div style="margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--muted);">
+            ${r.date} &nbsp;·&nbsp; ${r.yara.length} rule${r.yara.length !== 1 ? 's' : ''}
+          </div>
+        </div>
+        ${r.yara.map((y, yi) => `
+          <div class="yara-rule-card">
+            <div class="yara-rule-header" onclick="toggleRule('rule-${ri}-${yi}', this)">
+              <div>
+                <div class="yara-rule-name">${y.name}</div>
+                <div class="yara-rule-meta">${y.description} &nbsp;·&nbsp; by ${y.author}</div>
+              </div>
+              <div class="yara-rule-actions">
+                <button class="yara-copy-btn" onclick="copyRule(event, 'rule-${ri}-${yi}')">COPY</button>
+                <span class="yara-chevron" id="chev-${ri}-${yi}">▼</span>
+              </div>
+            </div>
+            <div class="yara-rule-body" id="rule-${ri}-${yi}">
+              <pre>${escHtml(y.rule)}</pre>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+      }
+
+      // Download all as single .yar file
+      if (dlAll) {
+        dlAll.addEventListener('click', () => {
+          const lines = ['// YARA Rules — SecBlog by SalahEldin Kamil', '// Generated: ' + new Date().toISOString().split('T')[0], ''];
+          sorted.forEach(r => {
+            lines.push('// ─────────────────────────────────────────────');
+            lines.push('// Report: ' + r.title);
+            lines.push('// Date:   ' + r.date);
+            lines.push('// ─────────────────────────────────────────────');
+            r.yara.forEach(y => { lines.push(y.rule); lines.push(''); });
+          });
+          const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'SalahEldin-Kamil-YARA-Rules.yar';
+          a.click();
+        });
+      }
+
+      function escHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      window.toggleRule = function (id, header) {
+        const body = document.getElementById(id);
+        const ri = id.split('-')[1], yi = id.split('-')[2];
+        const chev = document.getElementById('chev-' + ri + '-' + yi);
+        if (!body) return;
+        const open = body.classList.toggle('open');
+        if (chev) chev.style.transform = open ? 'rotate(180deg)' : '';
+      };
+
+      window.copyRule = function (e, id) {
+        e.stopPropagation();
+        const body = document.getElementById(id);
+        const pre = body ? body.querySelector('pre') : null;
+        if (!pre) return;
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          const btn = e.target;
+          btn.textContent = 'COPIED!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+        });
+      };
+
+    })();
+  </script>
+</body>
+
+</html>

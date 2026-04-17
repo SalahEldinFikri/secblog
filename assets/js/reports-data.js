@@ -38,6 +38,7 @@ const REPORTS = [
       { type: "IP", indicator: "169.40.2.68:45191", family: "C2 AdobeReaderZeroDay", confidence: "HIGH" },
       { type: "URL", indicator: "http://169.40.2.68:45191/&lt;path&gt;?language=&viewerType=&version=&platform=&...", family: "C2 AdobeReaderZeroDay", confidence: "HIGH" },
     ],
+    yara: null,
   },
 
   {
@@ -54,6 +55,20 @@ const REPORTS = [
       { type: "DOMAIN", indicator: "syn1112223334445556667778889990[.]org", family: "EvelynStealer", confidence: "HIGH" },
       { type: "DOMAIN", indicator: "server09.mentality.cloud", family: "C2 EvelynStealer", confidence: "HIGH" },
     ],
+    yara: [
+      {
+        name: "Evelyn_Injector",
+        description: "Detects Evelyn Stealer injector (runtime.exe)",
+        author: "SalahEldin Fikri (Mr_MaTriX)",
+        rule: "rule Evelyn_Injector\n{\n    meta:\n        description = \"Detects Evelyn Stealer injector (runtime.exe)\"\n        author      = \"SalahEldin Fikri (Mr_MaTriX)\"\n    strings:\n        $s1  = \"[*] Process Hollowing Complete!\"\n        $s2  = \"[*] Resume Thread!\"\n        $s3  = \"[*] Destination process created!\"\n        $s4  = \"[*] Decrypting embedded payload...\"\n        $s5  = \"[-] Failed writing header!\"\n        $s6  = \"[-] Failed unmapping target ImageBase!\"\n        $s7  = \"[*] Successfully loaded all required APIs\"\n    condition:\n        uint16(0) == 0x5A4D and filesize < 500KB and 5 of ($s*)\n}",
+      },
+      {
+        name: "Evelyn_Stealer",
+        description: "Detects Evelyn Stealer payload",
+        author: "SalahEldin Fikri (Mr_MaTriX)",
+        rule: "rule Evelyn_Stealer\n{\n    meta:\n        description = \"Detects Evelyn Stealer payload\"\n        author      = \"SalahEldin Fikri (Mr_MaTriX)\"\n    strings:\n        $m1 = \"[-] All upload attempts failed - data saved locally in Evelyn folder\"\n        $m2 = \"[*] Starting Evelyn Browser Extractor...\"\n        $m3 = \"[-] ERROR: Failed to create Evelyn folder\"\n        $s1 = \"[*] Downloading abe_decrypt.dll from FTP server...\"\n        $s2 = \"abe_decrypt.dll\" wide\n        $s3 = \"[*] Stealing Telegram session...\"\n        $s4 = \"[*] Stealing Steam session...\"\n        $s5 = \"[*] Capturing screenshot...\"\n        $s6 = \"[*] Killing existing browser processes...\"\n        $s7 = \"[+] WiFi profiles stolen successfully\"\n    condition:\n        uint16(0) == 0x5A4D and filesize < 300KB and (any of ($m*)) and (5 of ($s*))\n}",
+      },
+    ],
   },
 
   {
@@ -68,6 +83,7 @@ const REPORTS = [
       { type: "SHA256", indicator: "aad0a60cb86e3a56bcd356c6559b92c4dc4a1a960f409fb499cf76c9b5409fdb", family: "StealcWorm", confidence: "HIGH" },
       { type: "IP", indicator: "62.60.226.159", family: "C2 StealcWorm", confidence: "HIGH" },
     ],
+    yara: null,
   },
 
   {
@@ -82,6 +98,14 @@ const REPORTS = [
       { type: "SHA256", indicator: "0c8071494bc155c96f2cee998200f63efffcb5a064c021de0925504271806229", family: "Kalim", confidence: "HIGH" },
       { type: "DOMAIN", indicator: "moodleuni[.]com", family: "C2 Kalim", confidence: "HIGH" },
       { type: "IP", indicator: "150.171.27.12", family: "C2 Kalim", confidence: "MEDIUM" },
+    ],
+    yara: [
+      {
+        name: "kalim",
+        description: "Detects Kalim malware",
+        author: "SalahEldin Fikri",
+        rule: "rule kalim\n{\n    meta:\n        description = \"Detects Kalim malware\"\n        author      = \"SalahEldin Fikri\"\n    strings:\n        $m1  = \"kalim.pdb\" wide ascii\n        $s1  = \"UPLOAD\"\n        $s2  = \"isHidden\"\n        $s3  = \"/command\"\n        $s4  = \"sleepTime\"\n        $s5  = \"hardwareId\"\n        $s6  = \"pending\"\n        $s7  = \"ctrlc\"\n        $s8  = \"terminate\"\n        $s9  = { 8D 01 02 04 08 10 20 40 80 1B 36 }\n        $s10 = \"KifHsNH6Xhgyebsr\"\n    condition:\n        uint16(0) == 0x5A4D and\n        filesize < 500KB and\n        ($m1) and\n        7 of ($s*)\n}",
+      },
     ],
   },
 

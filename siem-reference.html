@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIEM SPL Reference — SecBlog</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    .ref-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 4rem;
+    }
+
+    .ref-hero {
+      margin-bottom: 2rem;
+    }
+
+    .ref-hero-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      margin-bottom: .6rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ref-hero h1 {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 700;
+      color: #e8f4ff;
+      letter-spacing: -0.5px;
+      margin-bottom: .4rem;
+    }
+
+    .ref-hero p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: .4;
+      pointer-events: none;
+    }
+
+    input[type=search] {
+      width: 100%;
+      padding: 8px 10px 8px 32px;
+      font-size: 13px;
+      font-family: var(--mono);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      background: rgba(7, 20, 40, 0.9);
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    input[type=search]::placeholder {
+      color: var(--muted);
+    }
+
+    input[type=search]:focus {
+      border-color: var(--cyan);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: .6rem;
+    }
+
+    .pill-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      align-self: center;
+      white-space: nowrap;
+    }
+
+    .pill {
+      font-size: 11px;
+      font-family: var(--mono);
+      letter-spacing: .5px;
+      padding: 4px 11px;
+      border-radius: 3px;
+      border: 1px solid var(--border2);
+      background: rgba(7, 20, 40, 0.7);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .pill:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .pill.active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(0, 212, 255, .08);
+    }
+
+    .pill.win.active {
+      background: rgba(59, 130, 246, .12);
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
+
+    .pill.mac.active {
+      background: rgba(236, 72, 153, .1);
+      border-color: #ec4899;
+      color: #f9a8d4;
+    }
+
+    .pill.linux.active {
+      background: rgba(34, 197, 94, .1);
+      border-color: #22c55e;
+      color: #86efac;
+    }
+
+    .pill.net.active {
+      background: rgba(234, 179, 8, .1);
+      border-color: #eab308;
+      color: #fde047;
+    }
+
+    .pill.cloud.active {
+      background: rgba(168, 85, 247, .1);
+      border-color: #a855f7;
+      color: #d8b4fe;
+    }
+
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      padding: .5rem 0 .75rem;
+      border-bottom: 1px solid var(--border2);
+      margin-bottom: .75rem;
+    }
+
+    .stats-bar .cnt {
+      color: var(--cyan);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      background: rgba(4, 13, 31, .7);
+      max-height: 62vh;
+      overflow-y: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      min-width: 720px;
+    }
+
+    thead th {
+      padding: 9px 12px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-family: var(--mono);
+      border-bottom: 1px solid var(--border2);
+      position: sticky;
+      top: 0;
+      background: rgba(4, 13, 31, .98);
+      z-index: 2;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(14, 32, 64, .5);
+      vertical-align: top;
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(0, 212, 255, .04);
+    }
+
+    .pb {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-weight: 500;
+      white-space: nowrap;
+      font-family: var(--mono);
+    }
+
+    .pb-win {
+      background: rgba(59, 130, 246, .15);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, .25);
+    }
+
+    .pb-mac {
+      background: rgba(236, 72, 153, .12);
+      color: #f9a8d4;
+      border: 1px solid rgba(236, 72, 153, .25);
+    }
+
+    .pb-linux {
+      background: rgba(34, 197, 94, .12);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, .25);
+    }
+
+    .pb-net {
+      background: rgba(234, 179, 8, .12);
+      color: #fde047;
+      border: 1px solid rgba(234, 179, 8, .25);
+    }
+
+    .pb-cloud {
+      background: rgba(168, 85, 247, .12);
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, .25);
+    }
+
+    .cb {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-family: var(--mono);
+      white-space: nowrap;
+    }
+
+    .cb-auth {
+      background: rgba(14, 165, 233, .12);
+      color: #38bdf8;
+      border: 1px solid rgba(14, 165, 233, .2);
+    }
+
+    .cb-proc {
+      background: rgba(34, 197, 94, .1);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, .2);
+    }
+
+    .cb-acct {
+      background: rgba(245, 158, 11, .1);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, .2);
+    }
+
+    .cb-persist {
+      background: rgba(236, 72, 153, .1);
+      color: #f9a8d4;
+      border: 1px solid rgba(236, 72, 153, .2);
+    }
+
+    .cb-lateral {
+      background: rgba(168, 85, 247, .12);
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, .2);
+    }
+
+    .cb-priv {
+      background: rgba(255, 77, 109, .12);
+      color: #ff8fa3;
+      border: 1px solid rgba(255, 77, 109, .2);
+    }
+
+    .cb-net {
+      background: rgba(100, 116, 139, .1);
+      color: #94a3b8;
+      border: 1px solid rgba(100, 116, 139, .2);
+    }
+
+    .cb-rdp {
+      background: rgba(249, 115, 22, .1);
+      color: #fdba74;
+      border: 1px solid rgba(249, 115, 22, .2);
+    }
+
+    .cb-ps {
+      background: rgba(16, 185, 129, .1);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, .2);
+    }
+
+    .cb-file {
+      background: rgba(56, 189, 248, .1);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, .2);
+    }
+
+    .cb-adv {
+      background: rgba(139, 92, 246, .12);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, .2);
+    }
+
+    .cb-fw {
+      background: rgba(234, 179, 8, .1);
+      color: #fde047;
+      border: 1px solid rgba(234, 179, 8, .2);
+    }
+
+    .cb-ids {
+      background: rgba(34, 197, 94, .1);
+      color: #86efac;
+      border: 1px solid rgba(34, 197, 94, .2);
+    }
+
+    .cb-cloud {
+      background: rgba(168, 85, 247, .12);
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, .2);
+    }
+
+    .cb-tl {
+      background: rgba(100, 116, 139, .1);
+      color: #94a3b8;
+      border: 1px solid rgba(100, 116, 139, .2);
+    }
+
+    .qwrap {
+      position: relative;
+    }
+
+    code {
+      display: block;
+      font-family: var(--mono);
+      font-size: 11px;
+      background: rgba(4, 13, 31, .9);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      padding: 5px 42px 5px 8px;
+      color: #93c5fd;
+      word-break: break-all;
+      line-height: 1.5;
+      min-width: 180px;
+      max-width: 380px;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: transparent;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      padding: 2px 6px;
+      border-radius: 2px;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .copy-btn.ok {
+      color: #86efac;
+      border-color: #86efac;
+    }
+
+    .sev {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .sev-label {
+      font-size: 9px;
+      font-family: var(--mono);
+      display: block;
+      opacity: .6;
+      letter-spacing: .5px;
+      margin-top: 1px;
+    }
+
+    .sev-crit {
+      color: #ff4d6d;
+    }
+
+    .sev-high {
+      color: #f59e0b;
+    }
+
+    .sev-med {
+      color: #38bdf8;
+    }
+
+    .sev-low {
+      color: var(--muted);
+    }
+
+    .empty {
+      padding: 3rem;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* Add custom query panel */
+    .add-panel {
+      margin-top: 1.5rem;
+      background: rgba(7, 20, 40, 0.8);
+      border: 1px solid var(--border2);
+      border-left: 3px solid var(--cyan);
+      padding: 1.25rem 1.5rem;
+    }
+
+    .add-panel-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+
+    .add-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px;
+      align-items: end;
+    }
+
+    .add-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .add-field label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: .5px;
+    }
+
+    .add-field input,
+    .add-field select {
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: var(--mono);
+      background: rgba(4, 13, 31, .9);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      border-radius: 3px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .add-field input:focus,
+    .add-field select:focus {
+      border-color: var(--cyan);
+    }
+
+    .add-field.wide {
+      grid-column: 1/-1;
+    }
+
+    .add-row-btns {
+      display: flex;
+      gap: 8px;
+      grid-column: 1/-1;
+    }
+
+    .add-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      padding: 7px 16px;
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      cursor: pointer;
+      border-radius: 3px;
+      transition: background .15s;
+    }
+
+    .add-btn:hover {
+      background: rgba(0, 212, 255, .08);
+    }
+
+    .clear-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      padding: 7px 16px;
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all .15s;
+    }
+
+    .clear-btn:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    @media(max-width:700px) {
+      thead th:nth-child(5) {
+        display: none;
+      }
+
+      td:nth-child(5) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="reports.html">Reports</a>
+      <a href="ioc-feed.html">IOC Feed</a>
+      <a href="yara-feed.html">YARA Feed</a>
+      <a href="siem-reference.html" class="active">SIEM Ref</a>
+      <a href="achievements.html">Achievements</a>
+      <a href="about.html">About</a>
+    </div>
+    <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="ref-container">
+
+    <div class="ref-hero">
+      <div class="ref-hero-tag"><span class="dot"></span> PERSONAL INVESTIGATION TOOLKIT</div>
+      <h1>SIEM / SPL Query Reference</h1>
+      <p>Filterable Splunk query reference for Windows, macOS, Linux, Network &amp; Cloud investigations.<br />
+        Click any query to copy instantly. Add your own custom queries — they're saved in your browser.</p>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="search" id="q" placeholder="Search use case, query, event code, keyword…" oninput="render()">
+      </div>
+    </div>
+
+    <div class="pill-row">
+      <span class="pill-label">PLATFORM</span>
+      <button class="pill win" onclick="togglePlat('win',this)">Windows</button>
+      <button class="pill mac" onclick="togglePlat('mac',this)">macOS</button>
+      <button class="pill linux" onclick="togglePlat('linux',this)">Linux</button>
+      <button class="pill net" onclick="togglePlat('net',this)">Network</button>
+      <button class="pill cloud" onclick="togglePlat('cloud',this)">Cloud</button>
+    </div>
+
+    <div class="pill-row" id="cat-pills">
+      <span class="pill-label">CATEGORY</span>
+    </div>
+
+    <div class="stats-bar">
+      <span>&gt;_ showing <span class="cnt" id="cnt">0</span> queries &nbsp;·&nbsp; <span id="custom-cnt"
+          style="color:var(--cyan);"></span></span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">click query → copy to clipboard</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:80px">PLATFORM</th>
+            <th style="width:115px">CATEGORY</th>
+            <th style="width:155px">USE CASE</th>
+            <th>SPL QUERY</th>
+            <th style="width:125px">DETECTS</th>
+            <th style="width:55px">SEV</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="empty" style="display:none;">&gt;_ no queries match — try clearing filters or changing
+        search term</div>
+    </div>
+
+    <!-- Add custom query -->
+    <div class="add-panel">
+      <div class="add-panel-title">// ADD YOUR OWN QUERY — saved in browser</div>
+      <div class="add-form">
+        <div class="add-field">
+          <label>PLATFORM</label>
+          <select id="np">
+            <option value="win">Windows</option>
+            <option value="mac">macOS</option>
+            <option value="linux">Linux</option>
+            <option value="net">Network</option>
+            <option value="cloud">Cloud</option>
+          </select>
+        </div>
+        <div class="add-field">
+          <label>CATEGORY</label>
+          <input id="nc" placeholder="e.g. Authentication" maxlength="30" />
+        </div>
+        <div class="add-field">
+          <label>USE CASE</label>
+          <input id="nu" placeholder="e.g. Failed logins" maxlength="60" />
+        </div>
+        <div class="add-field">
+          <label>DETECTS</label>
+          <input id="nd" placeholder="e.g. Brute force" maxlength="50" />
+        </div>
+        <div class="add-field">
+          <label>SEVERITY</label>
+          <select id="ns">
+            <option value="crit">CRITICAL</option>
+            <option value="high">HIGH</option>
+            <option value="med" selected>MEDIUM</option>
+            <option value="low">LOW</option>
+          </select>
+        </div>
+        <div class="add-field wide">
+          <label>SPL QUERY</label>
+          <input id="nq" placeholder='index=windows EventCode=4625 | stats count by src_ip | where count > 20'
+            style="width:100%;" />
+        </div>
+        <div class="add-row-btns">
+          <button class="add-btn" onclick="addQuery()">+ ADD QUERY</button>
+          <button class="clear-btn" onclick="clearCustom()">✕ CLEAR CUSTOM</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>&gt;_ secblog // personal investigation toolkit · SalahEldin Kamil</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/poly-bg.js"></script>
+  <script>
+    (function () {
+      const f = document.getElementById('footer-links');
+      if (f && typeof SITE_CONFIG !== 'undefined') {
+        const l = [];
+        if (SITE_CONFIG.links.github) l.push(`<a href="${SITE_CONFIG.links.github}" target="_blank">GitHub</a>`);
+        if (SITE_CONFIG.links.linkedin) l.push(`<a href="${SITE_CONFIG.links.linkedin}" target="_blank">LinkedIn</a>`);
+        if (SITE_CONFIG.links.email) l.push(`<a href="${SITE_CONFIG.links.email}">Contact</a>`);
+        f.innerHTML = l.join('');
+      }
+    })();
+
+    const BUILTIN = [
+      { p: "win", c: "Authentication", u: "Failed logins", q: "index=windows EventCode=4625", d: "Login failures", s: "high" },
+      { p: "win", c: "Authentication", u: "Successful logins", q: "index=windows EventCode=4624", d: "User access", s: "low" },
+      { p: "win", c: "Authentication", u: "Brute force — top IPs", q: "index=windows EventCode=4625 | stats count by src_ip | sort -count", d: "Attacker IPs", s: "high" },
+      { p: "win", c: "Authentication", u: "Brute force threshold", q: "index=windows EventCode=4625 | stats count by src_ip | where count > 20", d: "Aggressive attacks", s: "crit" },
+      { p: "win", c: "Authentication", u: "Success after failure", q: "index=windows (EventCode=4624 OR EventCode=4625) | stats values(EventCode) by Account_Name, src_ip", d: "Account compromise", s: "crit" },
+      { p: "win", c: "Authentication", u: "Admin logins", q: "index=windows EventCode=4672", d: "Privileged access", s: "high" },
+      { p: "win", c: "Authentication", u: "Explicit credentials", q: "index=windows EventCode=4648", d: "Credential abuse", s: "high" },
+      { p: "win", c: "RDP / Remote", u: "RDP login", q: "index=windows EventCode=4624 Logon_Type=10", d: "Remote login", s: "med" },
+      { p: "win", c: "RDP / Remote", u: "RDP failures", q: "index=windows EventCode=4625 Logon_Type=10", d: "RDP brute force", s: "high" },
+      { p: "win", c: "RDP / Remote", u: "RDP session tracking", q: "index=windows (EventCode=4778 OR EventCode=4779)", d: "Session activity", s: "med" },
+      { p: "win", c: "Account Mgmt", u: "User created", q: "index=windows EventCode=4720", d: "New account", s: "high" },
+      { p: "win", c: "Account Mgmt", u: "Account enabled", q: "index=windows EventCode=4722", d: "Reactivated user", s: "med" },
+      { p: "win", c: "Account Mgmt", u: "Password reset", q: "index=windows EventCode=4724", d: "Account takeover", s: "high" },
+      { p: "win", c: "Account Mgmt", u: "User added to admin", q: "index=windows EventCode=4732", d: "Privilege escalation", s: "crit" },
+      { p: "win", c: "Account Mgmt", u: "Account deleted", q: "index=windows EventCode=4726", d: "Cleanup / cover tracks", s: "high" },
+      { p: "win", c: "Process", u: "Process creation", q: "index=windows EventCode=4688", d: "Program execution", s: "med" },
+      { p: "win", c: "Process", u: "Suspicious PowerShell", q: 'index=windows EventCode=4688 CommandLine="*powershell*"', d: "Script execution", s: "high" },
+      { p: "win", c: "Process", u: "Encoded PowerShell", q: 'index=windows EventCode=4688 CommandLine="*-enc*"', d: "Obfuscation", s: "crit" },
+      { p: "win", c: "Process", u: "CMD execution", q: 'index=windows EventCode=4688 CommandLine="*cmd.exe*"', d: "Command usage", s: "med" },
+      { p: "win", c: "Process", u: "Suspicious parent process", q: 'index=windows EventCode=4688 ParentImage="*\\\\winword.exe" OR ParentImage="*\\\\excel.exe"', d: "Macro execution", s: "crit" },
+      { p: "win", c: "PowerShell", u: "Script block logging", q: "index=windows EventCode=4104", d: "Full script content", s: "high" },
+      { p: "win", c: "PowerShell", u: "Module logging", q: "index=windows EventCode=4103", d: "Commands run", s: "med" },
+      { p: "win", c: "PowerShell", u: "Download cradle", q: 'index=windows EventCode=4104 ScriptBlockText="*DownloadString*" OR ScriptBlockText="*IEX*"', d: "Remote code pull", s: "crit" },
+      { p: "win", c: "PowerShell", u: "AMSI bypass attempt", q: 'index=windows EventCode=4104 ScriptBlockText="*amsi*" ScriptBlockText="*bypass*"', d: "AV evasion", s: "crit" },
+      { p: "win", c: "Persistence", u: "Run key modified", q: 'index=windows EventCode=4657 ObjectName="*\\\\Run*"', d: "Autostart entry", s: "crit" },
+      { p: "win", c: "Persistence", u: "Scheduled task created", q: "index=windows EventCode=4698", d: "Task-based persistence", s: "crit" },
+      { p: "win", c: "Persistence", u: "Service installed", q: "index=windows EventCode=4697", d: "Service persistence", s: "crit" },
+      { p: "win", c: "Persistence", u: "Startup folder file", q: 'index=windows EventCode=11 TargetFilename="*Startup*"', d: "Startup persistence", s: "high" },
+      { p: "win", c: "Lateral Movement", u: "Pass-the-Hash", q: "index=windows EventCode=4624 Logon_Type=3 AuthPackage=NTLM", d: "PTH attack", s: "crit" },
+      { p: "win", c: "Lateral Movement", u: "Lateral via SMB", q: "index=windows EventCode=4624 Logon_Type=3 | stats count by src_ip, Account_Name", d: "SMB lateral movement", s: "high" },
+      { p: "win", c: "Lateral Movement", u: "WMI remote execution", q: 'index=windows EventCode=4688 ParentImage="*\\\\wmiprvse.exe"', d: "WMI execution", s: "crit" },
+      { p: "win", c: "Lateral Movement", u: "PsExec usage", q: 'index=windows EventCode=4688 (CommandLine="*psexec*" OR CommandLine="*PSEXESVC*")', d: "Remote admin tool", s: "crit" },
+      { p: "win", c: "Privilege Abuse", u: "Token impersonation", q: "index=windows EventCode=4703", d: "Privilege abuse", s: "high" },
+      { p: "win", c: "Privilege Abuse", u: "UAC bypass attempt", q: 'index=windows EventCode=4688 CommandLine="*eventvwr*" OR CommandLine="*fodhelper*"', d: "UAC bypass", s: "crit" },
+      { p: "win", c: "File Activity", u: "Sensitive file access", q: 'index=windows EventCode=4663 ObjectName="*\\\\SAM*" OR ObjectName="*\\\\NTDS*"', d: "Credential file access", s: "crit" },
+      { p: "win", c: "File Activity", u: "Mass file rename/delete", q: "index=windows EventCode=4663 | stats count by Account_Name | where count > 100", d: "Ransomware indicator", s: "crit" },
+      { p: "win", c: "Timeline", u: "All events for a user", q: "index=windows Account_Name=<username> | table _time, EventCode, host | sort _time", d: "User timeline", s: "med" },
+      { p: "win", c: "Timeline", u: "Events on a host", q: "index=windows host=<hostname> | table _time, EventCode, Account_Name | sort _time", d: "Host timeline", s: "med" },
+      { p: "mac", c: "Authentication", u: "Failed sudo", q: 'index=mac sourcetype=syslog "sudo" "authentication failure"', d: "Privilege attempt", s: "high" },
+      { p: "mac", c: "Authentication", u: "SSH login", q: 'index=mac sourcetype=syslog "sshd" "Accepted"', d: "Remote access", s: "med" },
+      { p: "mac", c: "Process", u: "Suspicious script exec", q: 'index=mac sourcetype=syslog (process=python OR process=ruby OR process=perl)', d: "Script abuse", s: "high" },
+      { p: "mac", c: "Persistence", u: "LaunchAgent added", q: 'index=mac sourcetype=fsevents path="*/LaunchAgents/*.plist"', d: "User persistence", s: "crit" },
+      { p: "mac", c: "Persistence", u: "LaunchDaemon added", q: 'index=mac sourcetype=fsevents path="*/LaunchDaemons/*.plist"', d: "System persistence", s: "crit" },
+      { p: "mac", c: "Persistence", u: "Crontab modification", q: 'index=mac sourcetype=syslog "crontab"', d: "Cron persistence", s: "high" },
+      { p: "linux", c: "Authentication", u: "SSH brute force", q: 'index=linux sourcetype=syslog "Failed password" | stats count by src_ip | where count > 10', d: "SSH attack", s: "high" },
+      { p: "linux", c: "Authentication", u: "SSH success", q: 'index=linux sourcetype=syslog "Accepted password" OR "Accepted publickey"', d: "Remote access", s: "med" },
+      { p: "linux", c: "Authentication", u: "sudo usage", q: 'index=linux sourcetype=syslog "sudo" NOT "pam_unix"', d: "Privilege use", s: "med" },
+      { p: "linux", c: "Authentication", u: "Root login", q: 'index=linux sourcetype=syslog "session opened for user root"', d: "Root access", s: "crit" },
+      { p: "linux", c: "Process", u: "Reverse shell indicators", q: 'index=linux sourcetype=audit (cmdline="*/bin/bash -i*" OR cmdline="*nc -e*" OR cmdline="*python -c*")', d: "Shell spawned", s: "crit" },
+      { p: "linux", c: "Process", u: "setuid binary execution", q: 'index=linux sourcetype=audit syscall=59 euid=0 uid!=0', d: "Privilege escalation", s: "crit" },
+      { p: "linux", c: "Persistence", u: "Systemd unit created", q: 'index=linux sourcetype=fsevents path="*/systemd/system/*.service"', d: "Service persistence", s: "crit" },
+      { p: "linux", c: "Persistence", u: "SSH authorized_keys modified", q: 'index=linux sourcetype=fsevents path="*/.ssh/authorized_keys"', d: "Backdoor SSH key", s: "crit" },
+      { p: "linux", c: "Persistence", u: "Profile / bashrc modified", q: 'index=linux sourcetype=fsevents path="*/.bashrc" OR path="*/.profile"', d: "Shell persistence", s: "high" },
+      { p: "linux", c: "File Activity", u: "Sensitive file read", q: 'index=linux sourcetype=audit path="/etc/passwd" OR path="/etc/shadow" OR path="/etc/sudoers"', d: "Credential access", s: "crit" },
+      { p: "linux", c: "File Activity", u: "World-writable file created", q: 'index=linux sourcetype=audit "chmod" "777"', d: "Dangerous permissions", s: "high" },
+      { p: "linux", c: "Network", u: "Listening port opened", q: 'index=linux sourcetype=netstat state=LISTEN | stats count by src_port, process', d: "Backdoor listener", s: "high" },
+      { p: "linux", c: "Network", u: "Unusual outbound connection", q: 'index=linux sourcetype=syslog dest_port!=80 dest_port!=443 | stats count by dest_ip, process', d: "C2 traffic", s: "high" },
+      { p: "linux", c: "Advanced", u: "Rootkit — kernel module", q: 'index=linux sourcetype=syslog "insmod" OR "modprobe" | table _time, host, cmdline', d: "Rootkit load", s: "crit" },
+      { p: "linux", c: "Advanced", u: "LD_PRELOAD hijack", q: 'index=linux sourcetype=audit "LD_PRELOAD"', d: "Library hijack", s: "crit" },
+      { p: "net", c: "Firewall", u: "Blocked traffic spikes", q: 'index=firewall action=blocked | timechart count by src_ip | sort -count', d: "Port scan / flood", s: "high" },
+      { p: "net", c: "Firewall", u: "Allow rule changes", q: 'index=firewall sourcetype=panos "rule-change" OR "config-change"', d: "Policy tampering", s: "crit" },
+      { p: "net", c: "Firewall", u: "Outbound on unusual ports", q: 'index=firewall action=allowed dest_port!=80 dest_port!=443 dest_port!=53 | stats count by dest_ip, dest_port', d: "C2 / exfil", s: "high" },
+      { p: "net", c: "Firewall", u: "ICMP flood", q: 'index=firewall protocol=icmp | stats count by src_ip | where count > 500', d: "DoS indicator", s: "high" },
+      { p: "net", c: "IDS / IPS", u: "High-severity alerts", q: 'index=ids severity=high OR severity=critical | stats count by signature, src_ip | sort -count', d: "Active attacks", s: "crit" },
+      { p: "net", c: "IDS / IPS", u: "Exploit attempt", q: 'index=ids category="exploit" | table _time, src_ip, dest_ip, signature', d: "Exploitation", s: "crit" },
+      { p: "net", c: "IDS / IPS", u: "Malware beacon pattern", q: 'index=ids signature="*beacon*" | timechart count span=5m', d: "C2 beaconing", s: "crit" },
+      { p: "net", c: "DNS", u: "High-frequency DNS queries", q: 'index=dns | stats count by query | where count > 1000 | sort -count', d: "DNS tunneling / DGA", s: "high" },
+      { p: "net", c: "DNS", u: "NX domain spikes", q: 'index=dns reply_code=NXDOMAIN | stats count by src_ip | where count > 50', d: "DGA / recon", s: "high" },
+      { p: "net", c: "DNS", u: "Long DNS query strings", q: 'index=dns | eval qlen=len(query) | where qlen > 50 | table src_ip, query, qlen', d: "DNS exfiltration", s: "crit" },
+      { p: "net", c: "DNS", u: "Rare TLD queries", q: 'index=dns | rex field=query "\\.(?<tld>[^.]+)$" | where tld IN ("xyz","tk","pw","cc","ru") | stats count by src_ip, tld', d: "Malicious domains", s: "high" },
+      { p: "net", c: "Proxy / HTTP", u: "User-agent anomaly", q: 'index=proxy | stats count by http_user_agent | where count < 5 | sort count', d: "Rare agents / tools", s: "med" },
+      { p: "net", c: "Proxy / HTTP", u: "Large data upload", q: 'index=proxy method=POST bytes_out > 1000000 | table src_ip, url, bytes_out', d: "Data exfiltration", s: "crit" },
+      { p: "net", c: "Proxy / HTTP", u: "Malware category hits", q: 'index=proxy url_category="malware" | table _time, src_ip, url', d: "Malware download", s: "crit" },
+      { p: "cloud", c: "Cloud (AWS)", u: "Root account login", q: 'index=cloudtrail eventName=ConsoleLogin user="root" | table _time, sourceIPAddress', d: "Root access", s: "crit" },
+      { p: "cloud", c: "Cloud (AWS)", u: "IAM user created", q: 'index=cloudtrail eventName=CreateUser | table _time, requestParameters.userName, sourceIPAddress', d: "New cloud account", s: "high" },
+      { p: "cloud", c: "Cloud (AWS)", u: "Admin policy attached", q: 'index=cloudtrail eventName=AttachUserPolicy policyArn="*AdministratorAccess*"', d: "Privilege escalation", s: "crit" },
+      { p: "cloud", c: "Cloud (AWS)", u: "CloudTrail disabled", q: 'index=cloudtrail eventName=StopLogging OR eventName=DeleteTrail', d: "Log tampering", s: "crit" },
+      { p: "cloud", c: "Cloud (AWS)", u: "S3 bucket made public", q: 'index=cloudtrail eventName=PutBucketAcl requestParameters.accessControlList="*public*"', d: "Data exposure", s: "crit" },
+      { p: "cloud", c: "Cloud (AWS)", u: "EC2 security group opened", q: 'index=cloudtrail eventName=AuthorizeSecurityGroupIngress requestParameters.cidrIp="0.0.0.0/0"', d: "Firewall bypass", s: "crit" },
+      { p: "cloud", c: "Cloud (Azure)", u: "MFA disabled for user", q: 'index=azuread operationName="Update user" | search "StrongAuthenticationMethods" AND "Delete"', d: "MFA bypass", s: "crit" },
+      { p: "cloud", c: "Cloud (Azure)", u: "Global admin assigned", q: 'index=azuread operationName="Add member to role" roleDisplayName="Global Administrator"', d: "Privilege escalation", s: "crit" },
+      { p: "cloud", c: "Cloud (Azure)", u: "Guest user invited", q: 'index=azuread operationName="Invite external user"', d: "External access", s: "high" },
+      { p: "cloud", c: "Cloud (GCP)", u: "Service account key created", q: 'index=gcp protoPayload.methodName="google.iam.admin.v1.CreateServiceAccountKey"', d: "Persistent access", s: "high" },
+      { p: "cloud", c: "Cloud (GCP)", u: "Project IAM change", q: 'index=gcp protoPayload.methodName="SetIamPolicy" | table _time, resource.labels.project_id, protoPayload.authenticationInfo.principalEmail', d: "Privilege change", s: "crit" },
+    ];
+
+    const STORAGE_KEY = 'secblog_spl_custom';
+    let custom = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    let DATA = [...BUILTIN, ...custom];
+
+    const PL = { win: "Windows", mac: "macOS", linux: "Linux", net: "Network", cloud: "Cloud" };
+    const PC = { win: "pb-win", mac: "pb-mac", linux: "pb-linux", net: "pb-net", cloud: "pb-cloud" };
+    const CC = {
+      "Authentication": "cb-auth", "RDP / Remote": "cb-rdp", "Account Mgmt": "cb-acct",
+      "Process": "cb-proc", "PowerShell": "cb-ps", "Persistence": "cb-persist",
+      "Lateral Movement": "cb-lateral", "Privilege Abuse": "cb-priv", "Network": "cb-net",
+      "File Activity": "cb-file", "Advanced": "cb-adv", "Timeline": "cb-tl",
+      "Firewall": "cb-fw", "IDS / IPS": "cb-ids", "DNS": "cb-net", "Proxy / HTTP": "cb-net",
+      "Cloud (AWS)": "cb-cloud", "Cloud (Azure)": "cb-cloud", "Cloud (GCP)": "cb-cloud",
+    };
+    const SI = { crit: "★", high: "▲", med: "◆", low: "–" };
+    const SL = { crit: "CRIT", high: "HIGH", med: "MED", low: "LOW" };
+    const SC = { crit: "sev-crit", high: "sev-high", med: "sev-med", low: "sev-low" };
+
+    let activePlats = new Set(), activeCats = new Set(), timers = {};
+
+    function buildCatPills() {
+      const cats = [...new Set(DATA.map(r => r.c))];
+      const cc = document.getElementById('cat-pills');
+      cc.querySelectorAll('.pill').forEach(b => b.remove());
+      cats.forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'pill'; b.textContent = c;
+        b.onclick = () => { activeCats.has(c) ? activeCats.delete(c) : activeCats.add(c); b.classList.toggle('active'); render(); };
+        cc.appendChild(b);
+      });
+    }
+
+    window.togglePlat = function (p, btn) {
+      activePlats.has(p) ? activePlats.delete(p) : activePlats.add(p);
+      btn.classList.toggle('active'); render();
+    };
+
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+    window.copyQ = function (i) {
+      const el = document.getElementById('raw-' + i);
+      if (!el) return;
+      navigator.clipboard.writeText(el.value).then(() => {
+        const btn = document.getElementById('cb-' + i);
+        if (btn) { btn.textContent = 'COPIED!'; btn.classList.add('ok'); }
+        clearTimeout(timers[i]);
+        timers[i] = setTimeout(() => { if (btn) { btn.textContent = 'COPY'; btn.classList.remove('ok'); } }, 2000);
+      });
+    };
+
+    function render() {
+      const q = (document.getElementById('q').value || '').toLowerCase();
+      const rows = DATA.filter(r => {
+        if (activePlats.size && !activePlats.has(r.p)) return false;
+        if (activeCats.size && !activeCats.has(r.c)) return false;
+        if (q && ![r.u, r.q, r.d, r.c, PL[r.p] || ''].some(v => v.toLowerCase().includes(q))) return false;
+        return true;
+      });
+      document.getElementById('cnt').textContent = rows.length;
+      const cc = document.getElementById('custom-cnt');
+      if (cc) cc.textContent = custom.length ? custom.length + ' custom saved' : '';
+      const tb = document.getElementById('tbody');
+      const em = document.getElementById('empty');
+      if (!rows.length) { tb.innerHTML = ''; em.style.display = 'block'; return; }
+      em.style.display = 'none';
+      tb.innerHTML = rows.map((r, i) => {
+        const isC = custom.some(x => x.q === r.q && x.u === r.u);
+        return `<tr${isC ? ' style="background:rgba(0,212,255,.03)"' : ''}>
+      <td><span class="pb ${PC[r.p] || 'pb-win'}">${PL[r.p] || r.p}</span></td>
+      <td><span class="cb ${CC[r.c] || 'cb-net'}">${esc(r.c)}</span></td>
+      <td style="font-size:12px">${esc(r.u)}${isC ? '<br><span style="font-size:9px;color:var(--cyan);font-family:var(--mono);letter-spacing:.5px;">CUSTOM</span>' : ''}</td>
+      <td><div class="qwrap">
+        <input type="hidden" id="raw-${i}" value="${esc(r.q)}"/>
+        <code onclick="copyQ(${i})" style="cursor:pointer;" title="Click to copy">${esc(r.q)}</code>
+        <button class="copy-btn" id="cb-${i}" onclick="copyQ(${i})">COPY</button>
+      </div></td>
+      <td style="font-size:12px;color:var(--muted)">${esc(r.d)}</td>
+      <td class="${SC[r.s]}"><span class="sev">${SI[r.s]}</span><span class="sev-label">${SL[r.s]}</span></td>
+    </tr>`;
+      }).join('');
+    }
+
+    window.addQuery = function () {
+      const p = document.getElementById('np').value;
+      const c = document.getElementById('nc').value.trim();
+      const u = document.getElementById('nu').value.trim();
+      const q = document.getElementById('nq').value.trim();
+      const d = document.getElementById('nd').value.trim();
+      const s = document.getElementById('ns').value;
+      if (!c || !u || !q) { alert('Category, Use Case, and SPL Query are required.'); return; }
+      custom.push({ p, c, u, q, d, s });
+      DATA = [...BUILTIN, ...custom];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
+      buildCatPills(); render();
+      ['nc', 'nu', 'nq', 'nd'].forEach(id => document.getElementById(id).value = '');
+    };
+
+    window.clearCustom = function () {
+      if (!custom.length) { alert('No custom queries to clear.'); return; }
+      if (!confirm('Delete all ' + custom.length + ' custom queries?')) return;
+      custom = [];
+      DATA = [...BUILTIN];
+      localStorage.removeItem(STORAGE_KEY);
+      buildCatPills(); render();
+    };
+
+    buildCatPills();
+    render();
+  </script>
+</body>
+
+</html>

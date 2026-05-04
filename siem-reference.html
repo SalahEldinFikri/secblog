@@ -4,17 +4,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIEM SPL Reference — SecBlog</title>
+  <title>SIEM Reference — SecBlog</title>
   <link rel="stylesheet" href="assets/css/style.css" />
   <style>
     .ref-container {
-      max-width: 1200px;
+      max-width: 1300px;
       margin: 0 auto;
       padding: 2.5rem 2rem 4rem;
     }
 
     .ref-hero {
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
 
     .ref-hero-tag {
@@ -22,7 +22,7 @@
       font-size: 11px;
       color: var(--cyan);
       letter-spacing: 2px;
-      margin-bottom: .6rem;
+      margin-bottom: .5rem;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -33,46 +33,110 @@
       font-weight: 700;
       color: #e8f4ff;
       letter-spacing: -0.5px;
-      margin-bottom: .4rem;
+      margin-bottom: .35rem;
     }
 
     .ref-hero p {
       font-size: 13px;
       color: var(--muted);
+      line-height: 1.65;
+      max-width: 780px;
+    }
+
+    .siem-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--border2);
+    }
+
+    .siem-tab {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 1px;
+      padding: 10px 20px;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .siem-tab:hover {
+      color: var(--text);
+    }
+
+    .siem-tab.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    .tab-badge {
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 2px;
+      margin-left: 5px;
+      background: rgba(0, 212, 255, .1);
+      color: var(--cyan);
+    }
+
+    .siem-panel {
+      display: none;
+    }
+
+    .siem-panel.active {
+      display: block;
+    }
+
+    .panel-desc {
+      font-size: 12px;
+      color: var(--muted);
       line-height: 1.6;
+      padding: .7rem 1rem;
+      background: rgba(0, 212, 255, .04);
+      border: 1px solid var(--border2);
+      border-top: none;
+      margin-bottom: .9rem;
+      font-family: var(--mono);
+    }
+
+    .panel-desc strong {
+      color: var(--cyan);
     }
 
     .toolbar {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 1rem;
+      margin-bottom: .7rem;
       align-items: center;
     }
 
     .search-wrap {
       flex: 1;
-      min-width: 220px;
+      min-width: 200px;
       position: relative;
     }
 
     .search-wrap svg {
       position: absolute;
-      left: 10px;
+      left: 9px;
       top: 50%;
       transform: translateY(-50%);
-      opacity: .4;
+      opacity: .35;
       pointer-events: none;
     }
 
     input[type=search] {
       width: 100%;
-      padding: 8px 10px 8px 32px;
-      font-size: 13px;
+      padding: 7px 9px 7px 28px;
+      font-size: 12px;
       font-family: var(--mono);
       border: 1px solid var(--border2);
-      border-radius: 4px;
-      background: rgba(7, 20, 40, 0.9);
+      border-radius: 3px;
+      background: rgba(7, 20, 40, .9);
       color: var(--text);
       outline: none;
       transition: border-color .2s;
@@ -89,8 +153,9 @@
     .pill-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: .6rem;
+      gap: 5px;
+      margin-bottom: .5rem;
+      align-items: center;
     }
 
     .pill-label {
@@ -98,18 +163,17 @@
       font-size: 10px;
       color: var(--muted);
       letter-spacing: 1px;
-      align-self: center;
       white-space: nowrap;
     }
 
     .pill {
       font-size: 11px;
       font-family: var(--mono);
-      letter-spacing: .5px;
-      padding: 4px 11px;
+      letter-spacing: .4px;
+      padding: 3px 9px;
       border-radius: 3px;
       border: 1px solid var(--border2);
-      background: rgba(7, 20, 40, 0.7);
+      background: rgba(7, 20, 40, .7);
       color: var(--muted);
       cursor: pointer;
       transition: all .15s;
@@ -123,7 +187,7 @@
     .pill.active {
       border-color: var(--cyan);
       color: var(--cyan);
-      background: rgba(0, 212, 255, .08);
+      background: rgba(0, 212, 255, .07);
     }
 
     .pill.win.active {
@@ -161,13 +225,13 @@
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: .5rem;
+      gap: .4rem;
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
-      padding: .5rem 0 .75rem;
+      padding: .4rem 0 .6rem;
       border-bottom: 1px solid var(--border2);
-      margin-bottom: .75rem;
+      margin-bottom: .6rem;
     }
 
     .stats-bar .cnt {
@@ -177,21 +241,20 @@
     .table-wrap {
       overflow-x: auto;
       border: 1px solid var(--border2);
-      border-radius: 4px;
+      border-radius: 3px;
       background: rgba(4, 13, 31, .7);
-      max-height: 62vh;
+      max-height: 55vh;
       overflow-y: auto;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12.5px;
-      min-width: 720px;
+      min-width: 680px;
     }
 
     thead th {
-      padding: 9px 12px;
+      padding: 8px 11px;
       text-align: left;
       font-size: 10px;
       font-weight: 500;
@@ -207,10 +270,11 @@
     }
 
     td {
-      padding: 8px 12px;
-      border-bottom: 1px solid rgba(14, 32, 64, .5);
+      padding: 7px 11px;
+      border-bottom: 1px solid rgba(14, 32, 64, .4);
       vertical-align: top;
       color: var(--text);
+      font-size: 12.5px;
     }
 
     tr:last-child td {
@@ -218,13 +282,13 @@
     }
 
     tr:hover td {
-      background: rgba(0, 212, 255, .04);
+      background: rgba(0, 212, 255, .03);
     }
 
     .pb {
       display: inline-block;
       font-size: 10px;
-      padding: 2px 7px;
+      padding: 2px 6px;
       border-radius: 3px;
       font-weight: 500;
       white-space: nowrap;
@@ -234,37 +298,37 @@
     .pb-win {
       background: rgba(59, 130, 246, .15);
       color: #93c5fd;
-      border: 1px solid rgba(59, 130, 246, .25);
+      border: 1px solid rgba(59, 130, 246, .2);
     }
 
     .pb-mac {
       background: rgba(236, 72, 153, .12);
       color: #f9a8d4;
-      border: 1px solid rgba(236, 72, 153, .25);
+      border: 1px solid rgba(236, 72, 153, .2);
     }
 
     .pb-linux {
       background: rgba(34, 197, 94, .12);
       color: #86efac;
-      border: 1px solid rgba(34, 197, 94, .25);
+      border: 1px solid rgba(34, 197, 94, .2);
     }
 
     .pb-net {
       background: rgba(234, 179, 8, .12);
       color: #fde047;
-      border: 1px solid rgba(234, 179, 8, .25);
+      border: 1px solid rgba(234, 179, 8, .2);
     }
 
     .pb-cloud {
       background: rgba(168, 85, 247, .12);
       color: #d8b4fe;
-      border: 1px solid rgba(168, 85, 247, .25);
+      border: 1px solid rgba(168, 85, 247, .2);
     }
 
     .cb {
       display: inline-block;
       font-size: 10px;
-      padding: 2px 7px;
+      padding: 2px 6px;
       border-radius: 3px;
       font-family: var(--mono);
       white-space: nowrap;
@@ -273,91 +337,97 @@
     .cb-auth {
       background: rgba(14, 165, 233, .12);
       color: #38bdf8;
-      border: 1px solid rgba(14, 165, 233, .2);
+      border: 1px solid rgba(14, 165, 233, .18);
     }
 
     .cb-proc {
       background: rgba(34, 197, 94, .1);
       color: #86efac;
-      border: 1px solid rgba(34, 197, 94, .2);
+      border: 1px solid rgba(34, 197, 94, .18);
     }
 
     .cb-acct {
       background: rgba(245, 158, 11, .1);
       color: #fcd34d;
-      border: 1px solid rgba(245, 158, 11, .2);
+      border: 1px solid rgba(245, 158, 11, .18);
     }
 
     .cb-persist {
       background: rgba(236, 72, 153, .1);
       color: #f9a8d4;
-      border: 1px solid rgba(236, 72, 153, .2);
+      border: 1px solid rgba(236, 72, 153, .18);
     }
 
     .cb-lateral {
       background: rgba(168, 85, 247, .12);
       color: #d8b4fe;
-      border: 1px solid rgba(168, 85, 247, .2);
+      border: 1px solid rgba(168, 85, 247, .18);
     }
 
     .cb-priv {
       background: rgba(255, 77, 109, .12);
       color: #ff8fa3;
-      border: 1px solid rgba(255, 77, 109, .2);
+      border: 1px solid rgba(255, 77, 109, .18);
     }
 
     .cb-net {
       background: rgba(100, 116, 139, .1);
       color: #94a3b8;
-      border: 1px solid rgba(100, 116, 139, .2);
+      border: 1px solid rgba(100, 116, 139, .18);
     }
 
     .cb-rdp {
       background: rgba(249, 115, 22, .1);
       color: #fdba74;
-      border: 1px solid rgba(249, 115, 22, .2);
+      border: 1px solid rgba(249, 115, 22, .18);
     }
 
     .cb-ps {
       background: rgba(16, 185, 129, .1);
       color: #6ee7b7;
-      border: 1px solid rgba(16, 185, 129, .2);
+      border: 1px solid rgba(16, 185, 129, .18);
     }
 
     .cb-file {
       background: rgba(56, 189, 248, .1);
       color: #7dd3fc;
-      border: 1px solid rgba(56, 189, 248, .2);
+      border: 1px solid rgba(56, 189, 248, .18);
     }
 
     .cb-adv {
       background: rgba(139, 92, 246, .12);
       color: #c4b5fd;
-      border: 1px solid rgba(139, 92, 246, .2);
+      border: 1px solid rgba(139, 92, 246, .18);
     }
 
     .cb-fw {
       background: rgba(234, 179, 8, .1);
       color: #fde047;
-      border: 1px solid rgba(234, 179, 8, .2);
+      border: 1px solid rgba(234, 179, 8, .18);
     }
 
     .cb-ids {
       background: rgba(34, 197, 94, .1);
       color: #86efac;
-      border: 1px solid rgba(34, 197, 94, .2);
+      border: 1px solid rgba(34, 197, 94, .18);
     }
 
     .cb-cloud {
       background: rgba(168, 85, 247, .12);
       color: #d8b4fe;
-      border: 1px solid rgba(168, 85, 247, .2);
+      border: 1px solid rgba(168, 85, 247, .18);
     }
 
     .cb-tl {
       background: rgba(100, 116, 139, .1);
       color: #94a3b8;
-      border: 1px solid rgba(100, 116, 139, .2);
+      border: 1px solid rgba(100, 116, 139, .18);
+    }
+
+    .cb-lm {
+      background: rgba(56, 189, 248, .1);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, .18);
     }
 
     .qwrap {
@@ -371,12 +441,18 @@
       background: rgba(4, 13, 31, .9);
       border: 1px solid var(--border2);
       border-radius: 3px;
-      padding: 5px 42px 5px 8px;
+      padding: 5px 40px 5px 8px;
       color: #93c5fd;
       word-break: break-all;
       line-height: 1.5;
-      min-width: 180px;
-      max-width: 380px;
+      min-width: 160px;
+      max-width: 400px;
+      cursor: pointer;
+      white-space: pre-wrap;
+    }
+
+    code:hover {
+      border-color: var(--cyan);
     }
 
     .copy-btn {
@@ -389,10 +465,9 @@
       font-family: var(--mono);
       font-size: 9px;
       color: var(--muted);
-      padding: 2px 6px;
+      padding: 2px 5px;
       border-radius: 2px;
       transition: all .15s;
-      white-space: nowrap;
     }
 
     .copy-btn:hover {
@@ -405,73 +480,77 @@
       border-color: #86efac;
     }
 
-    .sev {
+    .sev-crit {
+      color: #ff4d6d;
       font-family: var(--mono);
       font-size: 13px;
       font-weight: 700;
     }
 
-    .sev-label {
-      font-size: 9px;
+    .sev-high {
+      color: #f59e0b;
       font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .sev-med {
+      color: #38bdf8;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .sev-low {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .sev-lbl {
+      font-size: 9px;
       display: block;
       opacity: .6;
       letter-spacing: .5px;
       margin-top: 1px;
     }
 
-    .sev-crit {
-      color: #ff4d6d;
-    }
-
-    .sev-high {
-      color: #f59e0b;
-    }
-
-    .sev-med {
-      color: #38bdf8;
-    }
-
-    .sev-low {
-      color: var(--muted);
-    }
-
     .empty {
-      padding: 3rem;
+      padding: 2.5rem;
       text-align: center;
       font-family: var(--mono);
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
     }
 
-    /* Add custom query panel */
     .add-panel {
-      margin-top: 1.5rem;
-      background: rgba(7, 20, 40, 0.8);
+      margin-top: 1.1rem;
+      background: rgba(7, 20, 40, .8);
       border: 1px solid var(--border2);
       border-left: 3px solid var(--cyan);
-      padding: 1.25rem 1.5rem;
+      padding: .9rem 1.1rem;
     }
 
     .add-panel-title {
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: 11px;
       color: var(--cyan);
       letter-spacing: 1px;
-      margin-bottom: 1rem;
+      margin-bottom: .7rem;
     }
 
     .add-form {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 7px;
       align-items: end;
     }
 
     .add-field {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
 
     .add-field label {
@@ -483,8 +562,8 @@
 
     .add-field input,
     .add-field select {
-      padding: 6px 8px;
-      font-size: 12px;
+      padding: 5px 7px;
+      font-size: 11px;
       font-family: var(--mono);
       background: rgba(4, 13, 31, .9);
       border: 1px solid var(--border2);
@@ -503,9 +582,9 @@
       grid-column: 1/-1;
     }
 
-    .add-row-btns {
+    .add-btns {
       display: flex;
-      gap: 8px;
+      gap: 7px;
       grid-column: 1/-1;
     }
 
@@ -513,7 +592,7 @@
       font-family: var(--mono);
       font-size: 11px;
       letter-spacing: 1px;
-      padding: 7px 16px;
+      padding: 6px 13px;
       background: transparent;
       border: 1px solid var(--cyan);
       color: var(--cyan);
@@ -526,11 +605,11 @@
       background: rgba(0, 212, 255, .08);
     }
 
-    .clear-btn {
+    .clr-btn {
       font-family: var(--mono);
       font-size: 11px;
       letter-spacing: 1px;
-      padding: 7px 16px;
+      padding: 6px 13px;
       background: transparent;
       border: 1px solid var(--border2);
       color: var(--muted);
@@ -539,17 +618,133 @@
       transition: all .15s;
     }
 
-    .clear-btn:hover {
+    .clr-btn:hover {
       border-color: var(--red);
       color: var(--red);
     }
 
+    /* Event ID reference */
+    .sub-section-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      margin: 1.5rem 0 .7rem;
+      padding-bottom: .4rem;
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .evtref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1px;
+      background: var(--border2);
+      margin-bottom: 1px;
+    }
+
+    .evtref-card {
+      background: rgba(4, 13, 31, .85);
+      padding: .9rem 1.1rem;
+    }
+
+    .evtref-card-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      margin-bottom: .7rem;
+      padding-bottom: .35rem;
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .evtrow {
+      display: flex;
+      gap: 9px;
+      margin-bottom: .55rem;
+      align-items: flex-start;
+    }
+
+    .evtrow:last-child {
+      margin-bottom: 0;
+    }
+
+    .evtid {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 56px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      text-align: center;
+      white-space: nowrap;
+      line-height: 1.6;
+    }
+
+    .evtid-win {
+      background: rgba(59, 130, 246, .15);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, .2);
+    }
+
+    .evtid-sysmon {
+      background: rgba(0, 212, 255, .1);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 212, 255, .2);
+    }
+
+    .evtinfo {
+      flex: 1;
+    }
+
+    .evtname {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .evtdesc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .evtsev {
+      font-family: var(--mono);
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 2px;
+      display: inline-block;
+      margin-top: 3px;
+    }
+
+    .evtsev-crit {
+      background: rgba(255, 77, 109, .15);
+      color: var(--red);
+    }
+
+    .evtsev-high {
+      background: rgba(245, 158, 11, .12);
+      color: var(--amber);
+    }
+
+    .evtsev-med {
+      background: rgba(56, 189, 248, .1);
+      color: var(--blue);
+    }
+
+    .evtsev-low {
+      background: rgba(100, 116, 139, .1);
+      color: var(--muted);
+    }
+
     @media(max-width:700px) {
-      thead th:nth-child(5) {
-        display: none;
+      .siem-tab {
+        padding: 8px 11px;
+        font-size: 10px;
       }
 
-      td:nth-child(5) {
+      .tab-badge {
         display: none;
       }
     }
@@ -557,7 +752,6 @@
 </head>
 
 <body>
-
   <nav>
     <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
     <div class="nav-links">
@@ -573,109 +767,507 @@
   </nav>
 
   <div class="ref-container">
-
     <div class="ref-hero">
       <div class="ref-hero-tag"><span class="dot"></span> PERSONAL INVESTIGATION TOOLKIT</div>
-      <h1>SIEM / SPL Query Reference</h1>
-      <p>Filterable Splunk query reference for Windows, macOS, Linux, Network &amp; Cloud investigations.<br />
-        Click any query to copy instantly. Add your own custom queries — they're saved in your browser.</p>
+      <h1>SIEM Query Reference + Event ID Guide</h1>
+      <p>Splunk SPL · Elastic KQL/EQL · IBM QRadar AQL — three platforms in one place, plus a full Windows Event ID and
+        Sysmon reference with explanations. Click any query to copy. Custom queries saved in your browser.</p>
     </div>
 
-    <div class="toolbar">
-      <div class="search-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
-        <input type="search" id="q" placeholder="Search use case, query, event code, keyword…" oninput="render()">
+    <div class="siem-tabs">
+      <button class="siem-tab active" onclick="switchTab('splunk',this)">SPLUNK <span
+          class="tab-badge">SPL</span></button>
+      <button class="siem-tab" onclick="switchTab('elastic',this)">ELASTIC <span
+          class="tab-badge">KQL/EQL</span></button>
+      <button class="siem-tab" onclick="switchTab('qradar',this)">IBM QRADAR <span class="tab-badge">AQL</span></button>
+      <button class="siem-tab" onclick="switchTab('eventids',this)">EVENT IDs + SYSMON <span
+          class="tab-badge">REF</span></button>
+    </div>
+
+    <!-- SPLUNK -->
+    <div class="siem-panel active" id="panel-splunk">
+      <div class="panel-desc"><strong>Splunk SPL</strong> — Search Processing Language. Runs against Splunk indexes. Use
+        <strong>| stats</strong> to aggregate, <strong>| where</strong> to filter results, <strong>| timechart</strong>
+        for time-based views, <strong>| table</strong> to select fields. All queries use pipe-chaining.
+      </div>
+      <div id="controls-splunk"></div>
+      <div class="add-panel">
+        <div class="add-panel-title">// ADD CUSTOM SPL QUERY</div>
+        <div class="add-form" id="addform-splunk"></div>
       </div>
     </div>
 
-    <div class="pill-row">
-      <span class="pill-label">PLATFORM</span>
-      <button class="pill win" onclick="togglePlat('win',this)">Windows</button>
-      <button class="pill mac" onclick="togglePlat('mac',this)">macOS</button>
-      <button class="pill linux" onclick="togglePlat('linux',this)">Linux</button>
-      <button class="pill net" onclick="togglePlat('net',this)">Network</button>
-      <button class="pill cloud" onclick="togglePlat('cloud',this)">Cloud</button>
-    </div>
-
-    <div class="pill-row" id="cat-pills">
-      <span class="pill-label">CATEGORY</span>
-    </div>
-
-    <div class="stats-bar">
-      <span>&gt;_ showing <span class="cnt" id="cnt">0</span> queries &nbsp;·&nbsp; <span id="custom-cnt"
-          style="color:var(--cyan);"></span></span>
-      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">click query → copy to clipboard</span>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:80px">PLATFORM</th>
-            <th style="width:115px">CATEGORY</th>
-            <th style="width:155px">USE CASE</th>
-            <th>SPL QUERY</th>
-            <th style="width:125px">DETECTS</th>
-            <th style="width:55px">SEV</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-      <div class="empty" id="empty" style="display:none;">&gt;_ no queries match — try clearing filters or changing
-        search term</div>
-    </div>
-
-    <!-- Add custom query -->
-    <div class="add-panel">
-      <div class="add-panel-title">// ADD YOUR OWN QUERY — saved in browser</div>
-      <div class="add-form">
-        <div class="add-field">
-          <label>PLATFORM</label>
-          <select id="np">
-            <option value="win">Windows</option>
-            <option value="mac">macOS</option>
-            <option value="linux">Linux</option>
-            <option value="net">Network</option>
-            <option value="cloud">Cloud</option>
-          </select>
-        </div>
-        <div class="add-field">
-          <label>CATEGORY</label>
-          <input id="nc" placeholder="e.g. Authentication" maxlength="30" />
-        </div>
-        <div class="add-field">
-          <label>USE CASE</label>
-          <input id="nu" placeholder="e.g. Failed logins" maxlength="60" />
-        </div>
-        <div class="add-field">
-          <label>DETECTS</label>
-          <input id="nd" placeholder="e.g. Brute force" maxlength="50" />
-        </div>
-        <div class="add-field">
-          <label>SEVERITY</label>
-          <select id="ns">
-            <option value="crit">CRITICAL</option>
-            <option value="high">HIGH</option>
-            <option value="med" selected>MEDIUM</option>
-            <option value="low">LOW</option>
-          </select>
-        </div>
-        <div class="add-field wide">
-          <label>SPL QUERY</label>
-          <input id="nq" placeholder='index=windows EventCode=4625 | stats count by src_ip | where count > 20'
-            style="width:100%;" />
-        </div>
-        <div class="add-row-btns">
-          <button class="add-btn" onclick="addQuery()">+ ADD QUERY</button>
-          <button class="clear-btn" onclick="clearCustom()">✕ CLEAR CUSTOM</button>
-        </div>
+    <!-- ELASTIC -->
+    <div class="siem-panel" id="panel-elastic">
+      <div class="panel-desc"><strong>Elastic KQL / EQL</strong> — KQL (Kibana Query Language) filters events with
+        field:value syntax in Kibana Discover and Detection Rules. EQL (Event Query Language) uses <strong>sequence
+          by</strong> to detect multi-step attack chains. Works with Elastic Security, SIEM rules, and Timeline.</div>
+      <div id="controls-elastic"></div>
+      <div class="add-panel">
+        <div class="add-panel-title">// ADD CUSTOM ELASTIC QUERY</div>
+        <div class="add-form" id="addform-elastic"></div>
       </div>
     </div>
 
-  </div>
+    <!-- QRADAR -->
+    <div class="siem-panel" id="panel-qradar">
+      <div class="panel-desc"><strong>IBM QRadar AQL</strong> — Ariel Query Language. SQL-like syntax querying the Ariel
+        database. SELECT from <strong>events</strong> (log data) or <strong>flows</strong> (network). Filter with
+        <strong>WHERE</strong>, group with <strong>GROUP BY</strong>, limit time with <strong>LAST X
+          MINUTES/HOURS</strong>. Offense rules are built on top of AQL in the Rules Wizard.
+      </div>
+      <div id="controls-qradar"></div>
+      <div class="add-panel">
+        <div class="add-panel-title">// ADD CUSTOM QRADAR QUERY</div>
+        <div class="add-form" id="addform-qradar"></div>
+      </div>
+    </div>
+
+    <!-- EVENT IDs -->
+    <div class="siem-panel" id="panel-eventids">
+      <div class="panel-desc"><strong>Windows Event IDs + Sysmon</strong> — The most important event IDs for
+        investigations. Windows Security events come from <strong>Security.evtx</strong>. Sysmon events from
+        <strong>Microsoft-Windows-Sysmon/Operational</strong>. Always correlate multiple IDs to reconstruct the full
+        attack chain.
+      </div>
+
+      <div class="sub-section-title">// WINDOWS SECURITY EVENT IDs</div>
+      <div class="evtref-grid">
+
+        <div class="evtref-card">
+          <div class="evtref-card-title">LOGON &amp; SESSION</div>
+          <div class="evtrow"><span class="evtid evtid-win">4624</span>
+            <div class="evtinfo">
+              <div class="evtname">Successful Logon</div>
+              <div class="evtdesc">User logged on. Check LogonType: 2=Interactive, 3=Network, 7=Unlock, 10=RDP, 4=Batch,
+                5=Service. Type 3 with NTLM may be Pass-the-Hash.</div><span class="evtsev evtsev-low">LOW</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4625</span>
+            <div class="evtinfo">
+              <div class="evtname">Failed Logon</div>
+              <div class="evtdesc">Login attempt failed. High count from one IP = brute force. SubStatus:
+                0xC000006A=wrong password, 0xC0000064=unknown user, 0xC0000234=account locked.</div><span
+                class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4648</span>
+            <div class="evtinfo">
+              <div class="evtname">Explicit Credential Logon</div>
+              <div class="evtdesc">Logon with explicit credentials (runas / network logon with supplied creds). Common
+                in lateral movement when attacker uses alternate credentials to pivot.</div><span
+                class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4672</span>
+            <div class="evtinfo">
+              <div class="evtname">Special Privileges Assigned</div>
+              <div class="evtdesc">Sensitive privileges (SeDebugPrivilege, SeTcbPrivilege etc.) assigned to new session.
+                Correlate with 4624 to detect privileged admin logins.</div><span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4634</span>
+            <div class="evtinfo">
+              <div class="evtname">Logoff</div>
+              <div class="evtdesc">Account logged off. Pair with 4624 to calculate session duration. Useful for timeline
+                building and spotting very short sessions (automated tools).</div><span
+                class="evtsev evtsev-low">LOW</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4778</span>
+            <div class="evtinfo">
+              <div class="evtname">RDP Session Reconnected</div>
+              <div class="evtdesc">A disconnected RDP session was reconnected. Pair with 4779 to track full RDP session
+                lifecycle. May indicate an attacker resuming an existing session.</div><span
+                class="evtsev evtsev-med">MED</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4779</span>
+            <div class="evtinfo">
+              <div class="evtname">RDP Session Disconnected</div>
+              <div class="evtdesc">RDP session disconnected (not logged off). Attacker may disconnect instead of logoff
+                to leave session alive for later re-use.</div><span class="evtsev evtsev-med">MED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="evtref-card">
+          <div class="evtref-card-title">ACCOUNT MANAGEMENT</div>
+          <div class="evtrow"><span class="evtid evtid-win">4720</span>
+            <div class="evtinfo">
+              <div class="evtname">User Account Created</div>
+              <div class="evtdesc">New user account created. May indicate attacker backdoor account. Check who created
+                it and at what time. Common in post-exploitation persistence.</div><span
+                class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4722</span>
+            <div class="evtinfo">
+              <div class="evtname">Account Enabled</div>
+              <div class="evtdesc">Disabled account was re-enabled. Attackers re-enable dormant accounts to avoid alerts
+                triggered by new account creation.</div><span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4724</span>
+            <div class="evtinfo">
+              <div class="evtname">Password Reset Attempt</div>
+              <div class="evtdesc">An attempt to reset an account password. Combined with 4672 may indicate privilege
+                escalation or admin-level account takeover.</div><span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4726</span>
+            <div class="evtinfo">
+              <div class="evtname">Account Deleted</div>
+              <div class="evtdesc">User account deleted. May indicate an attacker removing a backdoor account after
+                completing their objective (covering tracks).</div><span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4728</span>
+            <div class="evtinfo">
+              <div class="evtname">Added to Global Group</div>
+              <div class="evtdesc">Member added to a security-enabled global group. If that group is Domain Admins —
+                this is critical privilege escalation via group membership.</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4732</span>
+            <div class="evtinfo">
+              <div class="evtname">Added to Local Group</div>
+              <div class="evtdesc">Member added to a local security group. Adding any user to the Administrators group
+                is a major privilege escalation indicator. Alert immediately.</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4740</span>
+            <div class="evtinfo">
+              <div class="evtname">Account Locked Out</div>
+              <div class="evtdesc">Account was locked out after repeated failures. Multiple lockouts across accounts
+                from one source = password spray. Multiple from many sources = distributed attack.</div><span
+                class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="evtref-card">
+          <div class="evtref-card-title">PROCESS &amp; POWERSHELL</div>
+          <div class="evtrow"><span class="evtid evtid-win">4688</span>
+            <div class="evtinfo">
+              <div class="evtname">Process Created</div>
+              <div class="evtdesc">New process created. Requires "Audit Process Creation" GPO + command line auditing.
+                Check NewProcessName, CommandLine, and ParentProcessName for suspicious chains.</div><span
+                class="evtsev evtsev-med">MED</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4689</span>
+            <div class="evtinfo">
+              <div class="evtname">Process Terminated</div>
+              <div class="evtdesc">Process ended. Correlate with 4688 to measure runtime. Very short-lived processes
+                running commands (loaders, stagers) are highly suspicious.</div><span
+                class="evtsev evtsev-low">LOW</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4103</span>
+            <div class="evtinfo">
+              <div class="evtname">PowerShell Module Logging</div>
+              <div class="evtdesc">Logs individual PowerShell pipeline execution. Records every command even in
+                interactive sessions. Requires Module Logging Group Policy. Good for catching PS abuse without script
+                blocks.</div><span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4104</span>
+            <div class="evtinfo">
+              <div class="evtname">PowerShell Script Block Logging</div>
+              <div class="evtdesc">Captures full PowerShell script content as it executes, AFTER deobfuscation by the PS
+                engine. Best event to catch encoded/obfuscated payloads. Requires Script Block Logging GPO.</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="evtref-card">
+          <div class="evtref-card-title">PERSISTENCE &amp; OBJECT ACCESS</div>
+          <div class="evtrow"><span class="evtid evtid-win">4697</span>
+            <div class="evtinfo">
+              <div class="evtname">Service Installed</div>
+              <div class="evtdesc">New service installed on the system. Malware uses services for persistence. Check
+                ServiceFileName — suspicious paths include Temp, AppData, or randomly named binaries.</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4698</span>
+            <div class="evtinfo">
+              <div class="evtname">Scheduled Task Created</div>
+              <div class="evtdesc">New scheduled task created. Heavily abused for persistence and lateral execution.
+                Inspect TaskContent for encoded commands, suspicious executables, or unusual user contexts.</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4702</span>
+            <div class="evtinfo">
+              <div class="evtname">Scheduled Task Updated</div>
+              <div class="evtdesc">Existing task modified. Attackers modify legitimate existing tasks instead of
+                creating new ones to stay under the radar of new-task creation alerts.</div><span
+                class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4657</span>
+            <div class="evtinfo">
+              <div class="evtname">Registry Value Modified</div>
+              <div class="evtdesc">Registry value was changed. Requires Object Access auditing. Monitor Run/RunOnce keys
+                for persistence changes. Also watch SAM, LSA Secrets, and AppInit_DLLs.</div><span
+                class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4663</span>
+            <div class="evtinfo">
+              <div class="evtname">Object Access Attempt</div>
+              <div class="evtdesc">Attempt to access an audited object (file, key, etc.). Use to detect access to SAM
+                hive, NTDS.dit, lsass memory dumps, or sensitive documents.</div><span
+                class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-win">4703</span>
+            <div class="evtinfo">
+              <div class="evtname">Token Rights Adjusted</div>
+              <div class="evtdesc">User right adjusted on a token. Indicates token manipulation/impersonation —
+                technique used to steal or elevate privileges without creating a new visible logon session.</div><span
+                class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-section-title">// SYSMON EVENT IDs (Microsoft Sysinternals)</div>
+      <div class="evtref-grid">
+
+        <div class="evtref-card">
+          <div class="evtref-card-title">PROCESS EXECUTION</div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 1</span>
+            <div class="evtinfo">
+              <div class="evtname">Process Create</div>
+              <div class="evtdesc">Richer than 4688. Includes full CommandLine, MD5/SHA256 hash, ParentImage,
+                ParentCommandLine, and ProcessGUID. Primary source for detecting malicious execution chains like Office
+                → PowerShell or Explorer → mshta.</div><span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 5</span>
+            <div class="evtinfo">
+              <div class="evtname">Process Terminated</div>
+              <div class="evtdesc">Process exited. Correlate with ID 1 using ProcessGUID to calculate runtime.
+                Short-lived processes executing commands (stagers, loaders) indicate automation.</div><span
+                class="evtsev evtsev-low">LOW</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 10</span>
+            <div class="evtinfo">
+              <div class="evtname">Process Access</div>
+              <div class="evtdesc">Process opened another process. Critical for catching credential dumpers — Mimikatz
+                opens lsass.exe with GrantedAccess 0x1010 or 0x1fffff. Alert on any non-system process accessing
+                lsass.exe.</div><span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 25</span>
+            <div class="evtinfo">
+              <div class="evtname">Process Tampering</div>
+              <div class="evtdesc">Process hollowing or process herpaderping detected — malicious image replaces a
+                legitimate process in memory. Indicates advanced loader technique used by sophisticated malware.</div>
+              <span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="evtref-card">
+          <div class="evtref-card-title">NETWORK &amp; DNS</div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 3</span>
+            <div class="evtinfo">
+              <div class="evtname">Network Connection</div>
+              <div class="evtdesc">Process made a network connection. Logs SourceIP, DestIP, DestPort, Protocol, and
+                initiating process name+hash. Best event for catching C2 beaconing — suspicious when Office/Notepad
+                makes outbound connections.</div><span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 22</span>
+            <div class="evtinfo">
+              <div class="evtname">DNS Query</div>
+              <div class="evtdesc">DNS query made by a process. Logs the process name, query, and resolved IP. Use to
+                detect DGA domains, DNS tunneling (long query strings), or C2 beaconing to suspicious TLDs like .xyz .tk
+                .pw.</div><span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="evtref-card">
+          <div class="evtref-card-title">FILE &amp; REGISTRY</div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 2</span>
+            <div class="evtinfo">
+              <div class="evtname">File Creation Time Changed</div>
+              <div class="evtdesc">Timestomping detected — file's creation timestamp was modified. Attackers do this to
+                make malicious files look like old legitimate system files, evading timeline-based analysis.</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 11</span>
+            <div class="evtinfo">
+              <div class="evtname">File Created</div>
+              <div class="evtdesc">New file written to disk. Alert on .exe/.ps1/.bat/.vbs dropped in Temp, AppData, or
+                Downloads especially by Office or browser processes — this is the dropper writing its payload.</div>
+              <span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 12</span>
+            <div class="evtinfo">
+              <div class="evtname">Registry Object Added/Deleted</div>
+              <div class="evtdesc">Registry key or value created/deleted. Monitor persistence paths: Run, RunOnce,
+                Services, Winlogon, AppInit_DLLs. Deletion may indicate post-exploitation cleanup.</div><span
+                class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 13</span>
+            <div class="evtinfo">
+              <div class="evtname">Registry Value Set</div>
+              <div class="evtdesc">Registry value was written. Primary event for detecting RunKey persistence, COM
+                hijacking, AppInit_DLLs abuse, and DebuggerValue injection. Always correlate with the writing process.
+              </div><span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 23</span>
+            <div class="evtinfo">
+              <div class="evtname">File Deleted (Archived)</div>
+              <div class="evtdesc">File was deleted (Sysmon can archive copies). Attackers delete tools, scripts, and
+                droppers after use. This catches that cleanup activity, especially in the minutes after execution
+                completes.</div><span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="evtref-card">
+          <div class="evtref-card-title">INJECTION &amp; LOADING</div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 7</span>
+            <div class="evtinfo">
+              <div class="evtname">Image Loaded</div>
+              <div class="evtdesc">DLL loaded into a process. Detect DLL injection and DLL hijacking. Alert on unsigned
+                DLLs loaded by system processes, or DLLs loaded from user-writable paths like Temp or AppData.</div>
+              <span class="evtsev evtsev-high">HIGH</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 8</span>
+            <div class="evtinfo">
+              <div class="evtname">CreateRemoteThread</div>
+              <div class="evtdesc">Process created a thread in another process — the primary mechanism for classic DLL
+                injection and shellcode injection. Non-system process injecting into lsass, svchost, or explorer is
+                critical.</div><span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 9</span>
+            <div class="evtinfo">
+              <div class="evtname">RawAccessRead</div>
+              <div class="evtdesc">Process read disk using raw I/O, bypassing the file system. Used by credential
+                dumpers to read SAM hive or NTDS.dit directly, and by some evasion tools to read locked files.</div>
+              <span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 17</span>
+            <div class="evtinfo">
+              <div class="evtname">Pipe Created</div>
+              <div class="evtdesc">Named pipe created. Cobalt Strike uses pipes for C2 communication (e.g.
+                \\.\pipe\msagent_*). Metasploit uses meterpreter pipes. Alert on pipes with random-looking or unusual
+                names.</div><span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 18</span>
+            <div class="evtinfo">
+              <div class="evtname">Pipe Connected</div>
+              <div class="evtdesc">Process connected to a named pipe. PsExec uses \\pipe\PSEXECSVC. Lateral movement via
+                SMB named pipes shows as ID 18 followed by ID 3 to the remote host.</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="evtref-card">
+          <div class="evtref-card-title">WMI &amp; DRIVERS</div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 6</span>
+            <div class="evtinfo">
+              <div class="evtname">Driver Loaded</div>
+              <div class="evtdesc">Kernel driver loaded into the system. Rootkits and kernel exploits load drivers for
+                ring-0 access. Alert on unsigned drivers or drivers loaded from user-writable paths.</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 19</span>
+            <div class="evtinfo">
+              <div class="evtname">WMI Event Filter</div>
+              <div class="evtdesc">WMI event filter registered — defines the TRIGGER for WMI persistence (e.g. on logon,
+                on process start). Part 1 of the WMI subscription trio (19→20→21).</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 20</span>
+            <div class="evtinfo">
+              <div class="evtname">WMI Event Consumer</div>
+              <div class="evtdesc">WMI consumer registered — defines WHAT TO RUN when the filter triggers (typically
+                executes a command or script). Part 2 of WMI subscription trio.</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon">ID 21</span>
+            <div class="evtinfo">
+              <div class="evtname">WMI Consumer Bound</div>
+              <div class="evtdesc">Consumer bound to filter — persistence is now fully installed. Alert on any new WMI
+                subscription. Legitimate software almost never uses WMI subscriptions this way.</div><span
+                class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="evtref-card">
+          <div class="evtref-card-title">INVESTIGATION CHAINS</div>
+          <div class="evtrow"><span class="evtid evtid-sysmon" style="font-size:9px;">LSASS DUMP</span>
+            <div class="evtinfo">
+              <div class="evtname">Credential Dumping Chain</div>
+              <div class="evtdesc">ID 10 (lsass access, GrantedAccess 0x1fffff) → ID 11 (file with .dmp extension
+                created in Temp) → ID 7 (suspicious DLL loaded in lsass). Three events together = credential dump in
+                progress.</div><span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon" style="font-size:9px;">MACRO→EXEC</span>
+            <div class="evtinfo">
+              <div class="evtname">Office Macro Execution</div>
+              <div class="evtdesc">ID 1 (ParentImage=winword.exe/excel.exe,
+                NewProcess=powershell.exe/cmd.exe/wscript.exe) → ID 3 or ID 22 (outbound network connection or DNS
+                query). Classic malicious document execution flow.</div><span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon" style="font-size:9px;">HOLLOW</span>
+            <div class="evtinfo">
+              <div class="evtname">Process Hollowing</div>
+              <div class="evtdesc">ID 1 (process created, usually a legitimate binary like svchost) → ID 8
+                (CreateRemoteThread into that process) → ID 25 (process tampering). Parent is typically a dropper or
+                loader binary.</div><span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon" style="font-size:9px;">PERSIST</span>
+            <div class="evtinfo">
+              <div class="evtname">Registry Persistence Install</div>
+              <div class="evtdesc">ID 11 (payload file dropped to disk) → ID 13 (Run key written pointing to that file)
+                → ID 1 (process spawned from that Run key on next logon). Full persistence chain in 3 Sysmon events.
+              </div><span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+          <div class="evtrow"><span class="evtid evtid-sysmon" style="font-size:9px;">C2 BEACON</span>
+            <div class="evtinfo">
+              <div class="evtname">C2 Beaconing Pattern</div>
+              <div class="evtdesc">ID 22 (periodic DNS queries to same domain at regular intervals) + ID 3 (outbound
+                connection to resolved IP on non-standard port). Regular interval = automated beacon. Check process name
+                — should NOT be a browser or OS process.</div><span class="evtsev evtsev-crit">CRIT</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- end panel-eventids -->
+
+  </div><!-- ref-container -->
 
   <footer>
     <span>&gt;_ secblog // personal investigation toolkit · SalahEldin Kamil</span>
@@ -696,201 +1288,286 @@
       }
     })();
 
-    const BUILTIN = [
-      { p: "win", c: "Authentication", u: "Failed logins", q: "index=windows EventCode=4625", d: "Login failures", s: "high" },
-      { p: "win", c: "Authentication", u: "Successful logins", q: "index=windows EventCode=4624", d: "User access", s: "low" },
-      { p: "win", c: "Authentication", u: "Brute force — top IPs", q: "index=windows EventCode=4625 | stats count by src_ip | sort -count", d: "Attacker IPs", s: "high" },
-      { p: "win", c: "Authentication", u: "Brute force threshold", q: "index=windows EventCode=4625 | stats count by src_ip | where count > 20", d: "Aggressive attacks", s: "crit" },
-      { p: "win", c: "Authentication", u: "Success after failure", q: "index=windows (EventCode=4624 OR EventCode=4625) | stats values(EventCode) by Account_Name, src_ip", d: "Account compromise", s: "crit" },
-      { p: "win", c: "Authentication", u: "Admin logins", q: "index=windows EventCode=4672", d: "Privileged access", s: "high" },
-      { p: "win", c: "Authentication", u: "Explicit credentials", q: "index=windows EventCode=4648", d: "Credential abuse", s: "high" },
-      { p: "win", c: "RDP / Remote", u: "RDP login", q: "index=windows EventCode=4624 Logon_Type=10", d: "Remote login", s: "med" },
-      { p: "win", c: "RDP / Remote", u: "RDP failures", q: "index=windows EventCode=4625 Logon_Type=10", d: "RDP brute force", s: "high" },
-      { p: "win", c: "RDP / Remote", u: "RDP session tracking", q: "index=windows (EventCode=4778 OR EventCode=4779)", d: "Session activity", s: "med" },
-      { p: "win", c: "Account Mgmt", u: "User created", q: "index=windows EventCode=4720", d: "New account", s: "high" },
-      { p: "win", c: "Account Mgmt", u: "Account enabled", q: "index=windows EventCode=4722", d: "Reactivated user", s: "med" },
-      { p: "win", c: "Account Mgmt", u: "Password reset", q: "index=windows EventCode=4724", d: "Account takeover", s: "high" },
-      { p: "win", c: "Account Mgmt", u: "User added to admin", q: "index=windows EventCode=4732", d: "Privilege escalation", s: "crit" },
-      { p: "win", c: "Account Mgmt", u: "Account deleted", q: "index=windows EventCode=4726", d: "Cleanup / cover tracks", s: "high" },
-      { p: "win", c: "Process", u: "Process creation", q: "index=windows EventCode=4688", d: "Program execution", s: "med" },
-      { p: "win", c: "Process", u: "Suspicious PowerShell", q: 'index=windows EventCode=4688 CommandLine="*powershell*"', d: "Script execution", s: "high" },
-      { p: "win", c: "Process", u: "Encoded PowerShell", q: 'index=windows EventCode=4688 CommandLine="*-enc*"', d: "Obfuscation", s: "crit" },
-      { p: "win", c: "Process", u: "CMD execution", q: 'index=windows EventCode=4688 CommandLine="*cmd.exe*"', d: "Command usage", s: "med" },
-      { p: "win", c: "Process", u: "Suspicious parent process", q: 'index=windows EventCode=4688 ParentImage="*\\\\winword.exe" OR ParentImage="*\\\\excel.exe"', d: "Macro execution", s: "crit" },
-      { p: "win", c: "PowerShell", u: "Script block logging", q: "index=windows EventCode=4104", d: "Full script content", s: "high" },
-      { p: "win", c: "PowerShell", u: "Module logging", q: "index=windows EventCode=4103", d: "Commands run", s: "med" },
-      { p: "win", c: "PowerShell", u: "Download cradle", q: 'index=windows EventCode=4104 ScriptBlockText="*DownloadString*" OR ScriptBlockText="*IEX*"', d: "Remote code pull", s: "crit" },
-      { p: "win", c: "PowerShell", u: "AMSI bypass attempt", q: 'index=windows EventCode=4104 ScriptBlockText="*amsi*" ScriptBlockText="*bypass*"', d: "AV evasion", s: "crit" },
-      { p: "win", c: "Persistence", u: "Run key modified", q: 'index=windows EventCode=4657 ObjectName="*\\\\Run*"', d: "Autostart entry", s: "crit" },
-      { p: "win", c: "Persistence", u: "Scheduled task created", q: "index=windows EventCode=4698", d: "Task-based persistence", s: "crit" },
-      { p: "win", c: "Persistence", u: "Service installed", q: "index=windows EventCode=4697", d: "Service persistence", s: "crit" },
-      { p: "win", c: "Persistence", u: "Startup folder file", q: 'index=windows EventCode=11 TargetFilename="*Startup*"', d: "Startup persistence", s: "high" },
-      { p: "win", c: "Lateral Movement", u: "Pass-the-Hash", q: "index=windows EventCode=4624 Logon_Type=3 AuthPackage=NTLM", d: "PTH attack", s: "crit" },
-      { p: "win", c: "Lateral Movement", u: "Lateral via SMB", q: "index=windows EventCode=4624 Logon_Type=3 | stats count by src_ip, Account_Name", d: "SMB lateral movement", s: "high" },
-      { p: "win", c: "Lateral Movement", u: "WMI remote execution", q: 'index=windows EventCode=4688 ParentImage="*\\\\wmiprvse.exe"', d: "WMI execution", s: "crit" },
-      { p: "win", c: "Lateral Movement", u: "PsExec usage", q: 'index=windows EventCode=4688 (CommandLine="*psexec*" OR CommandLine="*PSEXESVC*")', d: "Remote admin tool", s: "crit" },
-      { p: "win", c: "Privilege Abuse", u: "Token impersonation", q: "index=windows EventCode=4703", d: "Privilege abuse", s: "high" },
-      { p: "win", c: "Privilege Abuse", u: "UAC bypass attempt", q: 'index=windows EventCode=4688 CommandLine="*eventvwr*" OR CommandLine="*fodhelper*"', d: "UAC bypass", s: "crit" },
-      { p: "win", c: "File Activity", u: "Sensitive file access", q: 'index=windows EventCode=4663 ObjectName="*\\\\SAM*" OR ObjectName="*\\\\NTDS*"', d: "Credential file access", s: "crit" },
-      { p: "win", c: "File Activity", u: "Mass file rename/delete", q: "index=windows EventCode=4663 | stats count by Account_Name | where count > 100", d: "Ransomware indicator", s: "crit" },
-      { p: "win", c: "Timeline", u: "All events for a user", q: "index=windows Account_Name=<username> | table _time, EventCode, host | sort _time", d: "User timeline", s: "med" },
-      { p: "win", c: "Timeline", u: "Events on a host", q: "index=windows host=<hostname> | table _time, EventCode, Account_Name | sort _time", d: "Host timeline", s: "med" },
-      { p: "mac", c: "Authentication", u: "Failed sudo", q: 'index=mac sourcetype=syslog "sudo" "authentication failure"', d: "Privilege attempt", s: "high" },
-      { p: "mac", c: "Authentication", u: "SSH login", q: 'index=mac sourcetype=syslog "sshd" "Accepted"', d: "Remote access", s: "med" },
-      { p: "mac", c: "Process", u: "Suspicious script exec", q: 'index=mac sourcetype=syslog (process=python OR process=ruby OR process=perl)', d: "Script abuse", s: "high" },
-      { p: "mac", c: "Persistence", u: "LaunchAgent added", q: 'index=mac sourcetype=fsevents path="*/LaunchAgents/*.plist"', d: "User persistence", s: "crit" },
-      { p: "mac", c: "Persistence", u: "LaunchDaemon added", q: 'index=mac sourcetype=fsevents path="*/LaunchDaemons/*.plist"', d: "System persistence", s: "crit" },
-      { p: "mac", c: "Persistence", u: "Crontab modification", q: 'index=mac sourcetype=syslog "crontab"', d: "Cron persistence", s: "high" },
-      { p: "linux", c: "Authentication", u: "SSH brute force", q: 'index=linux sourcetype=syslog "Failed password" | stats count by src_ip | where count > 10', d: "SSH attack", s: "high" },
-      { p: "linux", c: "Authentication", u: "SSH success", q: 'index=linux sourcetype=syslog "Accepted password" OR "Accepted publickey"', d: "Remote access", s: "med" },
-      { p: "linux", c: "Authentication", u: "sudo usage", q: 'index=linux sourcetype=syslog "sudo" NOT "pam_unix"', d: "Privilege use", s: "med" },
-      { p: "linux", c: "Authentication", u: "Root login", q: 'index=linux sourcetype=syslog "session opened for user root"', d: "Root access", s: "crit" },
-      { p: "linux", c: "Process", u: "Reverse shell indicators", q: 'index=linux sourcetype=audit (cmdline="*/bin/bash -i*" OR cmdline="*nc -e*" OR cmdline="*python -c*")', d: "Shell spawned", s: "crit" },
-      { p: "linux", c: "Process", u: "setuid binary execution", q: 'index=linux sourcetype=audit syscall=59 euid=0 uid!=0', d: "Privilege escalation", s: "crit" },
-      { p: "linux", c: "Persistence", u: "Systemd unit created", q: 'index=linux sourcetype=fsevents path="*/systemd/system/*.service"', d: "Service persistence", s: "crit" },
-      { p: "linux", c: "Persistence", u: "SSH authorized_keys modified", q: 'index=linux sourcetype=fsevents path="*/.ssh/authorized_keys"', d: "Backdoor SSH key", s: "crit" },
-      { p: "linux", c: "Persistence", u: "Profile / bashrc modified", q: 'index=linux sourcetype=fsevents path="*/.bashrc" OR path="*/.profile"', d: "Shell persistence", s: "high" },
-      { p: "linux", c: "File Activity", u: "Sensitive file read", q: 'index=linux sourcetype=audit path="/etc/passwd" OR path="/etc/shadow" OR path="/etc/sudoers"', d: "Credential access", s: "crit" },
-      { p: "linux", c: "File Activity", u: "World-writable file created", q: 'index=linux sourcetype=audit "chmod" "777"', d: "Dangerous permissions", s: "high" },
-      { p: "linux", c: "Network", u: "Listening port opened", q: 'index=linux sourcetype=netstat state=LISTEN | stats count by src_port, process', d: "Backdoor listener", s: "high" },
-      { p: "linux", c: "Network", u: "Unusual outbound connection", q: 'index=linux sourcetype=syslog dest_port!=80 dest_port!=443 | stats count by dest_ip, process', d: "C2 traffic", s: "high" },
-      { p: "linux", c: "Advanced", u: "Rootkit — kernel module", q: 'index=linux sourcetype=syslog "insmod" OR "modprobe" | table _time, host, cmdline', d: "Rootkit load", s: "crit" },
-      { p: "linux", c: "Advanced", u: "LD_PRELOAD hijack", q: 'index=linux sourcetype=audit "LD_PRELOAD"', d: "Library hijack", s: "crit" },
-      { p: "net", c: "Firewall", u: "Blocked traffic spikes", q: 'index=firewall action=blocked | timechart count by src_ip | sort -count', d: "Port scan / flood", s: "high" },
-      { p: "net", c: "Firewall", u: "Allow rule changes", q: 'index=firewall sourcetype=panos "rule-change" OR "config-change"', d: "Policy tampering", s: "crit" },
-      { p: "net", c: "Firewall", u: "Outbound on unusual ports", q: 'index=firewall action=allowed dest_port!=80 dest_port!=443 dest_port!=53 | stats count by dest_ip, dest_port', d: "C2 / exfil", s: "high" },
-      { p: "net", c: "Firewall", u: "ICMP flood", q: 'index=firewall protocol=icmp | stats count by src_ip | where count > 500', d: "DoS indicator", s: "high" },
-      { p: "net", c: "IDS / IPS", u: "High-severity alerts", q: 'index=ids severity=high OR severity=critical | stats count by signature, src_ip | sort -count', d: "Active attacks", s: "crit" },
-      { p: "net", c: "IDS / IPS", u: "Exploit attempt", q: 'index=ids category="exploit" | table _time, src_ip, dest_ip, signature', d: "Exploitation", s: "crit" },
-      { p: "net", c: "IDS / IPS", u: "Malware beacon pattern", q: 'index=ids signature="*beacon*" | timechart count span=5m', d: "C2 beaconing", s: "crit" },
-      { p: "net", c: "DNS", u: "High-frequency DNS queries", q: 'index=dns | stats count by query | where count > 1000 | sort -count', d: "DNS tunneling / DGA", s: "high" },
-      { p: "net", c: "DNS", u: "NX domain spikes", q: 'index=dns reply_code=NXDOMAIN | stats count by src_ip | where count > 50', d: "DGA / recon", s: "high" },
-      { p: "net", c: "DNS", u: "Long DNS query strings", q: 'index=dns | eval qlen=len(query) | where qlen > 50 | table src_ip, query, qlen', d: "DNS exfiltration", s: "crit" },
-      { p: "net", c: "DNS", u: "Rare TLD queries", q: 'index=dns | rex field=query "\\.(?<tld>[^.]+)$" | where tld IN ("xyz","tk","pw","cc","ru") | stats count by src_ip, tld', d: "Malicious domains", s: "high" },
-      { p: "net", c: "Proxy / HTTP", u: "User-agent anomaly", q: 'index=proxy | stats count by http_user_agent | where count < 5 | sort count', d: "Rare agents / tools", s: "med" },
-      { p: "net", c: "Proxy / HTTP", u: "Large data upload", q: 'index=proxy method=POST bytes_out > 1000000 | table src_ip, url, bytes_out', d: "Data exfiltration", s: "crit" },
-      { p: "net", c: "Proxy / HTTP", u: "Malware category hits", q: 'index=proxy url_category="malware" | table _time, src_ip, url', d: "Malware download", s: "crit" },
-      { p: "cloud", c: "Cloud (AWS)", u: "Root account login", q: 'index=cloudtrail eventName=ConsoleLogin user="root" | table _time, sourceIPAddress', d: "Root access", s: "crit" },
-      { p: "cloud", c: "Cloud (AWS)", u: "IAM user created", q: 'index=cloudtrail eventName=CreateUser | table _time, requestParameters.userName, sourceIPAddress', d: "New cloud account", s: "high" },
-      { p: "cloud", c: "Cloud (AWS)", u: "Admin policy attached", q: 'index=cloudtrail eventName=AttachUserPolicy policyArn="*AdministratorAccess*"', d: "Privilege escalation", s: "crit" },
-      { p: "cloud", c: "Cloud (AWS)", u: "CloudTrail disabled", q: 'index=cloudtrail eventName=StopLogging OR eventName=DeleteTrail', d: "Log tampering", s: "crit" },
-      { p: "cloud", c: "Cloud (AWS)", u: "S3 bucket made public", q: 'index=cloudtrail eventName=PutBucketAcl requestParameters.accessControlList="*public*"', d: "Data exposure", s: "crit" },
-      { p: "cloud", c: "Cloud (AWS)", u: "EC2 security group opened", q: 'index=cloudtrail eventName=AuthorizeSecurityGroupIngress requestParameters.cidrIp="0.0.0.0/0"', d: "Firewall bypass", s: "crit" },
-      { p: "cloud", c: "Cloud (Azure)", u: "MFA disabled for user", q: 'index=azuread operationName="Update user" | search "StrongAuthenticationMethods" AND "Delete"', d: "MFA bypass", s: "crit" },
-      { p: "cloud", c: "Cloud (Azure)", u: "Global admin assigned", q: 'index=azuread operationName="Add member to role" roleDisplayName="Global Administrator"', d: "Privilege escalation", s: "crit" },
-      { p: "cloud", c: "Cloud (Azure)", u: "Guest user invited", q: 'index=azuread operationName="Invite external user"', d: "External access", s: "high" },
-      { p: "cloud", c: "Cloud (GCP)", u: "Service account key created", q: 'index=gcp protoPayload.methodName="google.iam.admin.v1.CreateServiceAccountKey"', d: "Persistent access", s: "high" },
-      { p: "cloud", c: "Cloud (GCP)", u: "Project IAM change", q: 'index=gcp protoPayload.methodName="SetIamPolicy" | table _time, resource.labels.project_id, protoPayload.authenticationInfo.principalEmail', d: "Privilege change", s: "crit" },
-    ];
-
-    const STORAGE_KEY = 'secblog_spl_custom';
-    let custom = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    let DATA = [...BUILTIN, ...custom];
-
-    const PL = { win: "Windows", mac: "macOS", linux: "Linux", net: "Network", cloud: "Cloud" };
-    const PC = { win: "pb-win", mac: "pb-mac", linux: "pb-linux", net: "pb-net", cloud: "pb-cloud" };
-    const CC = {
-      "Authentication": "cb-auth", "RDP / Remote": "cb-rdp", "Account Mgmt": "cb-acct",
-      "Process": "cb-proc", "PowerShell": "cb-ps", "Persistence": "cb-persist",
-      "Lateral Movement": "cb-lateral", "Privilege Abuse": "cb-priv", "Network": "cb-net",
-      "File Activity": "cb-file", "Advanced": "cb-adv", "Timeline": "cb-tl",
-      "Firewall": "cb-fw", "IDS / IPS": "cb-ids", "DNS": "cb-net", "Proxy / HTTP": "cb-net",
-      "Cloud (AWS)": "cb-cloud", "Cloud (Azure)": "cb-cloud", "Cloud (GCP)": "cb-cloud",
+    window.switchTab = function (id, btn) {
+      document.querySelectorAll('.siem-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.siem-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('panel-' + id).classList.add('active');
+      btn.classList.add('active');
     };
-    const SI = { crit: "★", high: "▲", med: "◆", low: "–" };
-    const SL = { crit: "CRIT", high: "HIGH", med: "MED", low: "LOW" };
-    const SC = { crit: "sev-crit", high: "sev-high", med: "sev-med", low: "sev-low" };
 
-    let activePlats = new Set(), activeCats = new Set(), timers = {};
+    const PL = { win: 'Windows', mac: 'macOS', linux: 'Linux', net: 'Network', cloud: 'Cloud' };
+    const PC = { win: 'pb-win', mac: 'pb-mac', linux: 'pb-linux', net: 'pb-net', cloud: 'pb-cloud' };
+    const CC = { 'Authentication': 'cb-auth', 'RDP / Remote': 'cb-rdp', 'Account Mgmt': 'cb-acct', 'Process': 'cb-proc', 'PowerShell': 'cb-ps', 'Persistence': 'cb-persist', 'Lateral Movement': 'cb-lateral', 'Privilege Abuse': 'cb-priv', 'Network': 'cb-net', 'File Activity': 'cb-file', 'Advanced': 'cb-adv', 'Timeline': 'cb-tl', 'Firewall': 'cb-fw', 'IDS / IPS': 'cb-ids', 'DNS': 'cb-net', 'Proxy / HTTP': 'cb-net', 'Cloud (AWS)': 'cb-cloud', 'Cloud (Azure)': 'cb-cloud', 'Cloud (GCP)': 'cb-cloud', 'Threat Hunting': 'cb-adv', 'Endpoint': 'cb-proc', 'Log Management': 'cb-lm' };
+    const SI = { crit: '★', high: '▲', med: '◆', low: '–' };
+    const SL = { crit: 'CRIT', high: 'HIGH', med: 'MED', low: 'LOW' };
+    const SC = { crit: 'sev-crit', high: 'sev-high', med: 'sev-med', low: 'sev-low' };
+    const timers = {};
+    const activePlats = { splunk: new Set(), elastic: new Set(), qradar: new Set() };
+    const activeCats = { splunk: new Set(), elastic: new Set(), qradar: new Set() };
 
-    function buildCatPills() {
-      const cats = [...new Set(DATA.map(r => r.c))];
-      const cc = document.getElementById('cat-pills');
+    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function getCustom(s) { return JSON.parse(localStorage.getItem('secblog_' + s + '_custom') || '[]'); }
+    function saveCustom(s, d) { localStorage.setItem('secblog_' + s + '_custom', JSON.stringify(d)); }
+    function getAllData(s) { return [...BUILTIN[s], ...getCustom(s)]; }
+
+    window.togglePlat = function (s, p, btn) { activePlats[s].has(p) ? activePlats[s].delete(p) : activePlats[s].add(p); btn.classList.toggle('active'); render(s); };
+
+    window.copyQ = function (s, i) {
+      const el = document.getElementById('raw-' + s + '-' + i);
+      if (!el) return;
+      navigator.clipboard.writeText(el.value).then(() => {
+        const btn = document.getElementById('cb-' + s + '-' + i);
+        if (btn) { btn.textContent = 'COPIED!'; btn.classList.add('ok'); }
+        const k = s + i; clearTimeout(timers[k]);
+        timers[k] = setTimeout(() => { if (btn) { btn.textContent = 'COPY'; btn.classList.remove('ok'); } }, 2000);
+      });
+    };
+
+    function buildControls(s) {
+      const panel = document.getElementById('controls-' + s);
+      panel.innerHTML = `
+    <div class="toolbar"><div class="search-wrap">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="search" id="q-${s}" placeholder="Search use case, query, keyword…" oninput="render('${s}')">
+    </div></div>
+    <div class="pill-row">
+      <span class="pill-label">PLATFORM</span>
+      <button class="pill win"   onclick="togglePlat('${s}','win',this)">Windows</button>
+      <button class="pill mac"   onclick="togglePlat('${s}','mac',this)">macOS</button>
+      <button class="pill linux" onclick="togglePlat('${s}','linux',this)">Linux</button>
+      <button class="pill net"   onclick="togglePlat('${s}','net',this)">Network</button>
+      <button class="pill cloud" onclick="togglePlat('${s}','cloud',this)">Cloud</button>
+    </div>
+    <div class="pill-row" id="cats-${s}"><span class="pill-label">CATEGORY</span></div>
+    <div class="stats-bar">
+      <span>&gt;_ <span class="cnt" id="cnt-${s}">0</span> queries &nbsp;·&nbsp; <span id="cc-${s}" style="color:var(--cyan);"></span></span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">click query to copy</span>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th style="width:76px">PLATFORM</th><th style="width:108px">CATEGORY</th>
+        <th style="width:148px">USE CASE</th><th>QUERY</th>
+        <th style="width:118px">DETECTS</th><th style="width:50px">SEV</th>
+      </tr></thead>
+      <tbody id="tb-${s}"></tbody>
+    </table><div class="empty" id="em-${s}" style="display:none;">&gt;_ no results</div></div>`;
+      buildAddForm(s);
+      buildCatPills(s);
+      render(s);
+    }
+
+    function buildAddForm(s) {
+      const placeholder = { splunk: 'index=windows EventCode=4625 | stats count by src_ip', elastic: 'event.code: 4625 and winlog.event_data.LogonType: 10', qradar: "SELECT sourceip, COUNT(*) as cnt FROM events WHERE EventID='4625' GROUP BY sourceip LAST 60 MINUTES" };
+      document.getElementById('addform-' + s).innerHTML = `
+    <div class="add-field"><label>PLATFORM</label><select id="np-${s}"><option value="win">Windows</option><option value="mac">macOS</option><option value="linux">Linux</option><option value="net">Network</option><option value="cloud">Cloud</option></select></div>
+    <div class="add-field"><label>CATEGORY</label><input id="nc-${s}" placeholder="Authentication"/></div>
+    <div class="add-field"><label>USE CASE</label><input id="nu-${s}" placeholder="Failed logins"/></div>
+    <div class="add-field"><label>DETECTS</label><input id="nd-${s}" placeholder="Brute force"/></div>
+    <div class="add-field"><label>SEVERITY</label><select id="ns-${s}"><option value="crit">CRITICAL</option><option value="high">HIGH</option><option value="med" selected>MEDIUM</option><option value="low">LOW</option></select></div>
+    <div class="add-field wide"><label>QUERY</label><input id="nq-${s}" placeholder="${placeholder[s]}"/></div>
+    <div class="add-btns"><button class="add-btn" onclick="addQuery('${s}')">+ ADD</button><button class="clr-btn" onclick="clearCustom('${s}')">✕ CLEAR</button></div>`;
+    }
+
+    function buildCatPills(s) {
+      const cats = [...new Set(getAllData(s).map(r => r.c))];
+      const cc = document.getElementById('cats-' + s);
+      if (!cc) return;
       cc.querySelectorAll('.pill').forEach(b => b.remove());
       cats.forEach(c => {
-        const b = document.createElement('button');
-        b.className = 'pill'; b.textContent = c;
-        b.onclick = () => { activeCats.has(c) ? activeCats.delete(c) : activeCats.add(c); b.classList.toggle('active'); render(); };
+        const b = document.createElement('button'); b.className = 'pill'; b.textContent = c;
+        b.onclick = () => { activeCats[s].has(c) ? activeCats[s].delete(c) : activeCats[s].add(c); b.classList.toggle('active'); render(s); };
         cc.appendChild(b);
       });
     }
 
-    window.togglePlat = function (p, btn) {
-      activePlats.has(p) ? activePlats.delete(p) : activePlats.add(p);
-      btn.classList.toggle('active'); render();
-    };
-
-    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-
-    window.copyQ = function (i) {
-      const el = document.getElementById('raw-' + i);
-      if (!el) return;
-      navigator.clipboard.writeText(el.value).then(() => {
-        const btn = document.getElementById('cb-' + i);
-        if (btn) { btn.textContent = 'COPIED!'; btn.classList.add('ok'); }
-        clearTimeout(timers[i]);
-        timers[i] = setTimeout(() => { if (btn) { btn.textContent = 'COPY'; btn.classList.remove('ok'); } }, 2000);
-      });
-    };
-
-    function render() {
-      const q = (document.getElementById('q').value || '').toLowerCase();
+    window.render = function (s) {
+      const DATA = getAllData(s);
+      const q = (document.getElementById('q-' + s)?.value || '').toLowerCase();
       const rows = DATA.filter(r => {
-        if (activePlats.size && !activePlats.has(r.p)) return false;
-        if (activeCats.size && !activeCats.has(r.c)) return false;
+        if (activePlats[s].size && !activePlats[s].has(r.p)) return false;
+        if (activeCats[s].size && !activeCats[s].has(r.c)) return false;
         if (q && ![r.u, r.q, r.d, r.c, PL[r.p] || ''].some(v => v.toLowerCase().includes(q))) return false;
         return true;
       });
-      document.getElementById('cnt').textContent = rows.length;
-      const cc = document.getElementById('custom-cnt');
-      if (cc) cc.textContent = custom.length ? custom.length + ' custom saved' : '';
-      const tb = document.getElementById('tbody');
-      const em = document.getElementById('empty');
+      document.getElementById('cnt-' + s).textContent = rows.length;
+      const cust = getCustom(s);
+      const cc = document.getElementById('cc-' + s);
+      if (cc) cc.textContent = cust.length ? cust.length + ' custom' : '';
+      const tb = document.getElementById('tb-' + s);
+      const em = document.getElementById('em-' + s);
       if (!rows.length) { tb.innerHTML = ''; em.style.display = 'block'; return; }
       em.style.display = 'none';
       tb.innerHTML = rows.map((r, i) => {
-        const isC = custom.some(x => x.q === r.q && x.u === r.u);
+        const isC = cust.some(x => x.q === r.q && x.u === r.u);
         return `<tr${isC ? ' style="background:rgba(0,212,255,.03)"' : ''}>
       <td><span class="pb ${PC[r.p] || 'pb-win'}">${PL[r.p] || r.p}</span></td>
       <td><span class="cb ${CC[r.c] || 'cb-net'}">${esc(r.c)}</span></td>
-      <td style="font-size:12px">${esc(r.u)}${isC ? '<br><span style="font-size:9px;color:var(--cyan);font-family:var(--mono);letter-spacing:.5px;">CUSTOM</span>' : ''}</td>
+      <td style="font-size:12px">${esc(r.u)}${isC ? '<br><span style="font-size:9px;color:var(--cyan);font-family:var(--mono);">CUSTOM</span>' : ''}</td>
       <td><div class="qwrap">
-        <input type="hidden" id="raw-${i}" value="${esc(r.q)}"/>
-        <code onclick="copyQ(${i})" style="cursor:pointer;" title="Click to copy">${esc(r.q)}</code>
-        <button class="copy-btn" id="cb-${i}" onclick="copyQ(${i})">COPY</button>
+        <input type="hidden" id="raw-${s}-${i}" value="${esc(r.q)}"/>
+        <code onclick="copyQ('${s}',${i})" title="Click to copy">${esc(r.q)}</code>
+        <button class="copy-btn" id="cb-${s}-${i}" onclick="copyQ('${s}',${i})">COPY</button>
       </div></td>
       <td style="font-size:12px;color:var(--muted)">${esc(r.d)}</td>
-      <td class="${SC[r.s]}"><span class="sev">${SI[r.s]}</span><span class="sev-label">${SL[r.s]}</span></td>
+      <td class="${SC[r.s]}"><span>${SI[r.s]}</span><span class="sev-lbl">${SL[r.s]}</span></td>
     </tr>`;
       }).join('');
-    }
-
-    window.addQuery = function () {
-      const p = document.getElementById('np').value;
-      const c = document.getElementById('nc').value.trim();
-      const u = document.getElementById('nu').value.trim();
-      const q = document.getElementById('nq').value.trim();
-      const d = document.getElementById('nd').value.trim();
-      const s = document.getElementById('ns').value;
-      if (!c || !u || !q) { alert('Category, Use Case, and SPL Query are required.'); return; }
-      custom.push({ p, c, u, q, d, s });
-      DATA = [...BUILTIN, ...custom];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
-      buildCatPills(); render();
-      ['nc', 'nu', 'nq', 'nd'].forEach(id => document.getElementById(id).value = '');
     };
 
-    window.clearCustom = function () {
-      if (!custom.length) { alert('No custom queries to clear.'); return; }
-      if (!confirm('Delete all ' + custom.length + ' custom queries?')) return;
-      custom = [];
-      DATA = [...BUILTIN];
-      localStorage.removeItem(STORAGE_KEY);
-      buildCatPills(); render();
+    window.addQuery = function (s) {
+      const p = document.getElementById('np-' + s).value;
+      const c = document.getElementById('nc-' + s).value.trim();
+      const u = document.getElementById('nu-' + s).value.trim();
+      const q = document.getElementById('nq-' + s).value.trim();
+      const d = document.getElementById('nd-' + s).value.trim();
+      const sv = document.getElementById('ns-' + s).value;
+      if (!c || !u || !q) { alert('Category, Use Case, and Query are required.'); return; }
+      const cust = getCustom(s); cust.push({ p, c, u, q, d, s: sv }); saveCustom(s, cust);
+      buildCatPills(s); render(s);
+      ['nc', 'nu', 'nq', 'nd'].forEach(id => document.getElementById(id + '-' + s).value = '');
     };
 
-    buildCatPills();
-    render();
+    window.clearCustom = function (s) {
+      const c = getCustom(s); if (!c.length) { alert('No custom queries.'); return; }
+      if (!confirm('Delete all ' + c.length + ' custom queries?')) return;
+      saveCustom(s, []); buildCatPills(s); render(s);
+    };
+
+    const BUILTIN = {
+      splunk: [
+        { p: 'win', c: 'Authentication', u: 'Failed logins', q: 'index=windows EventCode=4625', d: 'Login failures', s: 'high' },
+        { p: 'win', c: 'Authentication', u: 'Brute force — top IPs', q: 'index=windows EventCode=4625 | stats count by src_ip | sort -count', d: 'Attacker IPs', s: 'high' },
+        { p: 'win', c: 'Authentication', u: 'Brute force threshold >20', q: 'index=windows EventCode=4625 | stats count by src_ip | where count > 20', d: 'Aggressive brute force', s: 'crit' },
+        { p: 'win', c: 'Authentication', u: 'Success after failure', q: 'index=windows (EventCode=4624 OR EventCode=4625) | stats values(EventCode) by Account_Name, src_ip', d: 'Account compromise', s: 'crit' },
+        { p: 'win', c: 'Authentication', u: 'Admin logon (4672)', q: 'index=windows EventCode=4672', d: 'Privileged access', s: 'high' },
+        { p: 'win', c: 'Authentication', u: 'Explicit credentials (4648)', q: 'index=windows EventCode=4648', d: 'Credential abuse', s: 'high' },
+        { p: 'win', c: 'RDP / Remote', u: 'RDP logon', q: 'index=windows EventCode=4624 Logon_Type=10', d: 'Remote desktop login', s: 'med' },
+        { p: 'win', c: 'RDP / Remote', u: 'RDP brute force', q: 'index=windows EventCode=4625 Logon_Type=10', d: 'RDP password attack', s: 'high' },
+        { p: 'win', c: 'RDP / Remote', u: 'RDP session tracking', q: 'index=windows (EventCode=4778 OR EventCode=4779)', d: 'Session connect/disconnect', s: 'med' },
+        { p: 'win', c: 'Account Mgmt', u: 'User account created', q: 'index=windows EventCode=4720', d: 'New backdoor account', s: 'high' },
+        { p: 'win', c: 'Account Mgmt', u: 'Account enabled', q: 'index=windows EventCode=4722', d: 'Reactivated account', s: 'high' },
+        { p: 'win', c: 'Account Mgmt', u: 'Password reset', q: 'index=windows EventCode=4724', d: 'Account takeover', s: 'high' },
+        { p: 'win', c: 'Account Mgmt', u: 'Added to admin group', q: 'index=windows EventCode=4732', d: 'Privilege escalation', s: 'crit' },
+        { p: 'win', c: 'Account Mgmt', u: 'Account locked out', q: 'index=windows EventCode=4740 | stats count by Account_Name, src_ip', d: 'Brute force / spray', s: 'high' },
+        { p: 'win', c: 'Process', u: 'Process creation', q: 'index=windows EventCode=4688', d: 'Any process started', s: 'med' },
+        { p: 'win', c: 'Process', u: 'Suspicious PowerShell', q: 'index=windows EventCode=4688 CommandLine="*powershell*"', d: 'Script execution', s: 'high' },
+        { p: 'win', c: 'Process', u: 'Encoded PowerShell', q: 'index=windows EventCode=4688 CommandLine="*-enc*"', d: 'Obfuscated command', s: 'crit' },
+        { p: 'win', c: 'Process', u: 'Office spawning shell', q: 'index=windows EventCode=4688 (ParentImage="*\\\\winword.exe" OR ParentImage="*\\\\excel.exe")', d: 'Macro execution', s: 'crit' },
+        { p: 'win', c: 'PowerShell', u: 'Script block logging', q: 'index=windows EventCode=4104', d: 'Full script content', s: 'high' },
+        { p: 'win', c: 'PowerShell', u: 'Download cradle', q: 'index=windows EventCode=4104 ScriptBlockText="*DownloadString*" OR ScriptBlockText="*IEX*"', d: 'Remote code pull', s: 'crit' },
+        { p: 'win', c: 'PowerShell', u: 'AMSI bypass', q: 'index=windows EventCode=4104 ScriptBlockText="*amsi*" ScriptBlockText="*bypass*"', d: 'AV evasion', s: 'crit' },
+        { p: 'win', c: 'Persistence', u: 'Run key modified', q: 'index=windows EventCode=4657 ObjectName="*\\\\Run*"', d: 'Autostart registry', s: 'crit' },
+        { p: 'win', c: 'Persistence', u: 'Scheduled task created', q: 'index=windows EventCode=4698', d: 'Task-based persistence', s: 'crit' },
+        { p: 'win', c: 'Persistence', u: 'Service installed', q: 'index=windows EventCode=4697', d: 'Service persistence', s: 'crit' },
+        { p: 'win', c: 'Lateral Movement', u: 'Pass-the-Hash', q: 'index=windows EventCode=4624 Logon_Type=3 AuthPackage=NTLM', d: 'PTH attack', s: 'crit' },
+        { p: 'win', c: 'Lateral Movement', u: 'PsExec usage', q: 'index=windows EventCode=4688 (CommandLine="*psexec*" OR CommandLine="*PSEXESVC*")', d: 'Remote admin tool', s: 'crit' },
+        { p: 'win', c: 'Lateral Movement', u: 'WMI remote exec', q: 'index=windows EventCode=4688 ParentImage="*\\\\wmiprvse.exe"', d: 'WMI execution', s: 'crit' },
+        { p: 'win', c: 'File Activity', u: 'SAM/NTDS access', q: 'index=windows EventCode=4663 ObjectName="*\\\\SAM*" OR ObjectName="*\\\\NTDS*"', d: 'Credential file access', s: 'crit' },
+        { p: 'win', c: 'File Activity', u: 'Mass file access', q: 'index=windows EventCode=4663 | stats count by Account_Name | where count > 100', d: 'Ransomware indicator', s: 'crit' },
+        { p: 'win', c: 'Timeline', u: 'User activity timeline', q: 'index=windows Account_Name=<username> | table _time, EventCode, host | sort _time', d: 'Full user history', s: 'med' },
+        { p: 'win', c: 'Timeline', u: 'Host activity timeline', q: 'index=windows host=<hostname> | table _time, EventCode, Account_Name | sort _time', d: 'Full host history', s: 'med' },
+        { p: 'linux', c: 'Authentication', u: 'SSH brute force', q: 'index=linux sourcetype=syslog "Failed password" | stats count by src_ip | where count > 10', d: 'SSH attack', s: 'high' },
+        { p: 'linux', c: 'Authentication', u: 'Root SSH login', q: 'index=linux sourcetype=syslog "session opened for user root"', d: 'Root access', s: 'crit' },
+        { p: 'linux', c: 'Process', u: 'Reverse shell indicators', q: 'index=linux sourcetype=audit (cmdline="*/bin/bash -i*" OR cmdline="*nc -e*" OR cmdline="*python -c*")', d: 'Shell spawned', s: 'crit' },
+        { p: 'linux', c: 'Persistence', u: 'SSH authorized_keys modified', q: 'index=linux sourcetype=fsevents path="*/.ssh/authorized_keys"', d: 'Backdoor SSH key', s: 'crit' },
+        { p: 'linux', c: 'Persistence', u: 'Systemd unit created', q: 'index=linux sourcetype=fsevents path="*/systemd/system/*.service"', d: 'Service persistence', s: 'crit' },
+        { p: 'linux', c: 'Advanced', u: 'LD_PRELOAD hijack', q: 'index=linux sourcetype=audit "LD_PRELOAD"', d: 'Library hijack', s: 'crit' },
+        { p: 'linux', c: 'Advanced', u: 'Rootkit — kernel module', q: 'index=linux sourcetype=syslog "insmod" OR "modprobe"', d: 'Rootkit load', s: 'crit' },
+        { p: 'net', c: 'Firewall', u: 'Blocked traffic spikes', q: 'index=firewall action=blocked | timechart count by src_ip', d: 'Port scan / flood', s: 'high' },
+        { p: 'net', c: 'Firewall', u: 'Unusual outbound ports', q: 'index=firewall action=allowed dest_port!=80 dest_port!=443 dest_port!=53 | stats count by dest_ip, dest_port', d: 'C2 / exfil', s: 'high' },
+        { p: 'net', c: 'DNS', u: 'NXDOMAIN spikes', q: 'index=dns reply_code=NXDOMAIN | stats count by src_ip | where count > 50', d: 'DGA / recon', s: 'high' },
+        { p: 'net', c: 'DNS', u: 'Long DNS queries', q: 'index=dns | eval qlen=len(query) | where qlen > 50 | table src_ip, query, qlen', d: 'DNS exfiltration', s: 'crit' },
+        { p: 'net', c: 'IDS / IPS', u: 'High-severity alerts', q: 'index=ids severity=high OR severity=critical | stats count by signature, src_ip | sort -count', d: 'Active attacks', s: 'crit' },
+        { p: 'net', c: 'Proxy / HTTP', u: 'Large data upload', q: 'index=proxy method=POST bytes_out > 1000000 | table src_ip, url, bytes_out', d: 'Data exfiltration', s: 'crit' },
+        { p: 'cloud', c: 'Cloud (AWS)', u: 'Root login', q: 'index=cloudtrail eventName=ConsoleLogin user="root"', d: 'Root access', s: 'crit' },
+        { p: 'cloud', c: 'Cloud (AWS)', u: 'CloudTrail disabled', q: 'index=cloudtrail eventName=StopLogging OR eventName=DeleteTrail', d: 'Log tampering', s: 'crit' },
+        { p: 'cloud', c: 'Cloud (AWS)', u: 'Admin policy attached', q: 'index=cloudtrail eventName=AttachUserPolicy policyArn="*AdministratorAccess*"', d: 'Privilege escalation', s: 'crit' },
+        { p: 'cloud', c: 'Cloud (Azure)', u: 'MFA disabled', q: 'index=azuread operationName="Update user" | search "StrongAuthenticationMethods" AND "Delete"', d: 'MFA bypass', s: 'crit' },
+        { p: 'cloud', c: 'Cloud (Azure)', u: 'Global admin assigned', q: 'index=azuread operationName="Add member to role" roleDisplayName="Global Administrator"', d: 'Privilege escalation', s: 'crit' },
+      ],
+      elastic: [
+        { p: 'win', c: 'Authentication', u: 'Failed logins', q: 'event.code: 4625', d: 'Login failures', s: 'high' },
+        { p: 'win', c: 'Authentication', u: 'Brute force by source IP', q: 'event.code: 4625\n| stats count by source.ip\n| sort count desc', d: 'Attacker IPs', s: 'high' },
+        { p: 'win', c: 'Authentication', u: 'Success after failure', q: 'event.code: (4624 or 4625) and winlog.event_data.LogonType: 3', d: 'Account compromise', s: 'crit' },
+        { p: 'win', c: 'Authentication', u: 'Admin logon (4672)', q: 'event.code: 4672', d: 'Privileged access', s: 'high' },
+        { p: 'win', c: 'Authentication', u: 'Explicit credentials', q: 'event.code: 4648', d: 'Credential abuse', s: 'high' },
+        { p: 'win', c: 'RDP / Remote', u: 'RDP logon', q: 'event.code: 4624 and winlog.event_data.LogonType: 10', d: 'RDP login', s: 'med' },
+        { p: 'win', c: 'RDP / Remote', u: 'RDP failures', q: 'event.code: 4625 and winlog.event_data.LogonType: 10', d: 'RDP brute force', s: 'high' },
+        { p: 'win', c: 'Account Mgmt', u: 'User account created', q: 'event.code: 4720', d: 'New account', s: 'high' },
+        { p: 'win', c: 'Account Mgmt', u: 'Added to admin group', q: 'event.code: 4732', d: 'Privilege escalation', s: 'crit' },
+        { p: 'win', c: 'Account Mgmt', u: 'Account locked out', q: 'event.code: 4740', d: 'Brute force / spray', s: 'high' },
+        { p: 'win', c: 'Process', u: 'Process creation (Sysmon ID 1)', q: 'event.code: 1 and event.provider: Microsoft-Windows-Sysmon', d: 'Any process started', s: 'med' },
+        { p: 'win', c: 'Process', u: 'PowerShell execution', q: 'event.code: 1 and process.name: powershell.exe', d: 'Script execution', s: 'high' },
+        { p: 'win', c: 'Process', u: 'Encoded PowerShell', q: 'event.code: 1 and process.command_line: *-enc*', d: 'Obfuscated command', s: 'crit' },
+        { p: 'win', c: 'Process', u: 'Office spawning shell', q: 'event.code: 1 and process.parent.name: (winword.exe or excel.exe) and process.name: (cmd.exe or powershell.exe or wscript.exe)', d: 'Macro execution', s: 'crit' },
+        { p: 'win', c: 'Process', u: 'LSASS access (Sysmon ID 10)', q: 'event.code: 10 and winlog.event_data.TargetImage: *lsass.exe', d: 'Credential dumping', s: 'crit' },
+        { p: 'win', c: 'PowerShell', u: 'Script block logging', q: 'event.code: 4104', d: 'Full PS content', s: 'high' },
+        { p: 'win', c: 'PowerShell', u: 'Download cradle', q: 'event.code: 4104 and winlog.event_data.ScriptBlockText: (*DownloadString* or *IEX*)', d: 'Remote code pull', s: 'crit' },
+        { p: 'win', c: 'PowerShell', u: 'AMSI bypass', q: 'event.code: 4104 and winlog.event_data.ScriptBlockText: (*amsi* and *bypass*)', d: 'AV evasion', s: 'crit' },
+        { p: 'win', c: 'Persistence', u: 'Scheduled task created', q: 'event.code: 4698', d: 'Task persistence', s: 'crit' },
+        { p: 'win', c: 'Persistence', u: 'Service installed', q: 'event.code: 4697', d: 'Service persistence', s: 'crit' },
+        { p: 'win', c: 'Persistence', u: 'Registry Run key (Sysmon ID 13)', q: 'event.code: 13 and registry.path: *\\CurrentVersion\\Run*', d: 'Autostart entry', s: 'crit' },
+        { p: 'win', c: 'Persistence', u: 'WMI subscription (Sysmon 19/20/21)', q: 'event.code: (19 or 20 or 21)', d: 'WMI persistence', s: 'crit' },
+        { p: 'win', c: 'Persistence', u: 'File in Temp/AppData (Sysmon ID 11)', q: 'event.code: 11 and file.path: (*\\Temp\\* or *\\AppData\\*) and file.extension: (exe or ps1 or bat or vbs)', d: 'Dropper activity', s: 'high' },
+        { p: 'win', c: 'Persistence', u: 'Timestomping (Sysmon ID 2)', q: 'event.code: 2', d: 'Timestamp modified', s: 'crit' },
+        { p: 'win', c: 'Lateral Movement', u: 'Pass-the-Hash', q: 'event.code: 4624 and winlog.event_data.LogonType: 3 and winlog.event_data.AuthenticationPackageName: NTLM', d: 'PTH attack', s: 'crit' },
+        { p: 'win', c: 'Lateral Movement', u: 'PsExec pipe (Sysmon 17/18)', q: 'event.code: (17 or 18) and pipe.name: *PSEXECSVC*', d: 'PsExec lateral move', s: 'crit' },
+        { p: 'win', c: 'Lateral Movement', u: 'WMI remote exec', q: 'event.code: 1 and process.parent.name: wmiprvse.exe', d: 'WMI execution', s: 'crit' },
+        { p: 'win', c: 'Lateral Movement', u: 'CreateRemoteThread (Sysmon ID 8)', q: 'event.code: 8', d: 'DLL/shellcode injection', s: 'crit' },
+        { p: 'win', c: 'Threat Hunting', u: 'EQL: download then execute', q: 'sequence by host.name\n  [process where process.name == "powershell.exe"\n   and process.command_line like~ "*DownloadString*"]\n  [process where process.name == "cmd.exe"]', d: 'Download + exec chain', s: 'crit' },
+        { p: 'win', c: 'Threat Hunting', u: 'EQL: office macro to network', q: 'sequence by host.name\n  [process where process.parent.name in ("winword.exe","excel.exe")]\n  [network where destination.port not in (80,443)]', d: 'Macro → C2 connection', s: 'crit' },
+        { p: 'win', c: 'Threat Hunting', u: 'EQL: process hollowing', q: 'sequence by host.name\n  [process where event.type == "start"]\n  [process where event.code == "8"]\n  [process where event.code == "25"]', d: 'Process hollowing', s: 'crit' },
+        { p: 'linux', c: 'Authentication', u: 'SSH brute force', q: 'event.dataset: auth and message: *Failed password*', d: 'SSH attack', s: 'high' },
+        { p: 'linux', c: 'Authentication', u: 'Root SSH login', q: 'event.dataset: auth and message: *session opened for user root*', d: 'Root access', s: 'crit' },
+        { p: 'linux', c: 'Persistence', u: 'SSH keys modified', q: 'event.code: 11 and file.path: *authorized_keys', d: 'Backdoor SSH key', s: 'crit' },
+        { p: 'linux', c: 'Persistence', u: 'Systemd unit created', q: 'event.code: 11 and file.path: */systemd/system/*.service', d: 'Service persistence', s: 'crit' },
+        { p: 'linux', c: 'Advanced', u: 'LD_PRELOAD abuse', q: 'process.env_vars: *LD_PRELOAD*', d: 'Library hijack', s: 'crit' },
+        { p: 'net', c: 'DNS', u: 'Long DNS queries', q: 'dns.question.name.length > 50', d: 'DNS exfiltration', s: 'crit' },
+        { p: 'net', c: 'DNS', u: 'NXDOMAIN responses', q: 'dns.response_code: NXDOMAIN', d: 'DGA / recon', s: 'high' },
+        { p: 'net', c: 'Firewall', u: 'Unusual outbound', q: 'network.direction: outbound and destination.port not in (80,443,53,22,25)', d: 'C2 / exfil', s: 'high' },
+        { p: 'cloud', c: 'Cloud (AWS)', u: 'Root login', q: 'event.dataset: aws.cloudtrail and event.action: ConsoleLogin and user.name: root', d: 'Root access', s: 'crit' },
+        { p: 'cloud', c: 'Cloud (AWS)', u: 'CloudTrail stopped', q: 'event.dataset: aws.cloudtrail and event.action: (StopLogging or DeleteTrail)', d: 'Log tampering', s: 'crit' },
+        { p: 'cloud', c: 'Cloud (Azure)', u: 'MFA disabled', q: 'event.dataset: azure.auditlogs and message: *StrongAuthenticationMethods*', d: 'MFA bypass', s: 'crit' },
+      ],
+      qradar: [
+        { p: 'win', c: 'Authentication', u: 'Failed logins', q: "SELECT sourceip, username, COUNT(*) as failures FROM events WHERE EventID='4625' GROUP BY sourceip, username LAST 60 MINUTES", d: 'Login failures', s: 'high' },
+        { p: 'win', c: 'Authentication', u: 'Brute force >20', q: "SELECT sourceip, COUNT(*) as cnt FROM events WHERE EventID='4625' GROUP BY sourceip HAVING cnt > 20 LAST 30 MINUTES", d: 'Aggressive brute force', s: 'crit' },
+        { p: 'win', c: 'Authentication', u: 'Success after failure', q: "SELECT sourceip, username, EventID FROM events WHERE EventID IN ('4624','4625') ORDER BY starttime LAST 60 MINUTES", d: 'Account compromise', s: 'crit' },
+        { p: 'win', c: 'Authentication', u: 'Admin logon', q: "SELECT username, sourceip, hostname FROM events WHERE EventID='4672' LAST 60 MINUTES", d: 'Privileged access', s: 'high' },
+        { p: 'win', c: 'Authentication', u: 'Explicit credentials', q: "SELECT username, sourceip, hostname FROM events WHERE EventID='4648' LAST 60 MINUTES", d: 'Credential abuse', s: 'high' },
+        { p: 'win', c: 'RDP / Remote', u: 'RDP logon', q: "SELECT sourceip, username, hostname FROM events WHERE EventID='4624' AND LogonType='10' LAST 60 MINUTES", d: 'RDP access', s: 'med' },
+        { p: 'win', c: 'RDP / Remote', u: 'RDP brute force', q: "SELECT sourceip, COUNT(*) as cnt FROM events WHERE EventID='4625' AND LogonType='10' GROUP BY sourceip HAVING cnt > 5 LAST 30 MINUTES", d: 'RDP attack', s: 'high' },
+        { p: 'win', c: 'Account Mgmt', u: 'User account created', q: "SELECT username, hostname, starttime FROM events WHERE EventID='4720' LAST 24 HOURS", d: 'New account', s: 'high' },
+        { p: 'win', c: 'Account Mgmt', u: 'Added to admin group', q: "SELECT username, hostname, starttime FROM events WHERE EventID='4732' LAST 24 HOURS", d: 'Privilege escalation', s: 'crit' },
+        { p: 'win', c: 'Account Mgmt', u: 'Account locked out', q: "SELECT username, sourceip, COUNT(*) as cnt FROM events WHERE EventID='4740' GROUP BY username, sourceip LAST 30 MINUTES", d: 'Lockout / spray', s: 'high' },
+        { p: 'win', c: 'Process', u: 'Process creation', q: "SELECT username, hostname, CommandLine FROM events WHERE EventID='4688' LAST 60 MINUTES", d: 'Any process started', s: 'med' },
+        { p: 'win', c: 'Process', u: 'PowerShell execution', q: "SELECT username, hostname, CommandLine FROM events WHERE EventID='4688' AND CommandLine ILIKE '%powershell%' LAST 60 MINUTES", d: 'Script execution', s: 'high' },
+        { p: 'win', c: 'Process', u: 'Encoded PowerShell', q: "SELECT username, hostname, CommandLine FROM events WHERE EventID='4688' AND CommandLine ILIKE '%-enc%' LAST 60 MINUTES", d: 'Obfuscated command', s: 'crit' },
+        { p: 'win', c: 'Process', u: 'Office spawning shell', q: "SELECT username, hostname, CommandLine, ParentProcessName FROM events WHERE EventID='4688' AND (ParentProcessName ILIKE '%winword%' OR ParentProcessName ILIKE '%excel%') LAST 24 HOURS", d: 'Macro execution', s: 'crit' },
+        { p: 'win', c: 'PowerShell', u: 'Script block logging', q: "SELECT username, hostname, ScriptBlockText FROM events WHERE EventID='4104' LAST 60 MINUTES", d: 'Full PS content', s: 'high' },
+        { p: 'win', c: 'PowerShell', u: 'Download cradle', q: "SELECT username, hostname, ScriptBlockText FROM events WHERE EventID='4104' AND (ScriptBlockText ILIKE '%DownloadString%' OR ScriptBlockText ILIKE '%IEX%') LAST 60 MINUTES", d: 'Remote code pull', s: 'crit' },
+        { p: 'win', c: 'Persistence', u: 'Scheduled task created', q: "SELECT username, hostname, TaskName FROM events WHERE EventID='4698' LAST 24 HOURS", d: 'Task persistence', s: 'crit' },
+        { p: 'win', c: 'Persistence', u: 'Service installed', q: "SELECT username, hostname, ServiceName, ServiceFileName FROM events WHERE EventID='4697' LAST 24 HOURS", d: 'Service persistence', s: 'crit' },
+        { p: 'win', c: 'Lateral Movement', u: 'Pass-the-Hash', q: "SELECT sourceip, username, hostname FROM events WHERE EventID='4624' AND LogonType='3' AND AuthPackage='NTLM' LAST 60 MINUTES", d: 'PTH attack', s: 'crit' },
+        { p: 'win', c: 'Lateral Movement', u: 'PsExec service', q: "SELECT sourceip, hostname, CommandLine FROM events WHERE EventID='4688' AND CommandLine ILIKE '%PSEXESVC%' LAST 60 MINUTES", d: 'Remote admin tool', s: 'crit' },
+        { p: 'win', c: 'File Activity', u: 'SAM/NTDS access', q: "SELECT username, hostname, ObjectName FROM events WHERE EventID='4663' AND (ObjectName ILIKE '%SAM%' OR ObjectName ILIKE '%NTDS%') LAST 24 HOURS", d: 'Credential file access', s: 'crit' },
+        { p: 'win', c: 'Timeline', u: 'User activity timeline', q: "SELECT starttime, EventID, hostname, sourceip FROM events WHERE username='<USERNAME>' ORDER BY starttime LAST 24 HOURS", d: 'Full user history', s: 'med' },
+        { p: 'win', c: 'Timeline', u: 'Host activity timeline', q: "SELECT starttime, EventID, username, sourceip FROM events WHERE hostname='<HOSTNAME>' ORDER BY starttime LAST 24 HOURS", d: 'Full host history', s: 'med' },
+        { p: 'linux', c: 'Authentication', u: 'SSH brute force', q: "SELECT sourceip, COUNT(*) as cnt FROM events WHERE logsourcename ILIKE '%linux%' AND message ILIKE '%Failed password%' GROUP BY sourceip HAVING cnt > 10 LAST 30 MINUTES", d: 'SSH attack', s: 'high' },
+        { p: 'linux', c: 'Authentication', u: 'Root login', q: "SELECT sourceip, starttime FROM events WHERE logsourcename ILIKE '%linux%' AND message ILIKE '%session opened for user root%' LAST 60 MINUTES", d: 'Root access', s: 'crit' },
+        { p: 'linux', c: 'Persistence', u: 'Cron job added', q: "SELECT hostname, message FROM events WHERE logsourcename ILIKE '%linux%' AND message ILIKE '%crontab%' LAST 24 HOURS", d: 'Cron persistence', s: 'high' },
+        { p: 'net', c: 'Firewall', u: 'Blocked traffic spikes', q: "SELECT sourceip, destinationip, destinationport, COUNT(*) as cnt FROM events WHERE category='Firewall Deny' GROUP BY sourceip, destinationip, destinationport ORDER BY cnt DESC LAST 30 MINUTES", d: 'Port scan / flood', s: 'high' },
+        { p: 'net', c: 'Firewall', u: 'Unusual outbound ports', q: "SELECT sourceip, destinationip, destinationport FROM flows WHERE destinationport NOT IN (80,443,53,22,25) AND direction='Outbound' LAST 60 MINUTES", d: 'C2 / exfil', s: 'high' },
+        { p: 'net', c: 'DNS', u: 'NXDOMAIN spikes', q: "SELECT sourceip, COUNT(*) as cnt FROM events WHERE logsourcename ILIKE '%dns%' AND message ILIKE '%NXDOMAIN%' GROUP BY sourceip HAVING cnt > 50 LAST 30 MINUTES", d: 'DGA / recon', s: 'high' },
+        { p: 'net', c: 'IDS / IPS', u: 'High-severity IDS', q: "SELECT sourceip, destinationip, category, COUNT(*) as cnt FROM events WHERE category='IDS/IPS' AND severity >= 8 GROUP BY sourceip, destinationip, category ORDER BY cnt DESC LAST 60 MINUTES", d: 'Active attacks', s: 'crit' },
+        { p: 'cloud', c: 'Cloud (AWS)', u: 'Root login', q: "SELECT sourceip, username, starttime FROM events WHERE logsourcename ILIKE '%cloudtrail%' AND EventName='ConsoleLogin' AND username='root' LAST 24 HOURS", d: 'Root access', s: 'crit' },
+        { p: 'cloud', c: 'Cloud (AWS)', u: 'CloudTrail disabled', q: "SELECT username, sourceip FROM events WHERE logsourcename ILIKE '%cloudtrail%' AND (EventName='StopLogging' OR EventName='DeleteTrail') LAST 24 HOURS", d: 'Log tampering', s: 'crit' },
+        { p: 'cloud', c: 'Log Management', u: 'Events per source', q: "SELECT logsourcename, COUNT(*) as cnt FROM events GROUP BY logsourcename ORDER BY cnt DESC LAST 60 MINUTES", d: 'Log volume baseline', s: 'low' },
+        { p: 'cloud', c: 'Log Management', u: 'Silent hosts (no logs)', q: "SELECT logsourcename, MAX(starttime) as last_event FROM events GROUP BY logsourcename HAVING last_event < NOW() - 3600 LAST 24 HOURS", d: 'Log gap / dead sensor', s: 'high' },
+      ],
+    };
+
+    ['splunk', 'elastic', 'qradar'].forEach(s => { buildControls(s); });
   </script>
 </body>
 

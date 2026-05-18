@@ -24,7 +24,17 @@ const REPORTS = [
   // },
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
-
+  {
+    slug: "QRadar101 CyberDefenders",
+    title: "Analyze diverse log sources in QRadar SIEM to identify compromised systems, detect malicious tools, and reconstruct the sequence of attack events.",
+    date: "2026-05-18",
+    tag: "LAB",
+    severity: "TRAINING",
+    readTime: "20 MIN READ",
+    excerpt: "This investigation focuses on analyzing multiple log sources within IBM QRadar, including Sysmon, PowerShell Operational logs, Zeek, and Suricata, to identify compromised hosts, detect attacker tools and techniques, and reconstruct the complete intrusion timeline. The analysis uncovered a phishing-based initial compromise, malicious PowerShell execution, persistence through registry Run keys, ICMP network discovery, lateral movement using Impacket wmiexec.py, privilege escalation via a rogue domain admin account, and data exfiltration using curl to an external command-and-control server.",
+    iocs: null,
+    yara: null,
+  },
   {
     slug: "adobe-reader-zerodday",
     title: "Adobe Reader Zero-Day: Malicious PDF with Embedded JavaScript & Multi-Stage Payload",

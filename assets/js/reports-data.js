@@ -25,7 +25,7 @@ const REPORTS = [
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
   {
-    slug: "QRadar101%20CyberDefenders",
+    slug: "qardar",
     title: "QRadar101 CyberDefenders - Analyze diverse log sources in QRadar SIEM to identify compromised systems, detect malicious tools, and reconstruct the sequence of attack events.",
     date: "2026-05-18",
     tag: "LAB",

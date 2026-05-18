@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QRadar101 — CyberDefenders Lab Writeup — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+  <style>
+    /* ── QA block ── */
+    .qa-block {
+      margin-bottom: 2.5rem;
+      border: 1px solid var(--border2);
+      border-left: 3px solid var(--cyan);
+      background: rgba(4, 13, 31, .6);
+    }
+
+    .qa-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .qa-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      background: rgba(0, 212, 255, .08);
+      border: 1px solid rgba(0, 212, 255, .2);
+      padding: 3px 8px;
+      border-radius: 3px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .qa-question {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e8f4ff;
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .qa-body {
+      padding: 1rem 1.25rem;
+    }
+
+    .qa-solution {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: .9rem;
+    }
+
+    .qa-solution p {
+      margin-bottom: .7rem;
+    }
+
+    .qa-solution p:last-child {
+      margin-bottom: 0;
+    }
+
+    .qa-solution strong {
+      color: var(--text);
+    }
+
+    .qa-solution code {
+      font-family: var(--mono);
+      font-size: 11px;
+      background: rgba(4, 13, 31, .9);
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      padding: 1px 6px;
+      color: #93c5fd;
+    }
+
+    /* ── Answer pill ── */
+    .qa-answer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: .7rem 1rem;
+      background: rgba(0, 212, 255, .05);
+      border-top: 1px solid var(--border2);
+      font-family: var(--mono);
+    }
+
+    .qa-answer-label {
+      font-size: 10px;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .qa-answer-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e8f4ff;
+      background: rgba(0, 212, 255, .08);
+      border: 1px solid rgba(0, 212, 255, .15);
+      padding: 3px 12px;
+      border-radius: 3px;
+      letter-spacing: .5px;
+    }
+
+    /* ── Technique badge ── */
+    .mitre-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      background: rgba(255, 77, 109, .08);
+      border: 1px solid rgba(255, 77, 109, .25);
+      color: var(--red);
+      padding: 3px 10px;
+      border-radius: 3px;
+      margin-bottom: .75rem;
+    }
+
+    /* ── Step list ── */
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin: .5rem 0;
+    }
+
+    .step-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+      padding: .35rem 0;
+      border-bottom: 1px solid rgba(14, 32, 64, .4);
+    }
+
+    .step-list li:last-child {
+      border-bottom: none;
+    }
+
+    .step-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 22px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0, 212, 255, .1);
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── Image placeholder ── */
+    .img-note {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      padding: .4rem .8rem;
+      background: rgba(14, 32, 64, .4);
+      border-left: 2px solid var(--border2);
+      margin: .75rem 0;
+      font-style: italic;
+    }
+
+    /* ── Summary table ── */
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: .5rem;
+    }
+
+    .summary-table th {
+      padding: 8px 12px;
+      text-align: left;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border2);
+      background: rgba(4, 13, 31, .8);
+    }
+
+    .summary-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(14, 32, 64, .4);
+      vertical-align: top;
+    }
+
+    .summary-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .summary-table tr:hover td {
+      background: rgba(0, 212, 255, .03);
+    }
+
+    .summary-table .ans {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    /* ── Divider ── */
+    .section-divider {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 2px;
+      padding: .5rem 0 .75rem;
+      border-bottom: 1px solid var(--border2);
+      margin: 2rem 0 1.5rem;
+    }
+
+    /* ── Attack chain ── */
+    .attack-chain {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      border: 1px solid var(--border2);
+      margin: 1rem 0;
+      overflow: hidden;
+      border-radius: 3px;
+    }
+
+    .chain-step {
+      flex: 1;
+      min-width: 130px;
+      padding: .75rem 1rem;
+      background: rgba(7, 20, 40, .8);
+      border-right: 1px solid var(--border2);
+      position: relative;
+    }
+
+    .chain-step:last-child {
+      border-right: none;
+    }
+
+    .chain-tactic {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .chain-tech {
+      font-size: 12px;
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .chain-id {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--cyan);
+      margin-top: 4px;
+    }
+
+    @media(max-width:700px) {
+      .chain-step {
+        min-width: 50%;
+      }
+
+      .qa-header {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../reports.html">Reports</a>
+      <a href="../ioc-feed.html">IOC Feed</a>
+      <a href="../yara-feed.html">YARA Feed</a>
+      <a href="../siem-reference.html">SIEM Ref</a>
+      <a href="../achievements.html">Achievements</a>
+      <a href="../about.html">About</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+    <div class="report-breadcrumb"><a href="../reports.html">&lt; All Reports</a></div>
+
+    <!-- ── Header ── -->
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-threat">CTF WRITEUP</span>
+        <span class="tag-pill tag-apt">DFIR</span>
+        <span class="tag-pill tag-vuln">SIEM</span>
+      </div>
+      <h1 class="report-title">QRadar101 — CyberDefenders Lab Writeup</h1>
+      <div class="report-meta">
+        <span>📅 2026-05-18</span>
+        <span>⏱ 20 MIN READ</span>
+        <span>✍ SalahEldin Kamil</span>
+        <span>🏆 CyberDefenders</span>
+        <span class="sev sev-high">HIGH</span>
+      </div>
+      <div class="report-summary">
+        A financial company was breached by an external attacker assisted by a malicious insider. This lab walkthrough
+        covers the full investigation using IBM QRadar SIEM — from identifying infected hosts and malicious tools to
+        reconstructing the complete attack chain across 24 questions, including persistence via registry Run keys,
+        lateral movement with wmiexec, and data exfiltration via curl.
+      </div>
+    </div>
+
+    <!-- ── Scenario ── -->
+    <div class="report-section">
+      <h2>Scenario</h2>
+      <p>A financial company suffered a significant compromise. Initial triage by the internal team revealed multiple
+        infected systems and evidence of well-known offensive tools being used across the network. Suspicion also falls
+        on an insider who may have facilitated initial access. As the assigned SOC analyst, the objective is to
+        investigate the incident end-to-end using IBM QRadar SIEM and reconstruct the full attack timeline.</p>
+
+      <div style="margin-top:1rem;">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:1px;margin-bottom:.75rem;">
+          // LOG SOURCES AVAILABLE</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge" style="font-size:11px;">Sysmon (Swift on Security config)</span>
+          <span class="badge" style="font-size:11px;">PowerShell Script Block Logging</span>
+          <span class="badge" style="font-size:11px;">Windows Event Log</span>
+          <span class="badge" style="font-size:11px;">Suricata IDS</span>
+          <span class="badge" style="font-size:11px;">Zeek conn logs</span>
+          <span class="badge" style="font-size:11px;">Zeek HTTP logs</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Attack Chain Summary ── -->
+    <div class="report-section">
+      <h2>Attack Chain Overview</h2>
+      <div class="attack-chain">
+        <div class="chain-step">
+          <div class="chain-tactic">INITIAL ACCESS</div>
+          <div class="chain-tech">Malicious Word Doc</div>
+          <div class="chain-id">important_instructions.docx</div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-tactic">EXECUTION</div>
+          <div class="chain-tech">VBS + PowerShell</div>
+          <div class="chain-id">notebad.exe</div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-tactic">PERSISTENCE</div>
+          <div class="chain-tech">Registry Run Key</div>
+          <div class="chain-id">T1547.001</div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-tactic">DISCOVERY</div>
+          <div class="chain-tech">ICMP Host Discovery</div>
+          <div class="chain-id">192.168.20.0/24</div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-tactic">LATERAL MOVEMENT</div>
+          <div class="chain-tech">wmiexec.py</div>
+          <div class="chain-id">Impacket Suite</div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-tactic">EXFILTRATION</div>
+          <div class="chain-tech">curl upload</div>
+          <div class="chain-id">→ 192.20.80.25</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Questions ── -->
+    <div class="section-divider">// INVESTIGATION — 24 QUESTIONS</div>
+
+    <!-- Q1 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 01</span>
+        <div class="qa-question">How many log sources are available in QRadar?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Navigate to <strong>Admin → Data Sources → Log Sources</strong> in the QRadar console. The Log Sources
+            table lists every configured source ingesting data into QRadar. A quick count of the entries reveals the
+            total.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/LogSources.png" alt="   " />
+          <p class="img-caption">Figure 1: Admin panel → Log Sources table showing all 15 sources</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">15</span></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 02</span>
+        <div class="qa-question">What is the IDS software used to monitor the network?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>In the same Log Sources view, filtering by source type or scanning the log source names reveals an IDS
+            entry. The log source name clearly identifies the IDS product in use — it appears as a dedicated entry
+            alongside the Windows and Zeek sources.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/IDS.png" alt="   " />
+          <p class="img-caption">Log Sources — IDS entry highlighted</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">Suricata</span>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 03</span>
+        <div class="qa-question">What is the domain name used in the network?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Search for <strong>Event ID 4720</strong> (User Account Created) to find any newly created accounts. This
+            surfaces a single event — a new account named <code>rambo</code> was created during the attack window.</p>
+          <p>Taking that username and pivoting to <strong>Event ID 4624</strong> (Successful Logon) filtered by
+            <code>username = rambo</code>, the logon event payload includes the full domain name in the account details
+            field.
+          </p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/Domain.png" alt="   " />
+          <p class="img-caption">4720 event → new user "rambo" | 4624 event → domain field showing
+            hackdefend.local</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span
+          class="qa-answer-value">hackdefend.local</span></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 04</span>
+        <div class="qa-question">Multiple IPs communicated with the malicious server. One ends with "20" — provide the
+          full IP.</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>From the previous question we know the backdoor account <code>rambo</code> was created by an insider host.
+            Reviewing the 4720 event payload reveals the <strong>source IP address</strong> that initiated the account
+            creation request — the host that the attacker controlled or pivoted through internally.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/ip.png" alt="   " />
+          <p class="img-caption"> 4720 event payload — source IP 192.168.20.20</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span
+          class="qa-answer-value">192.168.20.20</span></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 05</span>
+        <div class="qa-question">What is the SID of the most frequent alert rule in the dataset?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>In the QRadar Log Activity view, group events by <strong>Rule SID</strong>. This aggregates all Suricata
+            IDS alerts by their Snort rule identifier. Sort the grouped results by <strong>Magnitude</strong>
+            (descending) to surface the most triggered rule.</p>
+          <p>Drilling into the top result and examining the raw event payload, the SID field is visible. Notably, the
+            source IP <code>192.168.20.20</code> appears in these events — further confirming it as part of the
+            attacker's infrastructure.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/SID3.png" alt="   " />
+          <p class="img-caption"> Grouped by Rule SID → top result → raw event showing SID 2027865 and src IP
+            192.168.20.20</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">2027865</span>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 06</span>
+        <div class="qa-question">What is the attacker's external IP address?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Using <code>192.168.20.20</code> as the pivot point, filter Log Activity grouped by <strong>source IP and
+              destination IP</strong>. A large number of IPs appear, but one stands out with two suspicious
+            characteristics:</p>
+          <ul class="report-list">
+            <li><strong>Destination port 448</strong> — not a standard service port, strongly suggesting a custom C2
+              listener</li>
+            <li><strong>Very high Zeek connection count</strong> — indicating sustained, repeated communication
+              consistent with C2 beaconing</li>
+          </ul>
+          <p>This combination unambiguously identifies the external attacker's IP.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/192ip.png" alt="   " />
+          <p class="img-caption"> Grouped flows — 192.20.80.25 on port 448 with high Zeek conn count</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span
+          class="qa-answer-value">192.20.80.25</span></div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 07</span>
+        <div class="qa-question">The attacker was searching for data belonging to one of the company's projects. What is
+          the project name?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Search the full log payload using a keyword filter: <code>payload contains "project"</code>. This returns
+            only four matching log entries. Examining each event reveals the specific project name referenced in the
+            attacker's file access or command activity — visible directly in the raw payload field.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/project.png" alt="   " />
+          <p class="img-caption"> Keyword search "project" → 4 results → payload detail showing "project48"
+          </p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">project48</span>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 08</span>
+        <div class="qa-question">What is the IP address of the first infected machine?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>The same log event from Q7 that revealed the project name also contains the <strong>source IP
+              address</strong> of the machine that initiated the access — this is the first endpoint the attacker gained
+            a foothold on after the initial infection.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/InfectedIP.png" alt="   " />
+          <p class="img-caption"> Same "project48" log — source IP field showing 192.168.10.15</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span
+          class="qa-answer-value">192.168.10.15</span></div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 09</span>
+        <div class="qa-question">What is the username of the infected employee on 192.168.10.15?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Remaining on the same log event from the previous two questions, the username field in the event payload
+            reveals the account associated with that machine. This is the legitimate employee account the attacker was
+            operating under after achieving initial access.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/Username.png" alt="   " />
+          <p class="img-caption"> Same log event — username field showing "nour"</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">nour</span></div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 10</span>
+        <div class="qa-question">Hackers dislike logging. What logging mechanism was the attacker checking for?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filter logs by <code>username = nour</code> and <code>log source = HD-FIN-03</code> (the machine at
+            192.168.10.15). The results show a significant volume of PowerShell-related events. Examining the command
+            lines reveals the attacker was querying the registry key
+            <code>HKLM\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging</code> to check whether
+            PowerShell script block logging was enabled before proceeding.
+          </p>
+          <p>This is a standard attacker tradecraft step — confirming the logging landscape before executing malicious
+            scripts to avoid leaving detailed evidence.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/PowerShell.png" alt="   " />
+          <p class="img-caption">Filtered by nour + HD-FIN-03 → PowerShell events → registry query for
+            ScriptBlockLogging</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">PowerShell</span>
+      </div>
+    </div>
+
+    <!-- Q11 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 11</span>
+        <div class="qa-question">What is the name of the second system the attacker targeted to cover tracks?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filter the event log by <strong>process command line containing <code>del</code></strong>. This surfaces
+            deletion commands executed by the attacker as part of their cleanup phase. Reviewing the log entries reveals
+            a <code>del</code> command executed against files on a second machine — the hostname appears in the log
+            source or command path, identifying it as the attacker's secondary target used to remove incriminating
+            evidence.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/Deletion.png" alt="   " />
+          <p class="img-caption">CommandLine filter "del" → log showing deletion activity on mgnt-01</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">mgnt-01</span>
+      </div>
+    </div>
+
+    <!-- Q12 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 12</span>
+        <div class="qa-question">When was the first malicious connection to the domain controller? (log start time —
+          hh:mm:ss)</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filter Sysmon logs by <code>source IP = 192.168.10.15</code> and <strong>Event ID 3</strong> (Network
+            Connection). Sort results by timestamp ascending to surface the earliest outbound connection. Scanning
+            through the events reveals <code>notebad.exe</code> — the malware masquerading as a legitimate application —
+            establishing the first network connection to the domain controller. The start time of that event is the
+            answer.</p>
+          <p><strong>Key indicator:</strong> The process name <code>notebad.exe</code> is a deliberate typo of
+            <code>notepad.exe</code>, a classic masquerading technique (MITRE T1036).
+          </p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/Sysmon3.png" alt="   " />
+          <p class="img-caption">Sysmon ID 3 filtered by 192.168.10.15 → earliest event → notebad.exe
+            network connection at 11:14:10</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">11:14:10</span>
+      </div>
+    </div>
+
+    <!-- Q13 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 13</span>
+        <div class="qa-question">What is the MD5 hash of the malicious file?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filter log payloads for hash-related fields. Sysmon <strong>Event ID 11</strong> (File Created) includes
+            the hash of newly created files. Scanning these events surfaces a suspicious file download — the malware
+            retrieved <code>important_instructions.docx</code> and wrote it to disk. The corresponding Sysmon event
+            includes the MD5 hash computed at write time.</p>
+          <p>This file is the initial infection vector delivered to the victim — a weaponized document designed to
+            appear legitimate to the targeted employee.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/Sysmon11.png" alt="   " />
+          <p class="img-caption">Sysmon ID 11 event — important_instructions.docx — MD5 field highlighted</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span
+          class="qa-answer-value">9D08221599FCD9D35D11F9CBD6A0DEA3</span></div>
+    </div>
+
+    <!-- Q14 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 14</span>
+        <div class="qa-question">What is the MITRE persistence technique ID used by the attacker?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <div class="mitre-badge">⚡ MITRE ATT&amp;CK — Persistence</div>
+          <p>Filtering for registry modification events (Sysmon <strong>Event ID 13</strong>) reveals the attacker wrote
+            a VBS script path to the Windows <strong>Run key</strong>:</p>
+          <pre class="code-block">HKLM\Software\Microsoft\Windows\CurrentVersion\Run</pre>
+          <p>This ensures the malicious VBS script executes every time the system starts, providing persistent access
+            that survives reboots. On the first infected device (<code>192.168.10.15</code>), this registry write is
+            clearly visible in the Sysmon telemetry. This maps directly to MITRE ATT&amp;CK technique <strong>T1547.001
+              — Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder</strong>.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/Sysmon13.png" alt="   " />
+          <p class="img-caption">Sysmon ID 13 — Registry value set on HKLM\...\Run → VBS file path</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">T1547.001</span>
+      </div>
+    </div>
+
+    <!-- Q15 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 15</span>
+        <div class="qa-question">What protocol was used for host discovery?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filter network flow logs originating from <code>192.168.10.15</code> and exclude <strong>TCP and
+              UDP</strong> by setting protocol ≠ 6 and ≠ 17. The remaining flows reveal the discovery traffic protocol.
+            A burst of small outbound packets to sequential destination IPs across the subnet is the hallmark of an
+            ICMP-based ping sweep used to enumerate live hosts before lateral movement.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/FlowLogs.png" alt="   " />
+          <p class="img-caption">Flow logs from 192.168.10.15 — non-TCP/UDP filter → ICMP entries across /24
+            range</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">ICMP</span></div>
+    </div>
+
+    <!-- Q16 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 16</span>
+        <div class="qa-question">What is the email service used by the company? (one word)</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filter network connections by <strong>destination port 53</strong> (DNS) to identify external services the
+            company communicates with. One of the resolved IPs is <code>13.107.252.10</code>. A quick lookup of this IP
+            reveals it belongs to <strong>Microsoft</strong>. Given the IP range and Microsoft's email offerings, the
+            company uses Office 365 for its email infrastructure — this is confirmed by the DNS resolution pattern
+            pointing to Microsoft's cloud mail endpoints.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/DNSQueries.png" alt="   " />
+          <p class="img-caption">DNS queries on port 53 → 13.107.252.10 → IP WHOIS showing Microsoft</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">office365</span>
+      </div>
+    </div>
+
+    <!-- Q17 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 17</span>
+        <div class="qa-question">What is the name of the malicious file used for initial infection?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>This was already uncovered in <strong>Q13</strong> when we found the MD5 hash via the Sysmon File Creation
+            event. The malicious document was downloaded to the victim machine and written to disk under a name designed
+            to appear legitimate — a Word document suggesting it contains important business information, exploiting
+            employee trust to trigger execution.</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span
+          class="qa-answer-value">important_instructions.docx</span></div>
+    </div>
+
+    <!-- Q18 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 18</span>
+        <div class="qa-question">What is the name of the new account added by the attacker?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filter for <strong>Event ID 4720</strong> (User Account Created). A single result appears — one new account
+            was created during the attack window. Examining the event payload confirms both the account name and the
+            creating entity. This backdoor account gives the attacker persistent access to the domain even if their
+            primary malware is removed.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/Event4720.png" alt="   " />
+          <p class="img-caption">EventID 4720 — single result — new account "rambo" in event details</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">rambo</span></div>
+    </div>
+
+    <!-- Q19 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 19</span>
+        <div class="qa-question">What is the PID of the process that performed injection?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filter Sysmon events for <strong>Event IDs 1, 8, and 10</strong> — process creation, CreateRemoteThread
+            (injection), and process access respectively. Focusing on <strong>Event ID 8</strong> (CreateRemoteThread)
+            surfaces the key event: a process creating a thread inside another process. This is the primary mechanism
+            for process injection.</p>
+          <p>The event payload includes both the <strong>source PID</strong> (the injector) and the <strong>target
+              PID</strong> (the injected process). The source PID is the answer — the process that initiated the
+            injection.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/Sysmon8.png" alt="   " />
+          <p class="img-caption">Sysmon ID 8 — CreateRemoteThread event — SourceProcessId: 7384</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">7384</span></div>
+    </div>
+
+    <!-- Q20 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 20</span>
+        <div class="qa-question">What is the name of the tool used for lateral movement?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filtering for PowerShell and CMD command-line activity reveals a distinctive command pattern:</p>
+          <pre
+            class="code-block">cmd.exe /Q /c reg query HKLM\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging 1> \\127.0.0.1\ADMIN$\__1604913874.5822518 2>&1</pre>
+          <p>This pattern — using <code>cmd.exe /Q /c</code> to run commands and redirect output to
+            <code>\\127.0.0.1\ADMIN$\__&lt;timestamp&gt;</code> — is the <strong>exact signature of Impacket's
+              wmiexec.py</strong>. The tool uses WMI for remote command execution and writes output to a temporary file
+            on the ADMIN$ share, then reads it back. This is one of the most recognisable footprints in Windows lateral
+            movement investigations.
+          </p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/CMDCommand.png" alt="   " />
+          <p class="img-caption"> CMD command line → ADMIN$ redirect pattern → wmiexec.py Impacket
+            signature
+          </p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">wmiexec.py</span>
+      </div>
+    </div>
+
+    <!-- Q21 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 21</span>
+        <div class="qa-question">The attacker exfiltrated one file. What tool was used for exfiltration?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Continuing the same command-line filter from Q20, one of the recorded commands shows the attacker using a
+            well-known HTTP client tool to upload a file directly to the attacker's C2 IP (<code>192.20.80.25</code>).
+            The command follows the standard upload syntax for this tool, making identification straightforward.</p>
+          <p>This technique — using a built-in or commonly available utility to exfiltrate data — is often called
+            "living off the land" exfiltration, as it avoids deploying custom tools that might be flagged by security
+            controls.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/CurlCommand.png" alt="   " />
+          <p class="img-caption"> CommandLine filter → curl command uploading file to 192.20.80.25</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">curl</span></div>
+    </div>
+
+    <!-- Q22 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 22</span>
+        <div class="qa-question">Who is the other legitimate domain admin besides "administrator"?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filter for <strong>Event ID 4672</strong> (Special Privileges Assigned on Logon) combined with successful
+            logon events. Event 4672 fires whenever a user with sensitive privileges (like Domain Admins membership)
+            creates a new logon session. Reviewing the list of usernames associated with these events — excluding the
+            built-in <code>administrator</code> account — reveals the second legitimate domain admin in the environment.
+          </p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/Event4672.png" alt="   " />
+          <p class="img-caption"> EventID 4672 grouped by username → "adam" alongside "administrator"</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">adam</span></div>
+    </div>
+
+    <!-- Q23 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 23</span>
+        <div class="qa-question">The attacker scanned hosts 1–30 on a specific network. What is that network?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Filter Zeek connection logs (<strong>log source: Zeek-conn</strong>) by source IP
+            <code>192.168.10.15</code>. The Zeek conn logs record all network connections at the flow level. Reviewing
+            the destination IPs shows a sequential pattern — the attacker enumerated addresses from <code>.1</code> to
+            <code>.30</code> within a specific subnet, the hallmark of a targeted ICMP ping sweep for host discovery
+            before lateral movement.
+          </p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/FlowLogsn.png" alt="   " />
+          <p class="img-caption"> Zeek-conn logs from 192.168.10.15 → destination IPs .1 through .30 in
+            192.168.20.0/24</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span
+          class="qa-answer-value">192.168.20.0</span></div>
+    </div>
+
+    <!-- Q24 -->
+    <div class="qa-block">
+      <div class="qa-header">
+        <span class="qa-num">Q 24</span>
+        <div class="qa-question">What is the name of the employee who hired the attacker?</div>
+      </div>
+      <div class="qa-body">
+        <div class="qa-solution">
+          <p>Reviewing the CMD command history from earlier — specifically the deletion commands used during the cleanup
+            phase — reveals the attacker explicitly targeted and then deleted a document belonging to a specific
+            employee. The filename or file path references that employee's name. The fact that this document was
+            selectively exfiltrated and then erased to destroy evidence strongly suggests this is the insider who
+            coordinated with the attacker and arranged access in exchange for financial or other motivation.</p>
+        </div>
+        <div class="report-img-block">
+          <img src="images/Qradar/CMDDelete.png" alt="  " />
+          <p class="img-caption"> CMD del commands — file path referencing "sami" → employee who hired
+            attacker</p>
+        </div>
+      </div>
+      <div class="qa-answer"><span class="qa-answer-label">ANSWER</span><span class="qa-answer-value">sami</span></div>
+    </div>
+
+    <!-- ── Final Summary ── -->
+    <div class="report-section" style="margin-top:2.5rem;">
+      <h2>Full Answer Summary</h2>
+      <div class="ioc-block">
+        <div class="ioc-header"><span class="dot"></span> ALL 24 ANSWERS — QRADAR101</div>
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>QUESTION</th>
+              <th>ANSWER</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Number of log sources</td>
+              <td class="ans">15</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>IDS software</td>
+              <td class="ans">Suricata</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Domain name</td>
+              <td class="ans">hackdefend.local</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>IP ending with "20"</td>
+              <td class="ans">192.168.20.20</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Most frequent alert SID</td>
+              <td class="ans">2027865</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Attacker's IP</td>
+              <td class="ans">192.20.80.25</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>Targeted project name</td>
+              <td class="ans">project48</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>First infected machine IP</td>
+              <td class="ans">192.168.10.15</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>Infected employee username</td>
+              <td class="ans">nour</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>Logging the attacker checked</td>
+              <td class="ans">PowerShell</td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td>Second targeted system</td>
+              <td class="ans">mgnt-01</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td>First malicious DC connection time</td>
+              <td class="ans">11:14:10</td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td>MD5 of malicious file</td>
+              <td class="ans">9D08221599FCD9D35D11F9CBD6A0DEA3</td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td>MITRE persistence technique</td>
+              <td class="ans">T1547.001</td>
+            </tr>
+            <tr>
+              <td>15</td>
+              <td>Host discovery protocol</td>
+              <td class="ans">ICMP</td>
+            </tr>
+            <tr>
+              <td>16</td>
+              <td>Company email service</td>
+              <td class="ans">office365</td>
+            </tr>
+            <tr>
+              <td>17</td>
+              <td>Initial infection filename</td>
+              <td class="ans">important_instructions.docx</td>
+            </tr>
+            <tr>
+              <td>18</td>
+              <td>Backdoor account created</td>
+              <td class="ans">rambo</td>
+            </tr>
+            <tr>
+              <td>19</td>
+              <td>PID of injecting process</td>
+              <td class="ans">7384</td>
+            </tr>
+            <tr>
+              <td>20</td>
+              <td>Lateral movement tool</td>
+              <td class="ans">wmiexec.py</td>
+            </tr>
+            <tr>
+              <td>21</td>
+              <td>Exfiltration tool</td>
+              <td class="ans">curl</td>
+            </tr>
+            <tr>
+              <td>22</td>
+              <td>Second domain admin</td>
+              <td class="ans">adam</td>
+            </tr>
+            <tr>
+              <td>23</td>
+              <td>Scanned network</td>
+              <td class="ans">192.168.20.0</td>
+            </tr>
+            <tr>
+              <td>24</td>
+              <td>Insider employee name</td>
+              <td class="ans">sami</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── MITRE Summary ── -->
+    <div class="report-section">
+      <h2>MITRE ATT&amp;CK Mapping</h2>
+      <table class="ioc-table" style="margin-top:.5rem;">
+        <thead>
+          <tr>
+            <th>TACTIC</th>
+            <th>TECHNIQUE ID</th>
+            <th>NAME</th>
+            <th>OBSERVED</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Initial Access</td>
+            <td>T1566.001</td>
+            <td>Phishing: Spearphishing Attachment</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">important_instructions.docx</td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>T1059.001</td>
+            <td>PowerShell</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">PS script block logging check,
+              command execution</td>
+          </tr>
+          <tr>
+            <td>Execution</td>
+            <td>T1059.003</td>
+            <td>Windows Command Shell</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">cmd.exe /Q /c via wmiexec</td>
+          </tr>
+          <tr>
+            <td>Persistence</td>
+            <td>T1547.001</td>
+            <td>Registry Run Keys / Startup Folder</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">VBS in HKLM\...\Run</td>
+          </tr>
+          <tr>
+            <td>Privilege Escalation</td>
+            <td>T1078</td>
+            <td>Valid Accounts</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">Backdoor account "rambo" created</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>T1036</td>
+            <td>Masquerading</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">notebad.exe (fake notepad)</td>
+          </tr>
+          <tr>
+            <td>Defense Evasion</td>
+            <td>T1070.004</td>
+            <td>File Deletion</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">del commands on mgnt-01 to cover
+              tracks</td>
+          </tr>
+          <tr>
+            <td>Credential Access</td>
+            <td>T1003</td>
+            <td>OS Credential Dumping</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">Process injection (PID 7384) via
+              CreateRemoteThread</td>
+          </tr>
+          <tr>
+            <td>Discovery</td>
+            <td>T1018</td>
+            <td>Remote System Discovery</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">ICMP ping sweep 192.168.20.1–30</td>
+          </tr>
+          <tr>
+            <td>Lateral Movement</td>
+            <td>T1047</td>
+            <td>Windows Management Instrumentation</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">wmiexec.py — Impacket suite</td>
+          </tr>
+          <tr>
+            <td>Exfiltration</td>
+            <td>T1041</td>
+            <td>Exfiltration Over C2 Channel</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">curl upload to 192.20.80.25</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="report-section">
+      <h2>References</h2>
+      <ul class="report-list">
+        <li><a href="https://cyberdefenders.org/blueteam-ctf-challenges/qradar101/" target="_blank">CyberDefenders —
+            QRadar101 Challenge</a></li>
+        <li><a href="https://github.com/SecureAuthCorp/impacket" target="_blank">Impacket Suite (SecureAuthCorp) —
+            wmiexec.py</a></li>
+        <li><a href="https://attack.mitre.org/techniques/T1547/001/" target="_blank">MITRE ATT&amp;CK — T1547.001
+            Registry Run Keys</a></li>
+        <li><a href="https://attack.mitre.org/techniques/T1047/" target="_blank">MITRE ATT&amp;CK — T1047 WMI Lateral
+            Movement</a></li>
+      </ul>
+    </div>
+
+    <div class="report-footer">
+      <a href="../reports.html" class="read-more">&lt; Back to all reports</a>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">All findings shared for educational &amp;
+        defensive purposes only.</span>
+    </div>
+
+  </div><!-- end report-container -->
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/report-page.js"></script>
+  <script src="../assets/js/poly-bg.js"></script>
+</body>
+
+</html>

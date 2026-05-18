@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>APT & Threat Actors — SecBlog</title>
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+  <style>
+    /* ======================================== */
+    /* APT GRID */
+    /* ======================================== */
+
+    .apt-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-top: 2rem;
+    }
+
+    /* ======================================== */
+    /* CARD */
+    /* ======================================== */
+
+    .apt-card {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: 0.3s ease;
+    }
+
+    .apt-card:hover {
+      border-color: #00ff9d;
+      box-shadow: 0 0 18px rgba(0, 255, 157, 0.12);
+    }
+
+    .apt-preview {
+      padding: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* ======================================== */
+    /* HEADER */
+    /* ======================================== */
+
+    .apt-header {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 1rem;
+    }
+
+    .apt-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid #00ff9d;
+      background: #0d1117;
+    }
+
+    .apt-name {
+      font-size: 26px;
+      color: #00ff9d;
+      font-family: var(--mono);
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .apt-alias {
+      margin-top: 6px;
+      color: #8b949e;
+      font-size: 13px;
+      font-family: var(--mono);
+    }
+
+    /* ======================================== */
+    /* DESCRIPTION */
+    /* ======================================== */
+
+    .apt-description {
+      margin-top: 1rem;
+      color: var(--text);
+      line-height: 1.9;
+      font-size: 15px;
+      max-width: 1000px;
+    }
+
+    /* ======================================== */
+    /* TAGS */
+    /* ======================================== */
+
+    .apt-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 1.2rem;
+    }
+
+    .apt-tag {
+      border: 1px solid #00ff9d;
+      color: #00ff9d;
+      padding: 7px 12px;
+      font-size: 11px;
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+
+    /* ======================================== */
+    /* THREAT LEVEL */
+    /* ======================================== */
+
+    .threat-level {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #ff4d4d;
+      color: #ff4d4d;
+      padding: 7px 12px;
+      margin-top: 1.2rem;
+      font-size: 11px;
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+
+    /* ======================================== */
+    /* EXPAND BUTTON TEXT */
+    /* ======================================== */
+
+    .expand-text {
+      margin-top: 1rem;
+      color: #00ff9d;
+      font-size: 12px;
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+
+    /* ======================================== */
+    /* DETAILS */
+    /* ======================================== */
+
+    .apt-details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+      border-top: 1px solid transparent;
+      padding: 0 1.5rem;
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .apt-card.active .apt-details {
+      max-height: 2000px;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .details-section {
+      margin-bottom: 2rem;
+    }
+
+    .details-section h3 {
+      color: #00ff9d;
+      margin-bottom: 12px;
+      font-size: 15px;
+      font-family: var(--mono);
+      letter-spacing: 1px;
+    }
+
+    .details-section p,
+    .details-section li {
+      color: var(--text);
+      line-height: 1.9;
+      font-size: 14px;
+    }
+
+    .details-section ul {
+      padding-left: 20px;
+    }
+
+    /* ======================================== */
+    /* LINKS */
+    /* ======================================== */
+
+    .apt-link {
+      color: #00ff9d;
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    .apt-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ======================================== */
+    /* PAGE DESCRIPTION */
+    /* ======================================== */
+
+    .section-description {
+      max-width: 1100px;
+      margin-top: 1rem;
+      color: #8b949e;
+      line-height: 1.9;
+      font-size: 14px;
+    }
+
+    /* ======================================== */
+    /* MOBILE */
+    /* ======================================== */
+
+    @media(max-width:768px) {
+
+      .apt-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .apt-logo {
+        width: 70px;
+        height: 70px;
+      }
+
+      .apt-name {
+        font-size: 22px;
+      }
+
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- ======================================== -->
+  <!-- NAVBAR -->
+  <!-- ======================================== -->
+
+  <nav>
+
+    <div class="logo">
+      &gt;_ <span>//</span> SECBLOG
+    </div>
+
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="reports.html">Reports</a>
+      <a href="ioc-feed.html">IOC Feed</a>
+      <a href="yara-feed.html">YARA Feed</a>
+      <a href="siem-reference.html">SIEM Ref</a>
+      <a href="achievements.html">Achievements</a>
+      <a href="apt-threats.html" class="active">APT & TA</a>
+      <a href="about.html" class="active">About</a>
+    </div>
+
+    <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">
+
+      ⬇ CV
+
+    </a>
+
+  </nav>
+
+  <!-- ======================================== -->
+  <!-- MAIN SECTION -->
+  <!-- ======================================== -->
+
+  <div class="section" style="padding-top:3rem;">
+
+    <div class="section-header">
+      <span class="section-title">
+        // APT & THREAT ACTORS
+      </span>
+    </div>
+
+    <p class="section-description">
+
+      Collection of Advanced Persistent Threat groups,
+      ransomware gangs, malware operators,
+      and threat actors encountered during
+      malware analysis, reverse engineering,
+      threat hunting, IOC tracking,
+      and cybersecurity research.
+
+    </p>
+
+    <!-- ======================================== -->
+    <!-- APT LIST -->
+    <!-- ======================================== -->
+
+    <div class="apt-grid">
+
+      <!-- ======================================== -->
+      <!-- APT28 -->
+      <!-- ======================================== -->
+
+      <div class="apt-card">
+
+        <div class="apt-preview" onclick="toggleAPT(this)">
+
+          <div class="apt-header">
+
+            <img src="assets/apts/apt28.png" alt="APT28" class="apt-logo">
+
+            <div>
+
+              <div class="apt-name">
+                APT28
+              </div>
+
+              <div class="apt-alias">
+                Fancy Bear / Sofacy / STRONTIUM
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="apt-description">
+
+            Russian state-linked threat actor associated
+            with cyber espionage,
+            phishing campaigns,
+            malware delivery,
+            credential theft,
+            and government targeting.
+
+          </div>
+
+          <div class="apt-meta">
+
+            <span class="apt-tag">ESPIONAGE</span>
+            <span class="apt-tag">PHISHING</span>
+            <span class="apt-tag">C2</span>
+            <span class="apt-tag">MALWARE</span>
+
+          </div>
+
+          <div class="threat-level">
+            HIGH RISK
+          </div>
+
+          <div class="expand-text">
+            CLICK TO EXPAND ↓
+          </div>
+
+        </div>
+
+        <!-- DETAILS -->
+
+        <div class="apt-details">
+
+          <div class="details-section">
+
+            <h3>OVERVIEW</h3>
+
+            <p>
+              APT28 is known for targeting
+              governments, military organizations,
+              journalists, media companies,
+              and research institutions using
+              spear-phishing and malware deployment.
+            </p>
+
+          </div>
+
+          <div class="details-section">
+
+            <h3>KNOWN MALWARE</h3>
+
+            <ul>
+              <li>X-Agent</li>
+              <li>Zebrocy</li>
+              <li>Sofacy</li>
+              <li>GAMEFISH</li>
+            </ul>
+
+          </div>
+
+          <div class="details-section">
+
+            <h3>MITRE ATT&CK</h3>
+
+            <div class="apt-meta">
+
+              <span class="apt-tag">T1566</span>
+              <span class="apt-tag">T1059</span>
+              <span class="apt-tag">T1003</span>
+              <span class="apt-tag">T1071</span>
+
+            </div>
+
+          </div>
+
+          <div class="details-section">
+
+            <h3>REFERENCES</h3>
+
+            <a href="#" class="apt-link">
+
+              VIEW FULL REPORT →
+
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ======================================== -->
+      <!-- LAZARUS -->
+      <!-- ======================================== -->
+
+      <div class="apt-card">
+
+        <div class="apt-preview" onclick="toggleAPT(this)">
+
+          <div class="apt-header">
+
+            <img src="assets/apts/lazarus.png" alt="Lazarus" class="apt-logo">
+
+            <div>
+
+              <div class="apt-name">
+                Lazarus Group
+              </div>
+
+              <div class="apt-alias">
+                Hidden Cobra / Zinc
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="apt-description">
+
+            North Korean threat actor associated
+            with destructive malware,
+            cryptocurrency theft,
+            ransomware,
+            and financial attacks.
+
+          </div>
+
+          <div class="apt-meta">
+
+            <span class="apt-tag">RANSOMWARE</span>
+            <span class="apt-tag">CRYPTO</span>
+            <span class="apt-tag">BANKING</span>
+
+          </div>
+
+          <div class="threat-level">
+            CRITICAL
+          </div>
+
+          <div class="expand-text">
+            CLICK TO EXPAND ↓
+          </div>
+
+        </div>
+
+        <div class="apt-details">
+
+          <div class="details-section">
+
+            <h3>OVERVIEW</h3>
+
+            <p>
+              Lazarus Group is responsible
+              for financial cyber operations,
+              destructive attacks,
+              supply-chain compromises,
+              and crypto theft campaigns.
+            </p>
+
+          </div>
+
+          <div class="details-section">
+
+            <h3>KNOWN MALWARE</h3>
+
+            <ul>
+              <li>AppleJeus</li>
+              <li>Destover</li>
+              <li>Volgmer</li>
+            </ul>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ======================================== -->
+      <!-- LOCKBIT -->
+      <!-- ======================================== -->
+
+      <div class="apt-card">
+
+        <div class="apt-preview" onclick="toggleAPT(this)">
+
+          <div class="apt-header">
+
+            <img src="assets/apts/lockbit.png" alt="LockBit" class="apt-logo">
+
+            <div>
+
+              <div class="apt-name">
+                LockBit
+              </div>
+
+              <div class="apt-alias">
+                Ransomware-as-a-Service
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="apt-description">
+
+            One of the most active ransomware
+            groups targeting enterprises globally
+            using phishing and exposed services.
+
+          </div>
+
+          <div class="apt-meta">
+
+            <span class="apt-tag">RANSOMWARE</span>
+            <span class="apt-tag">EXFILTRATION</span>
+            <span class="apt-tag">DOUBLE EXTORTION</span>
+
+          </div>
+
+          <div class="threat-level">
+            SEVERE
+          </div>
+
+          <div class="expand-text">
+            CLICK TO EXPAND ↓
+          </div>
+
+        </div>
+
+        <div class="apt-details">
+
+          <div class="details-section">
+
+            <h3>TACTICS</h3>
+
+            <ul>
+              <li>Phishing</li>
+              <li>VPN Exploitation</li>
+              <li>Privilege Escalation</li>
+              <li>Data Exfiltration</li>
+            </ul>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================== -->
+  <!-- FOOTER -->
+  <!-- ======================================== -->
+
+  <footer>
+
+    <span>
+      &gt;_ secblog // all findings for educational &amp; defensive use only
+    </span>
+
+    <div class="footer-links" id="footer-links"></div>
+
+  </footer>
+
+  <!-- ======================================== -->
+  <!-- SCRIPT -->
+  <!-- ======================================== -->
+
+  <script>
+
+    function toggleAPT(element) {
+
+      const card = element.parentElement;
+
+      card.classList.toggle("active");
+
+      const text =
+        card.querySelector(".expand-text");
+
+      if (card.classList.contains("active")) {
+
+        text.innerHTML =
+          "CLICK TO CLOSE ↑";
+
+      } else {
+
+        text.innerHTML =
+          "CLICK TO EXPAND ↓";
+
+      }
+
+    }
+
+  </script>
+
+</body>
+
+</html>

@@ -25,8 +25,8 @@ const REPORTS = [
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
   {
-    slug: "QRadar101 CyberDefenders",
-    title: "Analyze diverse log sources in QRadar SIEM to identify compromised systems, detect malicious tools, and reconstruct the sequence of attack events.",
+    slug: "QRadar101%20CyberDefenders",
+    title: "QRadar101 CyberDefenders - Analyze diverse log sources in QRadar SIEM to identify compromised systems, detect malicious tools, and reconstruct the sequence of attack events.",
     date: "2026-05-18",
     tag: "LAB",
     severity: "TRAINING",
@@ -35,6 +35,7 @@ const REPORTS = [
     iocs: null,
     yara: null,
   },
+
   {
     slug: "adobe-reader-zerodday",
     title: "Adobe Reader Zero-Day: Malicious PDF with Embedded JavaScript & Multi-Stage Payload",

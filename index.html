@@ -7,70 +7,325 @@
   <title>SecBlog — Malware & Threat Intelligence Research</title>
   <meta name="description" content="Independent malware analysis, threat intelligence, and cybersecurity research." />
   <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/home.css" />
 </head>
 
-<body>
+<body class="home-body">
 
   <nav>
-    <div class="logo">🦇 <span>//</span> Mr_MaTriX</div>
+    <div class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+          <path d="M12 2v13M12 2L7 7M12 2l5 5M5 9c0 3 2 5 2 5s-3 0-3 4 3 6 3 6M19 9c0 3-2 5-2 5s3 0 3 4-3 6-3 6"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <div>
+        Mr_MaTriX
+        <span class="logo-sub">SECBLOG // THREAT RESEARCH</span>
+      </div>
+    </div>
     <div class="nav-links">
       <a href="index.html" class="active">Home</a>
       <a href="reports.html" class="active">Reports</a>
-      <a href="ioc-feed.html" class="active">IOC Feed</a>
-      <a href="yara-feed.html" class="active">YARA Feed</a>
-      <a href="siem-reference.html" class="active">SIEM Ref</a>
+      <a href="ioc-feed.html" class="active">IOCs</a>
+      <a href="yara-feed.html" class="active">YARA Rules</a>
+      <a href="siem-reference.html" class="active">SIEM Reference</a>
       <a href="malware-structures.html" class="active">Structures</a>
       <a href="achievements.html" class="active">Achievements</a>
-      <a href="about.html" class="active">About</a>
+      <a href="about.html" class="active">About Me</a>
     </div>
     <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
   </nav>
 
-  <div class="hero">
-    <div class="hero-tag"><span class="dot"></span> LIVE — THREAT RESEARCH BLOG</div>
-    <h1>Malware Analysis &<br /><em>Threat Intelligence</em><br />Reports</h1>
-    <p>Deep malware analysis, reverse engineering, and adversary tradecraft — documented from real-world practice and
-      shared with the community.</p>
-    <div class="hero-stats">
-      <div class="stat">
-        <div class="stat-num" id="report-count">0</div>
-        <div class="stat-label">REPORTS</div>
+  <!-- ── HERO ── -->
+  <div class="atl-hero">
+    <div class="atl-hero-glow"></div>
+
+    <div class="atl-hero-main">
+      <div class="atl-eyebrow">// WELCOME TO</div>
+      <h1>Threat Research<br /><em>From the Depths</em><br />of the Wire</h1>
+      <p>A cybersecurity research blog uncovering threats, reverse-engineering malware, and documenting findings
+        pulled up from the depths — malware analysis, CTF writeups, IOCs, and YARA rules, shared in the open.</p>
+      <a href="reports.html" class="atl-btn-primary">
+        Begin Exploration
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
+
+    <div class="atl-status-panel">
+      <div class="atl-status-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2v13M12 2L7 7M12 2l5 5M5 9c0 3 2 5 2 5s-3 0-3 4 3 6 3 6M19 9c0 3-2 5-2 5s3 0 3 4-3 6-3 6"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Research Status
       </div>
-      <div class="stat">
-        <div class="stat-num">~</div>
-        <div class="stat-label">IOCs SHARED</div>
+
+      <div class="atl-status-row">
+        <span class="atl-status-label">
+          <svg class="atl-status-icon" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" />
+            <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          Reports Published
+        </span>
+        <span class="atl-status-num" id="report-count">0</span>
       </div>
-      <div class="stat">
-        <div class="stat-num">3</div>
-        <div class="stat-label">MALWARE FAMILIES</div>
+      <div class="atl-status-row">
+        <span class="atl-status-label">
+          <svg class="atl-status-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+          </svg>
+          IOCs Shared
+        </span>
+        <span class="atl-status-num" id="ioc-count">0</span>
       </div>
+      <div class="atl-status-row">
+        <span class="atl-status-label">
+          <svg class="atl-status-icon" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+          </svg>
+          YARA Rules Written
+        </span>
+        <span class="atl-status-num" id="yara-count">0</span>
+      </div>
+      <div class="atl-status-row">
+        <span class="atl-status-label">
+          <svg class="atl-status-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5L12 2z" stroke="currentColor"
+              stroke-width="1.5" stroke-linejoin="round" />
+          </svg>
+          Malware Families
+        </span>
+        <span class="atl-status-num">3</span>
+      </div>
+
     </div>
   </div>
 
   <div class="ticker">
-    <div class="ticker-inner" id="ticker-inner">
-      <span class="ticker-item"><span class="label">BLOG</span> Welcome to my threat research blog</span>
-      <span class="ticker-item"><span class="label">TOPIC</span> Malware Analysis · Threat Intel · Reverse
-        Engineering</span>
-      <span class="ticker-item"><span class="label">NEW</span> First report coming soon</span>
-      <span class="ticker-item"><span class="label">BLOG</span> Welcome to my threat research blog</span>
-      <span class="ticker-item"><span class="label">TOPIC</span> Malware Analysis · Threat Intel · Reverse
-        Engineering</span>
-      <span class="ticker-item"><span class="label">NEW</span> First report coming soon</span>
+    <div class="ticker-inner" id="ticker-inner"></div>
+  </div>
+
+  <!-- ── BENTO: ARTIFACTS / FEATURED / MAP ── -->
+  <div class="atl-section">
+    <div class="atl-bento">
+
+      <!-- Recently recovered artifacts (latest reports) -->
+      <div class="atl-panel">
+        <div class="atl-section-header" style="margin-bottom:.6rem;">
+          <span class="atl-section-title">
+            <svg class="atl-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2v13M12 2L7 7M12 2l5 5M5 9c0 3 2 5 2 5s-3 0-3 4 3 6 3 6M19 9c0 3-2 5-2 5s3 0 3 4-3 6-3 6"
+                stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Reports & Writeups
+          </span>
+          <a href="reports.html" class="atl-view-all">view all →</a>
+        </div>
+        <div id="posts-grid"><!-- populated by main.js --></div>
+        <div id="no-reports"
+          style="display:none;padding:1.5rem 0;text-align:center;font-size:13px;color:var(--atl-muted);">
+          no reports yet.
+        </div>
+      </div>
+
+      <!-- Featured expedition -->
+      <div class="atl-panel atl-featured" id="featured-expedition">
+        <!-- populated by home.js -->
+      </div>
+
+      <!-- Archive map -->
+      <div class="atl-panel atl-map-panel">
+        <div class="atl-section-header" style="margin-bottom:.6rem;">
+          <span class="atl-section-title">
+            <svg class="atl-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2v13M12 2L7 7M12 2l5 5M5 9c0 3 2 5 2 5s-3 0-3 4 3 6 3 6M19 9c0 3-2 5-2 5s3 0 3 4-3 6-3 6"
+                stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Archive Map
+          </span>
+        </div>
+        <div class="atl-map-grid">
+          <a href="reports.html" class="atl-map-tile">
+            <svg class="atl-icon" viewBox="0 0 24 24" fill="none">
+              <rect x="4" y="4" width="16" height="16" rx="1" stroke="currentColor" stroke-width="1.5" />
+              <path d="M4 9h16M9 9v11" stroke="currentColor" stroke-width="1.5" />
+            </svg>
+            <span class="atl-map-tile-label">Reports</span>
+          </a>
+          <a href="siem-reference.html" class="atl-map-tile">
+            <svg class="atl-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="1.5" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor"
+                stroke-width="1.5" />
+            </svg>
+            <span class="atl-map-tile-label">SIEM Reference</span>
+          </a>
+          <a href="achievements.html" class="atl-map-tile">
+            <svg class="atl-icon" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="6" stroke="currentColor" stroke-width="1.5" />
+              <path d="M8.5 13.5L7 22l5-3 5 3-1.5-8.5" stroke="currentColor" stroke-width="1.5"
+                stroke-linejoin="round" />
+            </svg>
+            <span class="atl-map-tile-label">Achievements</span>
+          </a>
+          <a href="ioc-feed.html" class="atl-map-tile">
+            <svg class="atl-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2v13M12 2L7 7M12 2l5 5M5 9c0 3 2 5 2 5s-3 0-3 4 3 6 3 6M19 9c0 3-2 5-2 5s3 0 3 4-3 6-3 6"
+                stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="atl-map-tile-label">IOCs</span>
+          </a>
+        </div>
+        <a href="ioc-feed.html" class="atl-view-all" style="align-self:flex-end;">view map →</a>
+      </div>
+
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">// LATEST REPORTS</span>
-      <a href="secblog/reports.html" class="view-all">view all →</a>
+  <!-- ── BOTTOM 4-UP SECTION CARDS ── -->
+  <div class="atl-section">
+    <div class="atl-card-row">
+
+      <a href="reports.html" class="atl-section-card" style="text-decoration:none;">
+        <svg class="atl-icon-big" viewBox="0 0 24 24" fill="none">
+          <rect x="4" y="4" width="16" height="16" rx="1" stroke="currentColor" stroke-width="1.5" />
+          <path d="M4 9h16M9 9v11" stroke="currentColor" stroke-width="1.5" />
+        </svg>
+        <h4>Reports</h4>
+        <p>Explore breakdowns of malware families, reverse engineering analysis, and threat reports.</p>
+        <span class="atl-card-arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </span>
+      </a>
+
+      <a href="achievements.html" class="atl-section-card" style="text-decoration:none;">
+        <svg class="atl-icon-big" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8" r="6" stroke="currentColor" stroke-width="1.5" />
+          <path d="M8.5 13.5L7 22l5-3 5 3-1.5-8.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+        </svg>
+        <h4>Achievements</h4>
+        <p>CTF writeups, walkthroughs, challenges solved, and battle stories from the field.</p>
+        <span class="atl-card-arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </span>
+      </a>
+
+      <a href="ioc-feed.html" class="atl-section-card" style="text-decoration:none;">
+        <svg class="atl-icon-big" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2v13M12 2L7 7M12 2l5 5M5 9c0 3 2 5 2 5s-3 0-3 4 3 6 3 6M19 9c0 3-2 5-2 5s3 0 3 4-3 6-3 6"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <h4>IOCs</h4>
+        <p>IOCs, YARA rules, scripts, and other valuable resources for security researchers.</p>
+        <span class="atl-card-arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </span>
+      </a>
+
+      <a href="yara-feed.html" class="atl-section-card" style="text-decoration:none;">
+        <svg class="atl-icon-big" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" />
+          <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <h4>YARA Rules</h4>
+        <p>Thoughts, research notes, cybersecurity insights, and the latest threat trends.</p>
+        <span class="atl-card-arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </span>
+      </a>
+
     </div>
-    <div class="posts-grid" id="posts-grid">
-      <!-- Reports are loaded from reports/index.js -->
+  </div>
+
+  <!-- ── IOC / YARA CHARTS SECTION ── -->
+  <div class="atl-section">
+    <div class="atl-section-header">
+      <span class="atl-section-title">
+        <svg class="atl-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M3 3v18h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M7 14l3-4 3 3 4-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        IOC & YARA Statistics
+      </span>
     </div>
-    <div id="no-reports"
-      style="display:none;padding:3rem 0;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);">
-      &gt;_ no reports yet. <a href="HOW-TO-ADD-REPORT.md" style="color:var(--green);">add your first report →</a>
+    <div id="charts-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.3rem;">
+      <div class="atl-chart-card">
+        <div class="atl-chart-label">IOC Types</div>
+        <canvas id="chart-ioc-types"></canvas>
+      </div>
+      <div class="atl-chart-card">
+        <div class="atl-chart-label">Confidence Levels</div>
+        <canvas id="chart-confidence"></canvas>
+      </div>
+      <div class="atl-chart-card">
+        <div class="atl-chart-label">IOCs by Malware Family</div>
+        <canvas id="chart-families"></canvas>
+      </div>
+      <div class="atl-chart-card">
+        <div class="atl-chart-label">YARA Rules per Report</div>
+        <canvas id="chart-yara"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── IOC PREVIEW SECTION ── -->
+  <div class="atl-section">
+    <div class="atl-section-header">
+      <span class="atl-section-title">
+        <svg class="atl-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2v13M12 2L7 7M12 2l5 5M5 9c0 3 2 5 2 5s-3 0-3 4 3 6 3 6M19 9c0 3-2 5-2 5s3 0 3 4-3 6-3 6"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Latest IOCs
+      </span>
+      <a href="ioc-feed.html" class="atl-view-all">view all →</a>
+    </div>
+    <div id="home-ioc-container"><!-- populated by main.js --></div>
+    <div id="home-no-iocs" style="display:none;padding:2rem 0;text-align:center;font-size:13px;color:var(--atl-muted);">
+      no IOCs published yet.
+    </div>
+  </div>
+
+  <!-- ── YARA PREVIEW SECTION ── -->
+  <div class="atl-section" style="padding-top:0;">
+    <div class="atl-section-header">
+      <span class="atl-section-title">
+        <svg class="atl-icon" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+          <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+          <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+          <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5" />
+        </svg>
+        YARA Rules
+      </span>
+      <a href="yara-feed.html" class="atl-view-all">view all →</a>
+    </div>
+    <div id="home-yara-container"><!-- populated by main.js --></div>
+    <div id="home-no-yara" style="display:none;padding:2rem 0;text-align:center;font-size:13px;color:var(--atl-muted);">
+      no YARA rules yet.
     </div>
   </div>
 
@@ -90,13 +345,18 @@
     </div>
   </div>
 
+  <div class="atl-closing">✦ In the depths of the unknown, knowledge is the greatest treasure. ✦</div>
+
   <footer>
     <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
     <div class="footer-links" id="footer-links"></div>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/reports-data.js"></script>
+  <script src="assets/js/charts.js"></script>
+  <script src="assets/js/home.js"></script>
   <script src="assets/js/main.js"></script>
 </body>
 

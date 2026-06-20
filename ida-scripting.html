@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IDA Pro Scripting Reference — SecBlog</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    /* ── Layout ── */
+    .ms-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 4rem;
+    }
+
+    .ms-hero {
+      padding: 3rem 2rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .ms-hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700;
+      color: #e8f4ff;
+      letter-spacing: -0.5px;
+      margin-bottom: .5rem;
+    }
+
+    .ms-hero p {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 640px;
+      line-height: 1.7;
+    }
+
+    .ms-hero .tag-row {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .ms-hero .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 10px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      letter-spacing: .5px;
+    }
+
+    .ms-hero .tag.green {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .ms-hero .tag.amber {
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    .ms-hero .tag.blue {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    /* ── Sidebar + content ── */
+    .ms-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .ms-sidebar {
+      position: sticky;
+      top: 72px;
+    }
+
+    .ms-nav-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .ms-nav-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      padding: 0 .5rem .5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ms-nav-item {
+      display: block;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      padding: 6px 8px;
+      border-left: 2px solid transparent;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+    }
+
+    .ms-nav-item:hover,
+    .ms-nav-item.active {
+      color: var(--green);
+      border-left-color: var(--green);
+      background: rgba(0, 255, 157, .04);
+    }
+
+    /* ── Search ── */
+    .ms-search {
+      margin-bottom: 1.25rem;
+    }
+
+    .ms-search input {
+      width: 100%;
+      background: rgba(7, 20, 40, .8);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 12px;
+      outline: none;
+    }
+
+    .ms-search input:focus {
+      border-color: var(--green);
+    }
+
+    .ms-search input::placeholder {
+      color: var(--muted);
+    }
+
+    /* ── Section headers ── */
+    .struct-section {
+      margin-bottom: 3rem;
+    }
+
+    .struct-section-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--green);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .struct-section-title .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Function card ── */
+    .struct-card {
+      background: rgba(7, 20, 40, .7);
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .struct-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .75rem 1.25rem;
+      border-bottom: 1px solid transparent;
+      cursor: pointer;
+      user-select: none;
+      transition: background .2s;
+    }
+
+    .struct-card-header:hover {
+      background: rgba(0, 255, 157, .04);
+    }
+
+    .struct-card.open .struct-card-header {
+      border-bottom-color: var(--border);
+    }
+
+    .card-title {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title .cat {
+      font-size: 10px;
+      padding: 2px 8px;
+      border: 1px solid;
+      letter-spacing: .5px;
+    }
+
+    .cat-nav {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .cat-xref {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .cat-name {
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    .cat-seg {
+      border-color: #a78bfa;
+      color: #a78bfa;
+    }
+
+    .cat-patch {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .cat-db {
+      border-color: #34d399;
+      color: #34d399;
+    }
+
+    .cat-type {
+      border-color: #fb923c;
+      color: #fb923c;
+    }
+
+    .cat-flow {
+      border-color: #f472b6;
+      color: #f472b6;
+    }
+
+    .card-toggle {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--muted);
+      transition: transform .2s;
+    }
+
+    .struct-card.open .card-toggle {
+      transform: rotate(90deg);
+    }
+
+    .struct-card-body {
+      display: none;
+      padding: 1.25rem;
+    }
+
+    .struct-card.open .struct-card-body {
+      display: block;
+    }
+
+    /* ── Function detail layout ── */
+    .fn-sig {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      background: rgba(0, 0, 0, .4);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      padding: .75rem 1rem;
+      color: #e8f4ff;
+      margin-bottom: 1rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .fn-sig .kw {
+      color: var(--blue);
+    }
+
+    .fn-sig .fn {
+      color: var(--green);
+    }
+
+    .fn-sig .arg {
+      color: var(--amber);
+    }
+
+    .fn-sig .typ {
+      color: #a78bfa;
+    }
+
+    .fn-sig .com {
+      color: var(--muted);
+    }
+
+    .fn-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .fn-params {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+      font-size: 12px;
+    }
+
+    .fn-params th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fn-params td {
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(31, 45, 69, .5);
+      vertical-align: top;
+    }
+
+    .fn-params td:first-child {
+      font-family: var(--mono);
+      color: var(--amber);
+      white-space: nowrap;
+    }
+
+    .fn-params td:nth-child(2) {
+      font-family: var(--mono);
+      color: #a78bfa;
+      white-space: nowrap;
+    }
+
+    .fn-params td:nth-child(3) {
+      color: var(--muted);
+    }
+
+    .fn-returns {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .fn-returns span {
+      color: #34d399;
+    }
+
+    /* ── Code example ── */
+    .code-block {
+      background: rgba(0, 0, 0, .5);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      padding: .9rem 1rem;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #cdd6f4;
+      overflow-x: auto;
+      white-space: pre;
+      margin-top: .5rem;
+    }
+
+    .code-block .py-kw {
+      color: #89b4fa;
+    }
+
+    .code-block .py-fn {
+      color: var(--green);
+    }
+
+    .code-block .py-str {
+      color: #a6e3a1;
+    }
+
+    .code-block .py-com {
+      color: #585b70;
+    }
+
+    .code-block .py-num {
+      color: #fab387;
+    }
+
+    .code-block .py-cls {
+      color: #cba6f7;
+    }
+
+    .code-block .py-var {
+      color: #cdd6f4;
+    }
+
+    .code-block .py-hex {
+      color: var(--amber);
+    }
+
+    .code-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-bottom: .4rem;
+    }
+
+    /* ── Notes/warnings ── */
+    .fn-note {
+      font-size: 12px;
+      font-family: var(--mono);
+      padding: .6rem .9rem;
+      margin-top: .75rem;
+      border-left: 3px solid var(--amber);
+      background: rgba(245, 158, 11, .06);
+      color: var(--amber);
+      line-height: 1.5;
+    }
+
+    .fn-note.info {
+      border-left-color: var(--blue);
+      background: rgba(56, 189, 248, .06);
+      color: var(--blue);
+    }
+
+    /* ── Search hidden ── */
+    .search-hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">🦇 <span>//</span> Mr_MaTriX</div>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="reports.html" class="active">Reports</a>
+      <a href="ioc-feed.html" class="active">IOCs</a>
+      <a href="yara-feed.html" class="active">YARA Rules</a>
+      <a href="siem-reference.html" class="active">SIEM Reference</a>
+      <a href="malware-structures.html" class="active">Structures</a>
+      <a href="achievements.html" class="active">Achievements</a>
+      <a href="about.html" class="active">About Me</a>
+    </div>
+    <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="ms-hero">
+    <h1>// IDA Pro Python <em style="color:var(--green)">Scripting Reference</em></h1>
+    <p>Complete IDAPython API reference for malware analysis and reverse engineering automation. Functions for
+      cross-references, navigation, naming, patching, type info, and control flow analysis.</p>
+    <div class="tag-row">
+      <span class="tag green">IDAPython</span>
+      <span class="tag blue">idc · idaapi · idautils</span>
+      <span class="tag amber">IDA Pro 7.x / 8.x</span>
+    </div>
+  </div>
+
+  <div class="ms-wrap">
+    <div class="ms-layout">
+
+      <!-- ── Sidebar ── -->
+      <aside class="ms-sidebar">
+        <div class="ms-search">
+          <input type="text" id="ms-search-input" placeholder="> search functions..." />
+        </div>
+
+        <div class="ms-nav-group">
+          <div class="ms-nav-label">NAVIGATION</div>
+          <a class="ms-nav-item" href="#sec-nav">Address &amp; Cursor</a>
+          <a class="ms-nav-item" href="#sec-funcs">Functions</a>
+          <a class="ms-nav-item" href="#sec-insn">Instructions</a>
+        </div>
+
+        <div class="ms-nav-group">
+          <div class="ms-nav-label">CROSS-REFERENCES</div>
+          <a class="ms-nav-item" href="#sec-xrefs">XrefsTo / XrefsFrom</a>
+          <a class="ms-nav-item" href="#sec-callers">Callers &amp; Callees</a>
+        </div>
+
+        <div class="ms-nav-group">
+          <div class="ms-nav-label">NAMING &amp; COMMENTS</div>
+          <a class="ms-nav-item" href="#sec-names">Names &amp; Labels</a>
+          <a class="ms-nav-item" href="#sec-comments">Comments</a>
+        </div>
+
+        <div class="ms-nav-group">
+          <div class="ms-nav-label">MEMORY &amp; SEGMENTS</div>
+          <a class="ms-nav-item" href="#sec-mem">Read / Write</a>
+          <a class="ms-nav-item" href="#sec-seg">Segments</a>
+          <a class="ms-nav-item" href="#sec-patch">Patching</a>
+        </div>
+
+        <div class="ms-nav-group">
+          <div class="ms-nav-label">ANALYSIS</div>
+          <a class="ms-nav-item" href="#sec-strings">Strings</a>
+          <a class="ms-nav-item" href="#sec-imports">Imports &amp; Exports</a>
+          <a class="ms-nav-item" href="#sec-flow">Control Flow</a>
+          <a class="ms-nav-item" href="#sec-types">Type Info</a>
+        </div>
+
+        <div class="ms-nav-group">
+          <div class="ms-nav-label">DATABASE</div>
+          <a class="ms-nav-item" href="#sec-db">IDB &amp; Misc</a>
+        </div>
+      </aside>
+
+      <!-- ── Main content ── -->
+      <main>
+
+        <!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+        <div class="struct-section" id="sec-nav">
+          <div class="struct-section-title"><span class="dot"></span>ADDRESS &amp; CURSOR NAVIGATION</div>
+
+          <!-- here() -->
+          <div class="struct-card" id="card-here">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.here()
+                <span class="cat cat-nav">NAV</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">here</span>() -> <span
+                  class="typ">int</span></div>
+              <div class="fn-desc">Returns the address currently under the cursor in IDA's disassembly view. Equivalent
+                to <code style="color:var(--green)">idc.get_screen_ea()</code>. The most commonly used function when
+                writing interactive scripts.</div>
+              <div class="fn-returns">Returns: <span>int</span> — linear address (ea)</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-var">ea</span> = <span class="py-fn">idc.here</span>()
+                <span class="py-fn">print</span>(<span class="py-fn">hex</span>(<span class="py-var">ea</span>)) <span
+                  class="py-com"># e.g. 0x140001000</span>
+
+                <span class="py-com"># Jump cursor to address</span>
+                <span class="py-fn">idc.jumpto</span>(<span class="py-var">ea</span>)
+              </div>
+            </div>
+          </div>
+
+          <!-- get_screen_ea / jumpto -->
+          <div class="struct-card" id="card-jumpto">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.jumpto()
+                <span class="cat cat-nav">NAV</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">jumpto</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>) -> <span class="typ">bool</span></div>
+              <div class="fn-desc">Moves the cursor in IDA's view to the given address. Useful in interactive scripts to
+                navigate the user to a discovered location.</div>
+              <table class="fn-params">
+                <tr>
+                  <th>PARAM</th>
+                  <th>TYPE</th>
+                  <th>DESC</th>
+                </tr>
+                <tr>
+                  <td>ea</td>
+                  <td>int</td>
+                  <td>Target linear address</td>
+                </tr>
+              </table>
+              <div class="fn-returns">Returns: <span>bool</span> — True on success</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-com"># Jump to entry point</span>
+                <span class="py-fn">idc.jumpto</span>(<span class="py-fn">idc.get_inf_attr</span>(<span
+                  class="py-cls">idc</span>.INF_START_EA))
+              </div>
+            </div>
+          </div>
+
+          <!-- next_head / prev_head -->
+          <div class="struct-card" id="card-next-head">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.next_head() / idc.prev_head()
+                <span class="cat cat-nav">NAV</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">next_head</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>, <span class="arg">maxea</span>: <span
+                  class="typ">int</span> = <span class="py-num">0xFFFFFFFFFFFFFFFF</span>) -> <span
+                  class="typ">int</span>
+                <span class="kw">def</span> <span class="fn">prev_head</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>, <span class="arg">minea</span>: <span class="typ">int</span> = <span
+                  class="py-num">0</span>) -> <span class="typ">int</span>
+              </div>
+              <div class="fn-desc">Move to the next or previous instruction/data head. Skips bytes that belong to the
+                current item (e.g. multi-byte instructions). Returns <code style="color:var(--red)">idc.BADADDR</code>
+                if no next/prev head exists within bounds.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-var">ea</span> = <span class="py-fn">idc.here</span>()
+                <span class="py-kw">for</span> _ <span class="py-kw">in</span> <span class="py-fn">range</span>(<span
+                  class="py-num">10</span>):
+                <span class="py-fn">print</span>(<span class="py-fn">hex</span>(<span class="py-var">ea</span>), <span
+                  class="py-fn">idc.GetDisasm</span>(<span class="py-var">ea</span>))
+                <span class="py-var">ea</span> = <span class="py-fn">idc.next_head</span>(<span
+                  class="py-var">ea</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-nav -->
+
+        <!-- ═══════════════════ FUNCTIONS ═══════════════════ -->
+        <div class="struct-section" id="sec-funcs">
+          <div class="struct-section-title"><span class="dot"></span>FUNCTION ENUMERATION</div>
+
+          <!-- Functions() -->
+          <div class="struct-card" id="card-functions">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idautils.Functions()
+                <span class="cat cat-nav">NAV</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">Functions</span>(<span
+                  class="arg">start</span>: <span class="typ">int</span> = <span class="py-num">None</span>, <span
+                  class="arg">end</span>: <span class="typ">int</span> = <span class="py-num">None</span>) -> <span
+                  class="typ">Iterator[int]</span></div>
+              <div class="fn-desc">Yields the start address of every function in the binary (or in the given address
+                range). The most fundamental loop in any IDA script.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-kw">import</span> <span class="py-cls">idautils</span>
+
+                <span class="py-kw">for</span> <span class="py-var">func_ea</span> <span class="py-kw">in</span> <span
+                  class="py-cls">idautils</span>.<span class="py-fn">Functions</span>():
+                <span class="py-var">name</span> = <span class="py-fn">idc.get_func_name</span>(<span
+                  class="py-var">func_ea</span>)
+                <span class="py-fn">print</span>(<span class="py-fn">hex</span>(<span class="py-var">func_ea</span>),
+                <span class="py-var">name</span>)
+              </div>
+            </div>
+          </div>
+
+          <!-- get_func -->
+          <div class="struct-card" id="card-get-func">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idaapi.get_func()
+                <span class="cat cat-nav">NAV</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">get_func</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>) -> <span class="typ">ida_funcs.func_t |
+                  None</span></div>
+              <div class="fn-desc">Returns the <code style="color:var(--amber)">func_t</code> object containing metadata
+                for the function that owns the given address. Key attributes: <code
+                  style="color:var(--green)">.start_ea</code>, <code style="color:var(--green)">.end_ea</code>, <code
+                  style="color:var(--green)">.size()</code>, <code style="color:var(--green)">.flags</code>.</div>
+              <table class="fn-params">
+                <tr>
+                  <th>PARAM</th>
+                  <th>TYPE</th>
+                  <th>DESC</th>
+                </tr>
+                <tr>
+                  <td>ea</td>
+                  <td>int</td>
+                  <td>Any address within the function</td>
+                </tr>
+              </table>
+              <div class="fn-returns">Returns: <span>func_t</span> — or None if not inside a function</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-var">fn</span> = <span class="py-cls">idaapi</span>.<span
+                  class="py-fn">get_func</span>(<span class="py-fn">idc.here</span>())
+                <span class="py-kw">if</span> <span class="py-var">fn</span>:
+                <span class="py-fn">print</span>(<span class="py-str">f"start=</span><span
+                  class="py-fn">{hex(fn.start_ea)}</span> <span class="py-str">end=</span><span
+                  class="py-fn">{hex(fn.end_ea)}</span> <span class="py-str">size=</span><span
+                  class="py-fn">{fn.size()}</span><span class="py-str">"</span>)
+              </div>
+            </div>
+          </div>
+
+          <!-- FuncItems -->
+          <div class="struct-card" id="card-funcitems">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idautils.FuncItems()
+                <span class="cat cat-nav">NAV</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">FuncItems</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>) -> <span class="typ">Iterator[int]</span></div>
+              <div class="fn-desc">Yields the address of every instruction that belongs to the function containing <code
+                  style="color:var(--amber)">ea</code>. Handles non-contiguous chunks automatically.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-com"># Count instructions in current function</span>
+                <span class="py-var">insns</span> = <span class="py-fn">list</span>(<span
+                  class="py-cls">idautils</span>.<span class="py-fn">FuncItems</span>(<span
+                  class="py-fn">idc.here</span>()))
+                <span class="py-fn">print</span>(<span class="py-str">f"</span><span
+                  class="py-fn">{len(insns)}</span><span class="py-str"> instructions"</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-funcs -->
+
+        <!-- ═══════════════════ INSTRUCTIONS ═══════════════════ -->
+        <div class="struct-section" id="sec-insn">
+          <div class="struct-section-title"><span class="dot"></span>INSTRUCTIONS &amp; DISASSEMBLY</div>
+
+          <!-- GetDisasm -->
+          <div class="struct-card" id="card-getdisasm">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.GetDisasm()
+                <span class="cat cat-nav">NAV</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">GetDisasm</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>) -> <span class="typ">str</span></div>
+              <div class="fn-desc">Returns the disassembly text for the instruction at <code
+                  style="color:var(--amber)">ea</code> as a string, including mnemonic and operands (e.g. <code
+                  style="color:var(--green)">"mov     rax, [rbp+var_8]"</code>).</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-com"># Find all call instructions in a function</span>
+                <span class="py-kw">for</span> <span class="py-var">ea</span> <span class="py-kw">in</span> <span
+                  class="py-cls">idautils</span>.<span class="py-fn">FuncItems</span>(<span
+                  class="py-fn">idc.here</span>()):
+                <span class="py-var">disasm</span> = <span class="py-fn">idc.GetDisasm</span>(<span
+                  class="py-var">ea</span>)
+                <span class="py-kw">if</span> <span class="py-var">disasm</span>.<span
+                  class="py-fn">startswith</span>(<span class="py-str">"call"</span>):
+                <span class="py-fn">print</span>(<span class="py-fn">hex</span>(<span class="py-var">ea</span>), <span
+                  class="py-var">disasm</span>)
+              </div>
+            </div>
+          </div>
+
+          <!-- print_insn_mnem / get_operand_value -->
+          <div class="struct-card" id="card-mnem">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.print_insn_mnem() / idc.get_operand_value()
+                <span class="cat cat-nav">NAV</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">print_insn_mnem</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>) -> <span class="typ">str</span>
+                <span class="kw">def</span> <span class="fn">get_operand_value</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>, <span class="arg">n</span>: <span class="typ">int</span>) -> <span
+                  class="typ">int</span>
+              </div>
+              <div class="fn-desc"><code style="color:var(--green)">print_insn_mnem</code> returns just the mnemonic
+                (e.g. <code style="color:var(--green)">"mov"</code>). <code
+                  style="color:var(--green)">get_operand_value</code> returns the numeric value of operand <code
+                  style="color:var(--amber)">n</code> (0-indexed). For calls/jumps this gives the target address.</div>
+              <table class="fn-params">
+                <tr>
+                  <th>PARAM</th>
+                  <th>TYPE</th>
+                  <th>DESC</th>
+                </tr>
+                <tr>
+                  <td>ea</td>
+                  <td>int</td>
+                  <td>Instruction address</td>
+                </tr>
+                <tr>
+                  <td>n</td>
+                  <td>int</td>
+                  <td>Operand index (0 = first, 1 = second)</td>
+                </tr>
+              </table>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-var">ea</span> = <span class="py-fn">idc.here</span>()
+                <span class="py-var">mnem</span> = <span class="py-fn">idc.print_insn_mnem</span>(<span
+                  class="py-var">ea</span>)
+                <span class="py-kw">if</span> <span class="py-var">mnem</span> == <span class="py-str">"call"</span>:
+                <span class="py-var">target</span> = <span class="py-fn">idc.get_operand_value</span>(<span
+                  class="py-var">ea</span>, <span class="py-num">0</span>)
+                <span class="py-fn">print</span>(<span class="py-str">"calls ->"</span>, <span
+                  class="py-fn">idc.get_func_name</span>(<span class="py-var">target</span>))
+              </div>
+            </div>
+          </div>
+
+          <!-- decode_insn -->
+          <div class="struct-card" id="card-decode">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idaapi.decode_insn()
+                <span class="cat cat-nav">NAV</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">decode_insn</span>(<span
+                  class="arg">insn</span>: <span class="typ">insn_t</span>, <span class="arg">ea</span>: <span
+                  class="typ">int</span>) -> <span class="typ">int</span></div>
+              <div class="fn-desc">Fully decodes the instruction at <code style="color:var(--amber)">ea</code> into an
+                <code style="color:var(--amber)">insn_t</code> object, giving access to operand types, registers,
+                immediate values, and more detail than the string-based API.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-var">insn</span> = <span class="py-cls">idaapi</span>.<span
+                  class="py-fn">insn_t</span>()
+                <span class="py-kw">if</span> <span class="py-cls">idaapi</span>.<span
+                  class="py-fn">decode_insn</span>(<span class="py-var">insn</span>, <span
+                  class="py-fn">idc.here</span>()):
+                <span class="py-fn">print</span>(<span class="py-str">"size:"</span>, <span
+                  class="py-var">insn</span>.size)
+                <span class="py-kw">for</span> <span class="py-var">op</span> <span class="py-kw">in</span> <span
+                  class="py-var">insn</span>.ops:
+                <span class="py-kw">if</span> <span class="py-var">op</span>.<span class="py-var">type</span> == <span
+                  class="py-cls">idaapi</span>.o_reg:
+                <span class="py-fn">print</span>(<span class="py-str">"reg operand:"</span>, <span
+                  class="py-var">op</span>.reg)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-insn -->
+
+        <!-- ═══════════════════ XREFS ═══════════════════ -->
+        <div class="struct-section" id="sec-xrefs">
+          <div class="struct-section-title"><span class="dot"></span>CROSS-REFERENCES — XrefsTo / XrefsFrom</div>
+
+          <!-- XrefsTo -->
+          <div class="struct-card open" id="card-xrefsto">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idautils.XrefsTo()
+                <span class="cat cat-xref">XREF</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">XrefsTo</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>, <span class="arg">flags</span>: <span
+                  class="typ">int</span> = <span class="py-num">0</span>) -> <span class="typ">Iterator[xref_t]</span>
+              </div>
+              <div class="fn-desc">Yields all cross-references pointing <em>to</em> the given address. Each yielded item
+                is an <code style="color:var(--amber)">xref_t</code> object with fields: <code
+                  style="color:var(--green)">.frm</code> (from address), <code style="color:var(--green)">.to</code> (to
+                address), <code style="color:var(--green)">.type</code> (xref type), <code
+                  style="color:var(--green)">.iscode</code> (1 if code ref). Use <code
+                  style="color:var(--amber)">flags=1</code> to include data references.</div>
+              <table class="fn-params">
+                <tr>
+                  <th>PARAM</th>
+                  <th>TYPE</th>
+                  <th>DESC</th>
+                </tr>
+                <tr>
+                  <td>ea</td>
+                  <td>int</td>
+                  <td>Address to find references to</td>
+                </tr>
+                <tr>
+                  <td>flags</td>
+                  <td>int</td>
+                  <td>0 = code xrefs only; 1 = include data xrefs</td>
+                </tr>
+              </table>
+              <div class="fn-returns">Returns: <span>Iterator[xref_t]</span> — each has .frm, .to, .type, .iscode</div>
+              <div class="code-label">&gt;_ EXAMPLE — who calls this function?</div>
+              <div class="code-block"><span class="py-kw">import</span> <span class="py-cls">idautils</span>
+
+                <span class="py-var">ea</span> = <span class="py-fn">idc.here</span>()
+                <span class="py-fn">print</span>(<span class="py-str">f"[*] XrefsTo </span><span
+                  class="py-fn">{hex(ea)}</span><span class="py-str">:"</span>)
+
+                <span class="py-kw">for</span> <span class="py-var">xref</span> <span class="py-kw">in</span> <span
+                  class="py-cls">idautils</span>.<span class="py-fn">XrefsTo</span>(<span class="py-var">ea</span>,
+                <span class="py-num">1</span>):
+                <span class="py-var">caller</span> = <span class="py-fn">idc.get_func_name</span>(<span
+                  class="py-var">xref</span>.frm) <span class="py-kw">or</span> <span class="py-fn">hex</span>(<span
+                  class="py-var">xref</span>.frm)
+                <span class="py-var">kind</span> = <span class="py-str">"CODE"</span> <span class="py-kw">if</span>
+                <span class="py-var">xref</span>.iscode <span class="py-kw">else</span> <span
+                  class="py-str">"DATA"</span>
+                <span class="py-fn">print</span>(<span class="py-str">f" [{kind}] </span><span
+                  class="py-fn">{hex(xref.frm)}</span><span class="py-str"> <- </span><span
+                      class="py-fn">{caller}</span><span class="py-str">"</span>)
+              </div>
+              <div class="fn-note info">xref.type values: fl_JN=18 (jump near), fl_CN=17 (call near), fl_F=21 (flow),
+                dr_R=1 (data read), dr_W=2 (data write)</div>
+            </div>
+          </div>
+
+          <!-- XrefsFrom -->
+          <div class="struct-card" id="card-xrefsfrom">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idautils.XrefsFrom()
+                <span class="cat cat-xref">XREF</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">XrefsFrom</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>, <span class="arg">flags</span>: <span
+                  class="typ">int</span> = <span class="py-num">0</span>) -> <span class="typ">Iterator[xref_t]</span>
+              </div>
+              <div class="fn-desc">Yields all cross-references <em>originating</em> from the given address — the inverse
+                of <code style="color:var(--green)">XrefsTo</code>. Useful to see what a single instruction calls, jumps
+                to, or reads from.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-kw">for</span> <span class="py-var">xref</span> <span
+                  class="py-kw">in</span> <span class="py-cls">idautils</span>.<span
+                  class="py-fn">XrefsFrom</span>(<span class="py-fn">idc.here</span>(), <span class="py-num">1</span>):
+                <span class="py-fn">print</span>(<span class="py-str">f" -> </span><span
+                  class="py-fn">{hex(xref.to)}</span><span class="py-str"> type=</span><span
+                  class="py-fn">{xref.type}</span><span class="py-str">"</span>)
+              </div>
+            </div>
+          </div>
+
+          <!-- CodeRefsTo / CodeRefsFrom -->
+          <div class="struct-card" id="card-coderefs">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idautils.CodeRefsTo() / CodeRefsFrom()
+                <span class="cat cat-xref">XREF</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">CodeRefsTo</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>, <span class="arg">flow</span>: <span
+                  class="typ">bool</span>) -> <span class="typ">Iterator[int]</span>
+                <span class="kw">def</span> <span class="fn">CodeRefsFrom</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>, <span class="arg">flow</span>: <span class="typ">bool</span>) -> <span
+                  class="typ">Iterator[int]</span>
+              </div>
+              <div class="fn-desc">Simpler wrappers that yield just the <em>address</em> (not an xref_t object). Set
+                <code style="color:var(--amber)">flow=False</code> to exclude sequential flow references and get only
+                real branches/calls.</div>
+              <table class="fn-params">
+                <tr>
+                  <th>PARAM</th>
+                  <th>TYPE</th>
+                  <th>DESC</th>
+                </tr>
+                <tr>
+                  <td>ea</td>
+                  <td>int</td>
+                  <td>Target/source address</td>
+                </tr>
+                <tr>
+                  <td>flow</td>
+                  <td>bool</td>
+                  <td>True = include sequential flow; False = branches/calls only</td>
+                </tr>
+              </table>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-com"># All callers of current function (no flow refs)</span>
+                <span class="py-var">ea</span> = <span class="py-fn">idc.here</span>()
+                <span class="py-kw">for</span> <span class="py-var">caller</span> <span class="py-kw">in</span> <span
+                  class="py-cls">idautils</span>.<span class="py-fn">CodeRefsTo</span>(<span class="py-var">ea</span>,
+                <span class="py-num">False</span>):
+                <span class="py-fn">print</span>(<span class="py-fn">hex</span>(<span class="py-var">caller</span>),
+                <span class="py-fn">idc.get_func_name</span>(<span class="py-var">caller</span>))
+              </div>
+            </div>
+          </div>
+
+          <!-- DataRefsTo / DataRefsFrom -->
+          <div class="struct-card" id="card-datarefs">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idautils.DataRefsTo() / DataRefsFrom()
+                <span class="cat cat-xref">XREF</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">DataRefsTo</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>) -> <span class="typ">Iterator[int]</span>
+                <span class="kw">def</span> <span class="fn">DataRefsFrom</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>) -> <span class="typ">Iterator[int]</span>
+              </div>
+              <div class="fn-desc">Yields addresses of code or data that <em>reads/writes</em> the given location
+                (DataRefsTo), or addresses that this instruction reads from (DataRefsFrom). Essential for tracking
+                global variable and string usage.</div>
+              <div class="code-label">&gt;_ EXAMPLE — find all places that read a global</div>
+              <div class="code-block"><span class="py-var">global_ea</span> = <span class="py-hex">0x140005000</span>
+                <span class="py-kw">for</span> <span class="py-var">ref</span> <span class="py-kw">in</span> <span
+                  class="py-cls">idautils</span>.<span class="py-fn">DataRefsTo</span>(<span
+                  class="py-var">global_ea</span>):
+                <span class="py-fn">print</span>(<span class="py-str">f"read at </span><span
+                  class="py-fn">{hex(ref)}</span><span class="py-str"> in </span><span
+                  class="py-fn">{idc.get_func_name(ref)}</span><span class="py-str">"</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-xrefs -->
+
+        <!-- ═══════════════════ CALLERS / CALLEES ═══════════════════ -->
+        <div class="struct-section" id="sec-callers">
+          <div class="struct-section-title"><span class="dot"></span>CALLERS &amp; CALLEES</div>
+
+          <!-- get_xrefs_to (all callers of a func) -->
+          <div class="struct-card" id="card-callers">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                Get all callers of a function
+                <span class="cat cat-xref">XREF</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-desc">Pattern combining <code style="color:var(--green)">XrefsTo</code> + <code
+                  style="color:var(--green)">iscode</code> filter to get every function that calls a target — the single
+                most common malware RE task (e.g. "who calls VirtualAlloc?").</div>
+              <div class="code-label">&gt;_ PATTERN — callers of an import</div>
+              <div class="code-block"><span class="py-kw">import</span> <span class="py-cls">idautils</span>, <span
+                  class="py-cls">idc</span>
+
+                <span class="py-kw">def</span> <span class="py-fn">get_callers</span>(<span
+                  class="py-var">func_name</span>):
+                <span class="py-var">ea</span> = <span class="py-fn">idc.get_name_ea_simple</span>(<span
+                  class="py-var">func_name</span>)
+                <span class="py-kw">if</span> <span class="py-var">ea</span> == <span class="py-cls">idc</span>.BADADDR:
+                <span class="py-fn">print</span>(<span class="py-str">"not found"</span>); <span
+                  class="py-kw">return</span>
+                <span class="py-kw">for</span> <span class="py-var">xref</span> <span class="py-kw">in</span> <span
+                  class="py-cls">idautils</span>.<span class="py-fn">XrefsTo</span>(<span class="py-var">ea</span>,
+                <span class="py-num">0</span>):
+                <span class="py-kw">if</span> <span class="py-var">xref</span>.iscode:
+                <span class="py-var">fn</span> = <span class="py-fn">idc.get_func_name</span>(<span
+                  class="py-var">xref</span>.frm) <span class="py-kw">or</span> <span class="py-fn">hex</span>(<span
+                  class="py-var">xref</span>.frm)
+                <span class="py-fn">print</span>(<span class="py-str">f" </span><span
+                  class="py-fn">{hex(xref.frm)}</span><span class="py-str"> [{fn}]"</span>)
+
+                <span class="py-fn">get_callers</span>(<span class="py-str">"VirtualAlloc"</span>)
+                <span class="py-fn">get_callers</span>(<span class="py-str">"CreateThread"</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-callers -->
+
+        <!-- ═══════════════════ NAMES ═══════════════════ -->
+        <div class="struct-section" id="sec-names">
+          <div class="struct-section-title"><span class="dot"></span>NAMES &amp; LABELS</div>
+
+          <!-- get_func_name / get_name -->
+          <div class="struct-card" id="card-get-name">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.get_func_name() / idc.get_name()
+                <span class="cat cat-name">NAME</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">get_func_name</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>) -> <span class="typ">str</span>
+                <span class="kw">def</span> <span class="fn">get_name</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>, <span class="arg">gtn_flags</span>: <span class="typ">int</span> = <span
+                  class="py-num">0</span>) -> <span class="typ">str</span>
+              </div>
+              <div class="fn-desc"><code style="color:var(--green)">get_func_name</code> returns the name IDA assigned
+                to the function starting at <code style="color:var(--amber)">ea</code>. <code
+                  style="color:var(--green)">get_name</code> is broader — it returns any named location (function,
+                label, import, export). Returns empty string if unnamed.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-fn">print</span>(<span
+                  class="py-fn">idc.get_func_name</span>(<span class="py-fn">idc.here</span>())) <span class="py-com">#
+                  "sub_140001000"</span>
+                <span class="py-fn">print</span>(<span class="py-fn">idc.get_name</span>(<span
+                  class="py-hex">0x140001000</span>)) <span class="py-com"># same or user-set label</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- set_name -->
+          <div class="struct-card" id="card-set-name">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.set_name()
+                <span class="cat cat-name">NAME</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">set_name</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>, <span class="arg">name</span>: <span
+                  class="typ">str</span>, <span class="arg">flags</span>: <span class="typ">int</span> = <span
+                  class="py-num">0</span>) -> <span class="typ">bool</span></div>
+              <div class="fn-desc">Assigns a name (label) to an address. Use <code
+                  style="color:var(--amber)">flags=idc.SN_NOCHECK</code> to skip duplicate-name validation, or <code
+                  style="color:var(--amber)">flags=idc.SN_FORCE</code> to allow renaming even if IDA would refuse.</div>
+              <table class="fn-params">
+                <tr>
+                  <th>PARAM</th>
+                  <th>TYPE</th>
+                  <th>DESC</th>
+                </tr>
+                <tr>
+                  <td>ea</td>
+                  <td>int</td>
+                  <td>Address to label</td>
+                </tr>
+                <tr>
+                  <td>name</td>
+                  <td>str</td>
+                  <td>New name string</td>
+                </tr>
+                <tr>
+                  <td>flags</td>
+                  <td>int</td>
+                  <td>SN_NOCHECK, SN_FORCE, SN_PUBLIC, etc.</td>
+                </tr>
+              </table>
+              <div class="code-label">&gt;_ EXAMPLE — bulk rename obfuscated stubs</div>
+              <div class="code-block"><span class="py-kw">for</span> <span class="py-var">i</span>, <span
+                  class="py-var">fn_ea</span> <span class="py-kw">in</span> <span class="py-fn">enumerate</span>(<span
+                  class="py-cls">idautils</span>.<span class="py-fn">Functions</span>()):
+                <span class="py-var">name</span> = <span class="py-fn">idc.get_func_name</span>(<span
+                  class="py-var">fn_ea</span>)
+                <span class="py-kw">if</span> <span class="py-var">name</span>.<span
+                  class="py-fn">startswith</span>(<span class="py-str">"sub_"</span>):
+                <span class="py-fn">idc.set_name</span>(<span class="py-var">fn_ea</span>, <span
+                  class="py-str">f"unknown_</span><span class="py-fn">{i}</span><span class="py-str">"</span>, <span
+                  class="py-cls">idc</span>.SN_NOCHECK)
+              </div>
+            </div>
+          </div>
+
+          <!-- get_name_ea_simple -->
+          <div class="struct-card" id="card-name-ea">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.get_name_ea_simple()
+                <span class="cat cat-name">NAME</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">get_name_ea_simple</span>(<span
+                  class="arg">name</span>: <span class="typ">str</span>) -> <span class="typ">int</span></div>
+              <div class="fn-desc">Reverse lookup — resolves a name string to its address. Returns <code
+                  style="color:var(--red)">idc.BADADDR</code> if not found. Perfect for locating imports, exports, or
+                any named symbol.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-var">ea</span> = <span
+                  class="py-fn">idc.get_name_ea_simple</span>(<span class="py-str">"WinExec"</span>)
+                <span class="py-kw">if</span> <span class="py-var">ea</span> != <span class="py-cls">idc</span>.BADADDR:
+                <span class="py-fn">print</span>(<span class="py-str">"WinExec at"</span>, <span
+                  class="py-fn">hex</span>(<span class="py-var">ea</span>))
+
+                <span class="py-com"># Also: idaapi.get_name_ea(BADADDR, name)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Names() iterator -->
+          <div class="struct-card" id="card-names-iter">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idautils.Names()
+                <span class="cat cat-name">NAME</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">Names</span>() -> <span
+                  class="typ">Iterator[Tuple[int, str]]</span></div>
+              <div class="fn-desc">Yields <code style="color:var(--amber)">(address, name)</code> tuples for every named
+                location in the IDB — functions, labels, imports, exports. Useful for building a full symbol table.
+              </div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-kw">for</span> <span class="py-var">ea</span>, <span
+                  class="py-var">name</span> <span class="py-kw">in</span> <span class="py-cls">idautils</span>.<span
+                  class="py-fn">Names</span>():
+                <span class="py-kw">if</span> <span class="py-str">"crypt"</span> <span class="py-kw">in</span> <span
+                  class="py-var">name</span>.<span class="py-fn">lower</span>():
+                <span class="py-fn">print</span>(<span class="py-fn">hex</span>(<span class="py-var">ea</span>), <span
+                  class="py-var">name</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-names -->
+
+        <!-- ═══════════════════ COMMENTS ═══════════════════ -->
+        <div class="struct-section" id="sec-comments">
+          <div class="struct-section-title"><span class="dot"></span>COMMENTS</div>
+
+          <div class="struct-card" id="card-comments">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.set_cmt() / idc.get_cmt()
+                <span class="cat cat-name">NAME</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">set_cmt</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>, <span class="arg">comment</span>: <span
+                  class="typ">str</span>, <span class="arg">rptble</span>: <span class="typ">bool</span>) -> <span
+                  class="typ">bool</span>
+                <span class="kw">def</span> <span class="fn">get_cmt</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>, <span class="arg">rptble</span>: <span class="typ">bool</span>) -> <span
+                  class="typ">str</span>
+              </div>
+              <div class="fn-desc">Set or read a comment at an address. <code
+                  style="color:var(--amber)">rptble=True</code> for a repeatable comment (shown at all xrefs too); <code
+                  style="color:var(--amber)">rptble=False</code> for a local comment at this address only.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-fn">idc.set_cmt</span>(<span class="py-fn">idc.here</span>(),
+                <span class="py-str">"decrypts config blob with RC4"</span>, <span class="py-num">False</span>)
+
+                <span class="py-com"># Repeatable — shows wherever this func is referenced</span>
+                <span class="py-fn">idc.set_cmt</span>(<span class="py-fn">idc.here</span>(), <span
+                  class="py-str">"SUSPICIOUS: allocates RWX memory"</span>, <span class="py-num">True</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-comments -->
+
+        <!-- ═══════════════════ MEMORY ═══════════════════ -->
+        <div class="struct-section" id="sec-mem">
+          <div class="struct-section-title"><span class="dot"></span>READ / WRITE MEMORY</div>
+
+          <!-- get_bytes / read_byte -->
+          <div class="struct-card" id="card-readbytes">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.get_bytes() / idaapi.get_bytes()
+                <span class="cat cat-seg">MEM</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">get_bytes</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>, <span class="arg">size</span>: <span
+                  class="typ">int</span>, <span class="arg">use_dbg</span>: <span class="typ">bool</span> = <span
+                  class="py-num">False</span>) -> <span class="typ">bytes</span>
+                <span class="py-com"># Single-byte shortcuts:</span>
+                <span class="kw">def</span> <span class="fn">get_wide_byte</span>(<span class="arg">ea</span>) -> <span
+                  class="typ">int</span> <span class="com"># 1 byte</span>
+                <span class="kw">def</span> <span class="fn">get_wide_word</span>(<span class="arg">ea</span>) -> <span
+                  class="typ">int</span> <span class="com"># 2 bytes</span>
+                <span class="kw">def</span> <span class="fn">get_wide_dword</span>(<span class="arg">ea</span>) -> <span
+                  class="typ">int</span> <span class="com"># 4 bytes</span>
+                <span class="kw">def</span> <span class="fn">get_qword</span>(<span class="arg">ea</span>) -> <span
+                  class="typ">int</span> <span class="com"># 8 bytes</span>
+              </div>
+              <div class="fn-desc">Reads raw bytes from the IDB (database, not live process unless debugging). <code
+                  style="color:var(--amber)">use_dbg=True</code> reads from the debuggee's live memory during a debug
+                session. Returns <code style="color:var(--green)">bytes</code> object or raises on unmapped memory.
+              </div>
+              <div class="code-label">&gt;_ EXAMPLE — extract encoded payload</div>
+              <div class="code-block"><span class="py-var">ea</span> = <span class="py-fn">idc.here</span>()
+                <span class="py-var">size</span> = <span class="py-num">256</span>
+                <span class="py-var">data</span> = <span class="py-fn">idc.get_bytes</span>(<span
+                  class="py-var">ea</span>, <span class="py-var">size</span>)
+                <span class="py-fn">print</span>(<span class="py-var">data</span>.<span class="py-fn">hex</span>())
+
+                <span class="py-com"># XOR decrypt in-script</span>
+                <span class="py-var">key</span> = <span class="py-hex">0x41</span>
+                <span class="py-var">dec</span> = <span class="py-fn">bytes</span>([<span class="py-var">b</span> ^
+                <span class="py-var">key</span> <span class="py-kw">for</span> <span class="py-var">b</span> <span
+                  class="py-kw">in</span> <span class="py-var">data</span>])
+                <span class="py-fn">print</span>(<span class="py-var">dec</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-mem -->
+
+        <!-- ═══════════════════ SEGMENTS ═══════════════════ -->
+        <div class="struct-section" id="sec-seg">
+          <div class="struct-section-title"><span class="dot"></span>SEGMENTS</div>
+
+          <div class="struct-card" id="card-segments">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idautils.Segments() / idc.get_segm_name()
+                <span class="cat cat-seg">SEG</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">Segments</span>() -> <span
+                  class="typ">Iterator[int]</span> <span class="com"># yields seg start ea</span>
+                <span class="kw">def</span> <span class="fn">get_segm_name</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>) -> <span class="typ">str</span>
+                <span class="kw">def</span> <span class="fn">get_segm_start</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>) -> <span class="typ">int</span>
+                <span class="kw">def</span> <span class="fn">get_segm_end</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>) -> <span class="typ">int</span>
+              </div>
+              <div class="fn-desc">Enumerate all segments (PE sections) in the binary. Each segment has a name (<code
+                  style="color:var(--green)">.text</code>, <code style="color:var(--green)">.data</code>, etc.),
+                start/end addresses, and permissions.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-kw">for</span> <span class="py-var">seg_ea</span> <span
+                  class="py-kw">in</span> <span class="py-cls">idautils</span>.<span class="py-fn">Segments</span>():
+                <span class="py-var">name</span> = <span class="py-fn">idc.get_segm_name</span>(<span
+                  class="py-var">seg_ea</span>)
+                <span class="py-var">start</span> = <span class="py-fn">idc.get_segm_start</span>(<span
+                  class="py-var">seg_ea</span>)
+                <span class="py-var">end</span> = <span class="py-fn">idc.get_segm_end</span>(<span
+                  class="py-var">seg_ea</span>)
+                <span class="py-fn">print</span>(<span class="py-str">f"</span><span class="py-fn">{name}</span><span
+                  class="py-str"> </span><span class="py-fn">{hex(start)}</span><span class="py-str">-</span><span
+                  class="py-fn">{hex(end)}</span><span class="py-str"> size=</span><span
+                  class="py-fn">{end-start}</span><span class="py-str">"</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-seg -->
+
+        <!-- ═══════════════════ PATCHING ═══════════════════ -->
+        <div class="struct-section" id="sec-patch">
+          <div class="struct-section-title"><span class="dot"></span>PATCHING</div>
+
+          <div class="struct-card" id="card-patch">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.patch_byte() / patch_word() / patch_dword()
+                <span class="cat cat-patch">PATCH</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">patch_byte</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>, <span class="arg">value</span>: <span
+                  class="typ">int</span>) -> <span class="typ">bool</span>
+                <span class="kw">def</span> <span class="fn">patch_word</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>, <span class="arg">value</span>: <span class="typ">int</span>) -> <span
+                  class="typ">bool</span>
+                <span class="kw">def</span> <span class="fn">patch_dword</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>, <span class="arg">value</span>: <span class="typ">int</span>) -> <span
+                  class="typ">bool</span>
+                <span class="kw">def</span> <span class="fn">patch_qword</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>, <span class="arg">value</span>: <span class="typ">int</span>) -> <span
+                  class="typ">bool</span>
+              </div>
+              <div class="fn-desc">Modify bytes in the IDB. Changes are tracked as "patches" and can be applied to the
+                original binary via <em>Edit → Patch program → Apply patches to input file</em>.</div>
+              <div class="fn-note">⚠ Patches modify the IDB, not the file on disk — use "Apply patches to input file" to
+                persist.</div>
+              <div class="code-label">&gt;_ EXAMPLE — NOP out an anti-debug check</div>
+              <div class="code-block"><span class="py-var">ea</span> = <span class="py-fn">idc.here</span>()
+                <span class="py-com"># NOP a 2-byte jz short instruction</span>
+                <span class="py-fn">idc.patch_byte</span>(<span class="py-var">ea</span>, <span
+                  class="py-hex">0x90</span>)
+                <span class="py-fn">idc.patch_byte</span>(<span class="py-var">ea</span>+<span class="py-num">1</span>,
+                <span class="py-hex">0x90</span>)
+                <span class="py-cls">idaapi</span>.<span class="py-fn">auto_mark_range</span>(<span
+                  class="py-var">ea</span>, <span class="py-var">ea</span>+<span class="py-num">2</span>, <span
+                  class="py-cls">idaapi</span>.AU_CODE) <span class="py-com"># reanalyze</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-patch -->
+
+        <!-- ═══════════════════ STRINGS ═══════════════════ -->
+        <div class="struct-section" id="sec-strings">
+          <div class="struct-section-title"><span class="dot"></span>STRINGS</div>
+
+          <div class="struct-card" id="card-strings">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idautils.Strings() / idc.get_strlit_contents()
+                <span class="cat cat-db">STR</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">Strings</span>(<span
+                  class="arg">default_setup</span>: <span class="typ">bool</span> = <span class="py-num">True</span>) ->
+                <span class="typ">StringList</span>
+                <span class="kw">def</span> <span class="fn">get_strlit_contents</span>(<span class="arg">ea</span>,
+                <span class="arg">length</span>, <span class="arg">strtype</span>) -> <span class="typ">bytes |
+                  None</span>
+              </div>
+              <div class="fn-desc"><code style="color:var(--green)">idautils.Strings()</code> returns a string-list
+                object iterable as <code style="color:var(--amber)">StringItem</code> objects with <code
+                  style="color:var(--green)">.ea</code>, <code style="color:var(--green)">.length</code>, <code
+                  style="color:var(--green)">.type</code>. Use <code
+                  style="color:var(--green)">get_strlit_contents</code> to read an arbitrary string at any address.
+              </div>
+              <div class="code-label">&gt;_ EXAMPLE — dump all strings and their xrefs</div>
+              <div class="code-block"><span class="py-var">sc</span> = <span class="py-cls">idautils</span>.<span
+                  class="py-fn">Strings</span>()
+                <span class="py-kw">for</span> <span class="py-var">s</span> <span class="py-kw">in</span> <span
+                  class="py-var">sc</span>:
+                <span class="py-var">val</span> = <span class="py-fn">str</span>(<span class="py-var">s</span>)
+                <span class="py-kw">if</span> <span class="py-fn">any</span>(<span class="py-var">k</span> <span
+                  class="py-kw">in</span> <span class="py-var">val</span>.<span class="py-fn">lower</span>() <span
+                  class="py-kw">for</span> <span class="py-var">k</span> <span class="py-kw">in</span> [<span
+                  class="py-str">"http"</span>, <span class="py-str">"cmd"</span>, <span
+                  class="py-str">"powershell"</span>]):
+                <span class="py-fn">print</span>(<span class="py-str">f"[!] </span><span
+                  class="py-fn">{hex(s.ea)}</span><span class="py-str">: </span><span class="py-fn">{val}</span><span
+                  class="py-str">"</span>)
+                <span class="py-kw">for</span> <span class="py-var">xref</span> <span class="py-kw">in</span> <span
+                  class="py-cls">idautils</span>.<span class="py-fn">XrefsTo</span>(<span class="py-var">s</span>.ea,
+                <span class="py-num">0</span>):
+                <span class="py-fn">print</span>(<span class="py-str">f" used at </span><span
+                  class="py-fn">{hex(xref.frm)}</span><span class="py-str">"</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-strings -->
+
+        <!-- ═══════════════════ IMPORTS / EXPORTS ═══════════════════ -->
+        <div class="struct-section" id="sec-imports">
+          <div class="struct-section-title"><span class="dot"></span>IMPORTS &amp; EXPORTS</div>
+
+          <div class="struct-card" id="card-imports">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idaapi.get_import_module_qty() / enum_import_names()
+                <span class="cat cat-db">IMPORT</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">get_import_module_qty</span>() -> <span
+                  class="typ">int</span>
+                <span class="kw">def</span> <span class="fn">get_import_module_name</span>(<span class="arg">i</span>:
+                <span class="typ">int</span>) -> <span class="typ">str</span>
+                <span class="kw">def</span> <span class="fn">enum_import_names</span>(<span class="arg">mod_idx</span>:
+                <span class="typ">int</span>, <span class="arg">callback</span>: <span class="typ">callable</span>) ->
+                <span class="typ">bool</span>
+              </div>
+              <div class="fn-desc">Walk the PE import table. The callback receives <code
+                  style="color:var(--amber)">(ea, name, ordinal)</code> and must return <code
+                  style="color:var(--green)">True</code> to continue enumeration.</div>
+              <div class="code-label">&gt;_ EXAMPLE — print all imports</div>
+              <div class="code-block"><span class="py-kw">import</span> <span class="py-cls">idaapi</span>
+
+                <span class="py-kw">def</span> <span class="py-fn">imp_cb</span>(<span class="py-var">ea</span>, <span
+                  class="py-var">name</span>, <span class="py-var">ord</span>):
+                <span class="py-fn">print</span>(<span class="py-str">f" </span><span
+                  class="py-fn">{hex(ea)}</span><span class="py-str"> {name or f'ord_{ord}'}</span><span
+                  class="py-str">"</span>)
+                <span class="py-kw">return</span> <span class="py-num">True</span>
+
+                <span class="py-var">n</span> = <span class="py-cls">idaapi</span>.<span
+                  class="py-fn">get_import_module_qty</span>()
+                <span class="py-kw">for</span> <span class="py-var">i</span> <span class="py-kw">in</span> <span
+                  class="py-fn">range</span>(<span class="py-var">n</span>):
+                <span class="py-var">mod</span> = <span class="py-cls">idaapi</span>.<span
+                  class="py-fn">get_import_module_name</span>(<span class="py-var">i</span>)
+                <span class="py-fn">print</span>(<span class="py-str">f"[{mod}]"</span>)
+                <span class="py-cls">idaapi</span>.<span class="py-fn">enum_import_names</span>(<span
+                  class="py-var">i</span>, <span class="py-var">imp_cb</span>)
+              </div>
+            </div>
+          </div>
+
+          <!-- Entries / exports -->
+          <div class="struct-card" id="card-exports">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idautils.Entries()
+                <span class="cat cat-db">EXPORT</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">Entries</span>() -> <span
+                  class="typ">Iterator[Tuple[int, int, int, str]]</span></div>
+              <div class="fn-desc">Yields <code style="color:var(--amber)">(index, ordinal, ea, name)</code> for every
+                export in the binary. Combine with <code style="color:var(--green)">XrefsTo</code> to find which exports
+                are unused or suspicious.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-kw">for</span> <span class="py-var">idx</span>, <span
+                  class="py-var">ordinal</span>, <span class="py-var">ea</span>, <span class="py-var">name</span> <span
+                  class="py-kw">in</span> <span class="py-cls">idautils</span>.<span class="py-fn">Entries</span>():
+                <span class="py-fn">print</span>(<span class="py-str">f"export #{ordinal} {name} @ </span><span
+                  class="py-fn">{hex(ea)}</span><span class="py-str">"</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-imports -->
+
+        <!-- ═══════════════════ CONTROL FLOW ═══════════════════ -->
+        <div class="struct-section" id="sec-flow">
+          <div class="struct-section-title"><span class="dot"></span>CONTROL FLOW &amp; BASIC BLOCKS</div>
+
+          <div class="struct-card" id="card-blocks">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idaapi.FlowChart() / BasicBlock
+                <span class="cat cat-flow">CFG</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">FlowChart</span>(<span
+                  class="arg">f</span>: <span class="typ">func_t</span>, <span class="arg">flags</span>: <span
+                  class="typ">int</span> = <span class="py-num">0</span>) -> <span
+                  class="typ">Iterator[BasicBlock]</span></div>
+              <div class="fn-desc">Builds and yields <code style="color:var(--amber)">BasicBlock</code> objects for
+                every basic block in a function. Each block has <code style="color:var(--green)">.start_ea</code>, <code
+                  style="color:var(--green)">.end_ea</code>, <code style="color:var(--green)">.succs()</code>, and <code
+                  style="color:var(--green)">.preds()</code> for successor/predecessor navigation.</div>
+              <div class="code-label">&gt;_ EXAMPLE — count blocks and find large ones</div>
+              <div class="code-block"><span class="py-var">fn</span> = <span class="py-cls">idaapi</span>.<span
+                  class="py-fn">get_func</span>(<span class="py-fn">idc.here</span>())
+                <span class="py-var">chart</span> = <span class="py-cls">idaapi</span>.<span
+                  class="py-fn">FlowChart</span>(<span class="py-var">fn</span>)
+                <span class="py-var">blocks</span> = <span class="py-fn">list</span>(<span class="py-var">chart</span>)
+                <span class="py-fn">print</span>(<span class="py-str">f"</span><span
+                  class="py-fn">{len(blocks)}</span><span class="py-str"> basic blocks"</span>)
+
+                <span class="py-kw">for</span> <span class="py-var">bb</span> <span class="py-kw">in</span> <span
+                  class="py-var">blocks</span>:
+                <span class="py-var">size</span> = <span class="py-var">bb</span>.end_ea - <span
+                  class="py-var">bb</span>.start_ea
+                <span class="py-kw">if</span> <span class="py-var">size</span> > <span class="py-num">200</span>:
+                <span class="py-fn">print</span>(<span class="py-str">f"big block: </span><span
+                  class="py-fn">{hex(bb.start_ea)}</span><span class="py-str"> ({size} bytes)"</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-flow -->
+
+        <!-- ═══════════════════ TYPE INFO ═══════════════════ -->
+        <div class="struct-section" id="sec-types">
+          <div class="struct-section-title"><span class="dot"></span>TYPE INFORMATION</div>
+
+          <div class="struct-card" id="card-tinfo">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idaapi.get_tinfo() / apply_tinfo()
+                <span class="cat cat-type">TYPE</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">get_tinfo</span>(<span
+                  class="arg">ea</span>: <span class="typ">int</span>) -> <span class="typ">Tuple[bool, tinfo_t]</span>
+                <span class="kw">def</span> <span class="fn">apply_tinfo</span>(<span class="arg">ea</span>: <span
+                  class="typ">int</span>, <span class="arg">tif</span>: <span class="typ">tinfo_t</span>, <span
+                  class="arg">flags</span>: <span class="typ">int</span>) -> <span class="typ">bool</span>
+                <span class="kw">def</span> <span class="fn">parse_decl</span>(<span class="arg">tif</span>: <span
+                  class="typ">tinfo_t</span>, <span class="arg">til</span>, <span class="arg">decl</span>: <span
+                  class="typ">str</span>, <span class="arg">flags</span>: <span class="typ">int</span>) -> <span
+                  class="typ">bool</span>
+              </div>
+              <div class="fn-desc">Read and apply type information (function prototypes, struct types) to addresses.
+                Useful for applying known calling conventions or fixing IDA's type inference on obfuscated code.</div>
+              <div class="code-label">&gt;_ EXAMPLE — apply a prototype to a function</div>
+              <div class="code-block"><span class="py-var">tif</span> = <span class="py-cls">idaapi</span>.<span
+                  class="py-fn">tinfo_t</span>()
+                <span class="py-var">til</span> = <span class="py-cls">idaapi</span>.<span
+                  class="py-fn">get_idati</span>()
+                <span class="py-cls">idaapi</span>.<span class="py-fn">parse_decl</span>(<span
+                  class="py-var">tif</span>, <span class="py-var">til</span>,
+                <span class="py-str">"LPVOID __stdcall VirtualAlloc(LPVOID, SIZE_T, DWORD, DWORD);"</span>,
+                <span class="py-cls">idaapi</span>.PT_SIL)
+                <span class="py-cls">idaapi</span>.<span class="py-fn">apply_tinfo</span>(<span
+                  class="py-fn">idc.here</span>(), <span class="py-var">tif</span>, <span
+                  class="py-cls">idaapi</span>.TINFO_DEFINITE)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-types -->
+
+        <!-- ═══════════════════ DATABASE / MISC ═══════════════════ -->
+        <div class="struct-section" id="sec-db">
+          <div class="struct-section-title"><span class="dot"></span>IDB &amp; MISC</div>
+
+          <!-- get_inf_attr -->
+          <div class="struct-card" id="card-inf">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idc.get_inf_attr() — binary metadata
+                <span class="cat cat-db">IDB</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">get_inf_attr</span>(<span
+                  class="arg">attr</span>: <span class="typ">int</span>) -> <span class="typ">int</span></div>
+              <div class="fn-desc">Queries binary-level metadata from the IDB. Common attributes: <code
+                  style="color:var(--green)">INF_START_EA</code> (entry point), <code
+                  style="color:var(--green)">INF_PROCNAME</code> (processor), <code
+                  style="color:var(--green)">INF_FILETYPE</code>, <code style="color:var(--green)">INF_LFLAGS</code>
+                (bitness flags).</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-var">ep</span> = <span class="py-fn">idc.get_inf_attr</span>(<span
+                  class="py-cls">idc</span>.INF_START_EA)
+                <span class="py-var">bits</span> = <span class="py-num">64</span> <span class="py-kw">if</span> <span
+                  class="py-fn">idc.get_inf_attr</span>(<span class="py-cls">idc</span>.INF_LFLAGS) & <span
+                  class="py-cls">idc</span>.LFLG_64BIT <span class="py-kw">else</span> <span class="py-num">32</span>
+                <span class="py-fn">print</span>(<span class="py-str">f"Entry: </span><span
+                  class="py-fn">{hex(ep)}</span><span class="py-str"> Arch: {bits}-bit"</span>)
+              </div>
+            </div>
+          </div>
+
+          <!-- auto_wait / refresh_idaview -->
+          <div class="struct-card" id="card-auto">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idaapi.auto_wait() / refresh_idaview_anyway()
+                <span class="cat cat-db">IDB</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">auto_wait</span>() -> <span
+                  class="typ">None</span>
+                <span class="kw">def</span> <span class="fn">refresh_idaview_anyway</span>() -> <span
+                  class="typ">None</span>
+              </div>
+              <div class="fn-desc"><code style="color:var(--green)">auto_wait()</code> blocks until IDA's background
+                analysis queue is empty — call this after bulk patching or adding functions before querying results.
+                <code style="color:var(--green)">refresh_idaview_anyway()</code> forces the UI to redraw.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-com"># After making many changes, wait for re-analysis</span>
+                <span class="py-cls">idaapi</span>.<span class="py-fn">auto_mark_range</span>(<span
+                  class="py-var">start</span>, <span class="py-var">end</span>, <span
+                  class="py-cls">idaapi</span>.AU_CODE)
+                <span class="py-cls">idaapi</span>.<span class="py-fn">auto_wait</span>()
+                <span class="py-cls">idaapi</span>.<span class="py-fn">refresh_idaview_anyway</span>()
+              </div>
+            </div>
+          </div>
+
+          <!-- ask_yn / msg -->
+          <div class="struct-card" id="card-ui">
+            <div class="struct-card-header" onclick="toggleCard(this)">
+              <div class="card-title">
+                idaapi.ask_yn() / idc.msg()
+                <span class="cat cat-db">UI</span>
+              </div>
+              <span class="card-toggle">▶</span>
+            </div>
+            <div class="struct-card-body">
+              <div class="fn-sig"><span class="kw">def</span> <span class="fn">ask_yn</span>(<span
+                  class="arg">default</span>: <span class="typ">int</span>, <span class="arg">msg</span>: <span
+                  class="typ">str</span>) -> <span class="typ">int</span> <span class="com"># 1=yes, 0=no,
+                  -1=cancel</span>
+                <span class="kw">def</span> <span class="fn">msg</span>(<span class="arg">s</span>: <span
+                  class="typ">str</span>) -> <span class="typ">None</span> <span class="com"># print to output
+                  window</span>
+                <span class="kw">def</span> <span class="fn">ask_str</span>(<span class="arg">defval</span>: <span
+                  class="typ">str</span>, <span class="arg">hist</span>: <span class="typ">int</span>, <span
+                  class="arg">prompt</span>: <span class="typ">str</span>) -> <span class="typ">str</span>
+              </div>
+              <div class="fn-desc">Interactive UI helpers. <code style="color:var(--green)">msg()</code> is the IDA
+                equivalent of <code style="color:var(--amber)">print()</code> — it writes to the Output window. <code
+                  style="color:var(--green)">ask_yn</code> pops a Yes/No dialog. <code
+                  style="color:var(--green)">ask_str</code> prompts for a string input.</div>
+              <div class="code-label">&gt;_ EXAMPLE</div>
+              <div class="code-block"><span class="py-fn">idc.msg</span>(<span class="py-str">"[*] analysis
+                  started\n"</span>)
+                <span class="py-var">ans</span> = <span class="py-cls">idaapi</span>.<span
+                  class="py-fn">ask_yn</span>(<span class="py-num">1</span>, <span class="py-str">"Rename all sub_
+                  functions?"</span>)
+                <span class="py-kw">if</span> <span class="py-var">ans</span> == <span class="py-num">1</span>:
+                <span class="py-fn">idc.msg</span>(<span class="py-str">"renaming...\n"</span>)
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /sec-db -->
+
+      </main>
+    </div><!-- /ms-layout -->
+  </div><!-- /ms-wrap -->
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script>
+    // ── Footer links ──
+    (function () {
+      const fl = document.getElementById('footer-links');
+      const l = SITE_CONFIG.links;
+      if (l.github) fl.innerHTML += `<a href="${l.github}" target="_blank">GitHub</a>`;
+      if (l.linkedin) fl.innerHTML += `<a href="${l.linkedin}" target="_blank">LinkedIn</a>`;
+      if (l.email) fl.innerHTML += `<a href="${l.email}">Email</a>`;
+    })();
+
+    // ── Toggle cards ──
+    function toggleCard(header) {
+      header.closest('.struct-card').classList.toggle('open');
+    }
+
+    // ── Sidebar active link on scroll ──
+    const navItems = document.querySelectorAll('.ms-nav-item');
+    function setActive() {
+      let current = '';
+      document.querySelectorAll('.struct-section').forEach(sec => {
+        if (sec.getBoundingClientRect().top <= 80) current = sec.id;
+      });
+      navItems.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    }
+    window.addEventListener('scroll', setActive, { passive: true });
+
+    // ── Search ──
+    document.getElementById('ms-search-input').addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      if (!q) {
+        document.querySelectorAll('.struct-card, .struct-section').forEach(el => el.classList.remove('search-hidden'));
+        return;
+      }
+      document.querySelectorAll('.struct-card').forEach(card => {
+        card.classList.toggle('search-hidden', !card.textContent.toLowerCase().includes(q));
+      });
+      document.querySelectorAll('.struct-section').forEach(sec => {
+        const visible = [...sec.querySelectorAll('.struct-card')].some(c => !c.classList.contains('search-hidden'));
+        sec.classList.toggle('search-hidden', !visible);
+      });
+    });
+
+    // ── Smooth sidebar scrolling ──
+    document.querySelectorAll('.ms-nav-item[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+
+</html>

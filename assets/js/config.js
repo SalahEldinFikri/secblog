@@ -25,7 +25,7 @@ const SITE_CONFIG = {
     { label: "TOOLS", text: "IDA Pro · x64dbg · LLM · YARA · Wireshark" },
     { label: "AWARD", text: "#1 MENA Region — CSAW24 CTF Qualifications" },
     { label: "BLOG", text: "Malware writeups, IOCs, and YARA rules — all open source" },
-    { label: "NEW", text: "Check out my latest report on Achievements!" },
+    { label: "NEW", text: "Check out my latest report and achievements!" },
     { label: "CONTACT", text: "Feel free to reach out for collaborations or inquiries!" },
   ],
 

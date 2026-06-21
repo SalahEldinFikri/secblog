@@ -107,6 +107,27 @@ body.home-body::before {
   letter-spacing: .5px;
 }
 
+@media(max-width:860px) {
+  .home-body nav {
+    height: 64px;
+    padding: 0 1.2rem;
+  }
+
+  .home-body .logo-sub {
+    display: none;
+  }
+
+  .home-body nav .nav-links {
+    top: 64px;
+    background: rgba(6, 11, 20, 1);
+  }
+
+  .home-body .nav-toggle {
+    border-color: var(--atl-border);
+    color: var(--atl-teal);
+  }
+}
+
 /* ── HERO ──────────────────────────────────────────────── */
 .atl-hero {
   position: relative;

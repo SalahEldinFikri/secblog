@@ -11,6 +11,10 @@
 <body>
 
   <nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
     <div class="logo">🦇 <span>//</span> Mr_MaTriX</div>
     <div class="nav-links">
       <a href="index.html" class="active">Home</a>
@@ -21,6 +25,8 @@
       <a href="malware-structures.html" class="active">Structures</a>
       <a href="achievements.html" class="active">Achievements</a>
       <a href="about.html" class="active">About Me</a>
+    
+      <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
     </div>
     <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
   </nav>
@@ -32,7 +38,7 @@
     </div>
 
     <div class="about-band" style="border:1px solid var(--border);padding:2rem;background:var(--surface);">
-      <div class="about-inner" style="grid-template-columns:1fr 2fr;">
+      <div class="about-inner">
         <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
           <img src="assets/profile.jpg" alt="SalahEldin Kamil"
             style="width:110px;height:110px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid #00ff9d;" />
@@ -68,6 +74,26 @@
 
   <script src="assets/js/config.js"></script>
   <script src="assets/js/about-page.js"></script>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('nav-toggle');
+      var links = document.querySelector('nav .nav-links');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function () {
+        var isOpen = links.classList.toggle('open');
+        btn.classList.toggle('open', isOpen);
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          links.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
+  </script>
 </body>
 
 </html>

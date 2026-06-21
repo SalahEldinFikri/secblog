@@ -4,6 +4,20 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+#poly-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
 :root {
   --bg: #0a0e17;
   --surface: #111827;
@@ -30,6 +44,11 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 nav {
@@ -66,6 +85,7 @@ nav {
   color: var(--muted);
   letter-spacing: .5px;
   transition: color .2s;
+  white-space: nowrap;
 }
 
 .nav-links a:hover,
@@ -523,13 +543,113 @@ footer {
   color: var(--green);
 }
 
-@media(max-width:700px) {
-  .about-inner {
-    grid-template-columns: 1fr;
+/* ── MOBILE NAV (hamburger) ─────────────────────────────── */
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--green);
+  width: 38px;
+  height: 38px;
+  border-radius: 4px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  order: 3;
+}
+
+.logo { order: 1; }
+nav .nav-links { order: 2; }
+nav .nav-cta { order: 3; }
+
+.nav-cta-mobile {
+  display: none;
+}
+
+.nav-toggle svg { display: block; }
+
+.nav-toggle .icon-close { display: none; }
+.nav-toggle.open .icon-open { display: none; }
+.nav-toggle.open .icon-close { display: block; }
+
+@media(max-width:1180px) and (min-width:861px) {
+  nav {
+    padding: 0 1.25rem;
+  }
+
+  .nav-links {
+    gap: 1rem;
+  }
+
+  .nav-links a {
+    font-size: 12.5px;
+  }
+}
+
+@media(max-width:860px) {
+  .nav-toggle {
+    display: flex;
   }
 
   nav .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background: rgba(10, 14, 23, 1);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .25s ease;
+    z-index: 99;
+  }
+
+  nav .nav-links.open {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  nav .nav-links a {
+    padding: 14px 1.5rem;
+    border-bottom: 1px solid rgba(31,45,69,.5);
+    font-size: 14px;
+  }
+
+  nav .nav-cta {
     display: none;
+  }
+
+  nav .nav-links .nav-cta-mobile {
+    display: block;
+    margin: 10px 1.5rem;
+    text-align: center;
+  }
+}
+
+/* ── RESPONSIVE TABLES: any table that can't fit scrolls within itself ── */
+.ioc-table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+.ioc-table thead,
+.ioc-table tbody,
+.ioc-table tr {
+  display: table;
+  width: 100%;
+  table-layout: auto;
+}
+
+@media(max-width:700px) {
+  .about-inner {
+    grid-template-columns: 1fr;
   }
 
   .hero {
@@ -539,7 +659,27 @@ footer {
   .section {
     padding: 2rem 1.5rem;
   }
+
+  nav {
+    padding: 0 1.25rem;
+  }
+
+  .logo {
+    font-size: 13px;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.6rem, 7vw, 2.4rem);
+  }
+
+  .ioc-table th,
+  .ioc-table td {
+    padding: 8px 0.85rem;
+    font-size: 11px;
+    white-space: nowrap;
+  }
 }
+
 /* ── IOC TABLE (homepage) ───────────────────────────────── */
 .ioc-table {
   width: 100%;
@@ -654,4 +794,11 @@ footer {
 .yara-copy-btn-home:hover {
   border-color: var(--green);
   color: var(--green);
+}
+
+@media(max-width:700px) {
+  .yara-copy-btn-home {
+    padding: 9px 14px;
+    font-size: 11px;
+  }
 }

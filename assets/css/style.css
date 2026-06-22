@@ -631,20 +631,11 @@ nav .nav-cta { order: 3; }
   }
 }
 
-/* ── RESPONSIVE TABLES: any table that can't fit scrolls within itself ── */
-.ioc-table {
-  display: block;
+/* ── RESPONSIVE TABLES: wrap ioc-table in a scrollable container on mobile ── */
+.ioc-table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   max-width: 100%;
-}
-
-.ioc-table thead,
-.ioc-table tbody,
-.ioc-table tr {
-  display: table;
-  width: 100%;
-  table-layout: auto;
 }
 
 @media(max-width:700px) {

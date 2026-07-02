@@ -21,18 +21,25 @@
 
   <nav>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
-      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
     </button>
-    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="logo">&gt;_ <span>//</span> MR_MATRIX</div>
     <div class="nav-links">
-      <a href="../index.html">Home</a>
-      <a href="../reports.html">The Ruins</a>
-      <a href="../ioc-feed.html">The Relics</a>
-      <a href="../yara-feed.html">The Observatory</a>
-      <a href="../achievements.html">The Expeditions</a>
-      <a href="../about.html">About Me</a>
-    
+      <a href="../index.html" class="active">Home</a>
+      <a href="../reports.html" class="active">Reports</a>
+      <a href="../APT.html" class="active">APT</a>
+      <a href="../ioc-feed.html" class="active">IOCs</a>
+      <a href="../yara-feed.html" class="active">YARA Rules</a>
+      <a href="../siem-reference.html" class="active">SIEM Reference</a>
+      <a href="../malware-structures.html" class="active">Structures</a>
+      <a href="../achievements.html" class="active">Achievements</a>
+      <a href="../about.html" class="active">About Me</a>
+
       <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
     </div>
     <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
@@ -71,52 +78,54 @@
         <p class="img-caption">Figure 1: Malicious PDF overview — embedded JavaScript, AcroForm payload, and C2
           structure</p>
       </div>
-      <div class="ioc-table-wrap"><table class="ioc-table" style="margin-top:1rem;">
-        <thead>
-          <tr>
-            <th>FINDING</th>
-            <th>DETAIL</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="color:var(--red)">Embedded JavaScript</td>
-            <td>Executes automatically, initiates multi-stage infection chain</td>
-          </tr>
-          <tr>
-            <td style="color:var(--red)">Heavy Obfuscation</td>
-            <td>JSFuck-style techniques and string-mapping function to hide indicators</td>
-          </tr>
-          <tr>
-            <td style="color:var(--amber)">Hidden Payload in AcroForm</td>
-            <td>Base64-encoded data stored in form field <code>(btn1)</code>, retrieved at runtime</td>
-          </tr>
-          <tr>
-            <td style="color:var(--amber)">Multi-layer Decoding</td>
-            <td>Base64 → byte conversion → AES-CTR decryption → zlib/deflate decompression</td>
-          </tr>
-          <tr>
-            <td style="color:var(--red)">C2 Communication</td>
-            <td>Hardcoded endpoint: <span class="ioc-ip"><code>169[.]40[.]2[.]68[:]45191</code></span></td>
-          </tr>
-          <tr>
-            <td style="color:var(--blue)">System Fingerprinting</td>
-            <td>Collects OS, Adobe Reader version, platform, and environment details</td>
-          </tr>
-          <tr>
-            <td style="color:var(--muted)">Stealth &amp; Evasion</td>
-            <td>Hides PDF layers <code>(getOCGs)</code>, delays execution <code>(setTimeOut)</code></td>
-          </tr>
-          <tr>
-            <td style="color:var(--muted)">Continuous Polling</td>
-            <td>setInterval repeatedly checks for and processes incoming payload data</td>
-          </tr>
-          <tr>
-            <td style="color:var(--red)">Dynamic Execution</td>
-            <td>Final payload executed via runtime eval: <code>eval(global.final_js)</code></td>
-          </tr>
-        </tbody>
-      </table></div>
+      <div class="ioc-table-wrap">
+        <table class="ioc-table" style="margin-top:1rem;">
+          <thead>
+            <tr>
+              <th>FINDING</th>
+              <th>DETAIL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--red)">Embedded JavaScript</td>
+              <td>Executes automatically, initiates multi-stage infection chain</td>
+            </tr>
+            <tr>
+              <td style="color:var(--red)">Heavy Obfuscation</td>
+              <td>JSFuck-style techniques and string-mapping function to hide indicators</td>
+            </tr>
+            <tr>
+              <td style="color:var(--amber)">Hidden Payload in AcroForm</td>
+              <td>Base64-encoded data stored in form field <code>(btn1)</code>, retrieved at runtime</td>
+            </tr>
+            <tr>
+              <td style="color:var(--amber)">Multi-layer Decoding</td>
+              <td>Base64 → byte conversion → AES-CTR decryption → zlib/deflate decompression</td>
+            </tr>
+            <tr>
+              <td style="color:var(--red)">C2 Communication</td>
+              <td>Hardcoded endpoint: <span class="ioc-ip"><code>169[.]40[.]2[.]68[:]45191</code></span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--blue)">System Fingerprinting</td>
+              <td>Collects OS, Adobe Reader version, platform, and environment details</td>
+            </tr>
+            <tr>
+              <td style="color:var(--muted)">Stealth &amp; Evasion</td>
+              <td>Hides PDF layers <code>(getOCGs)</code>, delays execution <code>(setTimeOut)</code></td>
+            </tr>
+            <tr>
+              <td style="color:var(--muted)">Continuous Polling</td>
+              <td>setInterval repeatedly checks for and processes incoming payload data</td>
+            </tr>
+            <tr>
+              <td style="color:var(--red)">Dynamic Execution</td>
+              <td>Final payload executed via runtime eval: <code>eval(global.final_js)</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Static Analysis -->
@@ -579,72 +588,74 @@ var _0x25ecb7 = [
     <!-- MITRE -->
     <div class="report-section">
       <h2>9. MITRE ATT&amp;CK</h2>
-      <div class="ioc-table-wrap"><table class="ioc-table" style="margin-top:1rem;">
-        <thead>
-          <tr>
-            <th>TACTIC</th>
-            <th>TECHNIQUE ID</th>
-            <th>NAME</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Initial Access</td>
-            <td>T1566.001</td>
-            <td>Phishing: Spearphishing Attachment</td>
-          </tr>
-          <tr>
-            <td>Execution</td>
-            <td>T1059.007</td>
-            <td>JavaScript</td>
-          </tr>
-          <tr>
-            <td>Execution</td>
-            <td>T1204.002</td>
-            <td>User Execution: Malicious File</td>
-          </tr>
-          <tr>
-            <td>Execution</td>
-            <td>T1059</td>
-            <td>Command and Scripting Interpreter</td>
-          </tr>
-          <tr>
-            <td>Defense Evasion</td>
-            <td>T1027</td>
-            <td>Obfuscated Files or Information</td>
-          </tr>
-          <tr>
-            <td>Defense Evasion</td>
-            <td>T1140</td>
-            <td>Deobfuscate/Decode Files or Information</td>
-          </tr>
-          <tr>
-            <td>Defense Evasion</td>
-            <td>T1027.002</td>
-            <td>Software Packing</td>
-          </tr>
-          <tr>
-            <td>Discovery</td>
-            <td>T1082</td>
-            <td>System Information Discovery</td>
-          </tr>
-          <tr>
-            <td>Command &amp; Control</td>
-            <td>T1071.001</td>
-            <td>Application Layer Protocol: HTTP</td>
-          </tr>
-          <tr>
-            <td>Command &amp; Control</td>
-            <td>T1105</td>
-            <td>Ingress Tool Transfer</td>
-          </tr>
-          <tr>
-            <td>Command &amp; Control</td>
-            <td>T1571</td>
-            <td>Non-Standard Port</td>
-          </tr>
-        </tbody>
-      </table></div>
+      <div class="ioc-table-wrap">
+        <table class="ioc-table" style="margin-top:1rem;">
+          <thead>
+            <tr>
+              <th>TACTIC</th>
+              <th>TECHNIQUE ID</th>
+              <th>NAME</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Initial Access</td>
+              <td>T1566.001</td>
+              <td>Phishing: Spearphishing Attachment</td>
+            </tr>
+            <tr>
+              <td>Execution</td>
+              <td>T1059.007</td>
+              <td>JavaScript</td>
+            </tr>
+            <tr>
+              <td>Execution</td>
+              <td>T1204.002</td>
+              <td>User Execution: Malicious File</td>
+            </tr>
+            <tr>
+              <td>Execution</td>
+              <td>T1059</td>
+              <td>Command and Scripting Interpreter</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>T1027</td>
+              <td>Obfuscated Files or Information</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>T1140</td>
+              <td>Deobfuscate/Decode Files or Information</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>T1027.002</td>
+              <td>Software Packing</td>
+            </tr>
+            <tr>
+              <td>Discovery</td>
+              <td>T1082</td>
+              <td>System Information Discovery</td>
+            </tr>
+            <tr>
+              <td>Command &amp; Control</td>
+              <td>T1071.001</td>
+              <td>Application Layer Protocol: HTTP</td>
+            </tr>
+            <tr>
+              <td>Command &amp; Control</td>
+              <td>T1105</td>
+              <td>Ingress Tool Transfer</td>
+            </tr>
+            <tr>
+              <td>Command &amp; Control</td>
+              <td>T1571</td>
+              <td>Non-Standard Port</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- References -->

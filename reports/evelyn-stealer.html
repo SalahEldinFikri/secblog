@@ -13,18 +13,25 @@
 
   <nav>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
-      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
     </button>
-    <div class="logo">&gt;_ <span>//</span> SECBLOG</div>
+    <div class="logo">&gt;_ <span>//</span> MR_MATRIX</div>
     <div class="nav-links">
-      <a href="../index.html">Home</a>
-      <a href="../reports.html">The Ruins</a>
-      <a href="../ioc-feed.html">The Relics</a>
-      <a href="../yara-feed.html">The Observatory</a>
-      <a href="../achievements.html">The Expeditions</a>
-      <a href="../about.html">About Me</a>
-    
+      <a href="../index.html" class="active">Home</a>
+      <a href="../reports.html" class="active">Reports</a>
+      <a href="../APT.html" class="active">APT</a>
+      <a href="../ioc-feed.html" class="active">IOCs</a>
+      <a href="../yara-feed.html" class="active">YARA Rules</a>
+      <a href="../siem-reference.html" class="active">SIEM Reference</a>
+      <a href="../malware-structures.html" class="active">Structures</a>
+      <a href="../achievements.html" class="active">Achievements</a>
+      <a href="../about.html" class="active">About Me</a>
+
       <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
     </div>
     <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
@@ -303,67 +310,69 @@
 
     <div class="report-section">
       <h2>9. MITRE ATT&amp;CK</h2>
-      <div class="ioc-table-wrap"><table class="ioc-table" style="margin-top:1rem;">
-        <thead>
-          <tr>
-            <th>TACTIC</th>
-            <th>TECHNIQUE ID</th>
-            <th>NAME</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Initial Access</td>
-            <td>T1566.001</td>
-            <td>Phishing: Attachment</td>
-          </tr>
-          <tr>
-            <td>Execution</td>
-            <td>T1059.001</td>
-            <td>PowerShell</td>
-          </tr>
-          <tr>
-            <td>Execution</td>
-            <td>T1106</td>
-            <td>Native API</td>
-          </tr>
-          <tr>
-            <td>Defense Evasion</td>
-            <td>T1027</td>
-            <td>Obfuscated Files or Information</td>
-          </tr>
-          <tr>
-            <td>Defense Evasion</td>
-            <td>T1564.003</td>
-            <td>Hidden Window</td>
-          </tr>
-          <tr>
-            <td>Defense Evasion</td>
-            <td>T1497.001</td>
-            <td>Virtualization/Sandbox Evasion</td>
-          </tr>
-          <tr>
-            <td>Privilege Abuse</td>
-            <td>T1055.012</td>
-            <td>Process Hollowing</td>
-          </tr>
-          <tr>
-            <td>Credential Access</td>
-            <td>T1555</td>
-            <td>Credentials from Password Stores</td>
-          </tr>
-          <tr>
-            <td>Collection</td>
-            <td>T1113</td>
-            <td>Screen Capture</td>
-          </tr>
-          <tr>
-            <td>Exfiltration</td>
-            <td>T1041</td>
-            <td>Exfiltration Over C2 Channel</td>
-          </tr>
-        </tbody>
-      </table></div>
+      <div class="ioc-table-wrap">
+        <table class="ioc-table" style="margin-top:1rem;">
+          <thead>
+            <tr>
+              <th>TACTIC</th>
+              <th>TECHNIQUE ID</th>
+              <th>NAME</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Initial Access</td>
+              <td>T1566.001</td>
+              <td>Phishing: Attachment</td>
+            </tr>
+            <tr>
+              <td>Execution</td>
+              <td>T1059.001</td>
+              <td>PowerShell</td>
+            </tr>
+            <tr>
+              <td>Execution</td>
+              <td>T1106</td>
+              <td>Native API</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>T1027</td>
+              <td>Obfuscated Files or Information</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>T1564.003</td>
+              <td>Hidden Window</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>T1497.001</td>
+              <td>Virtualization/Sandbox Evasion</td>
+            </tr>
+            <tr>
+              <td>Privilege Abuse</td>
+              <td>T1055.012</td>
+              <td>Process Hollowing</td>
+            </tr>
+            <tr>
+              <td>Credential Access</td>
+              <td>T1555</td>
+              <td>Credentials from Password Stores</td>
+            </tr>
+            <tr>
+              <td>Collection</td>
+              <td>T1113</td>
+              <td>Screen Capture</td>
+            </tr>
+            <tr>
+              <td>Exfiltration</td>
+              <td>T1041</td>
+              <td>Exfiltration Over C2 Channel</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div class="report-section">

@@ -24,16 +24,60 @@ const REPORTS = [
   // },
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
+
   {
-    slug: "qardar",
-    title: "QRadar101 CyberDefenders - Analyze diverse log sources in QRadar SIEM to identify compromised systems, detect malicious tools, and reconstruct the sequence of attack events.",
-    date: "2026-05-18",
-    tag: "LAB",
-    severity: "TRAINING",
-    readTime: "20 MIN READ",
-    excerpt: "This investigation focuses on analyzing multiple log sources within IBM QRadar, including Sysmon, PowerShell Operational logs, Zeek, and Suricata, to identify compromised hosts, detect attacker tools and techniques, and reconstruct the complete intrusion timeline. The analysis uncovered a phishing-based initial compromise, malicious PowerShell execution, persistence through registry Run keys, ICMP network discovery, lateral movement using Impacket wmiexec.py, privilege escalation via a rogue domain admin account, and data exfiltration using curl to an external command-and-control server.",
-    iocs: null,
-    yara: null,
+    slug: "lazarus-3cx-supply-chain",
+    title: "Lazarus Group Supply Chain Attack on 3CX Desktop App",
+    date: "2025-11-20",
+  },
+
+
+  {
+    slug: "lazarus",
+    title: "Lazarus Group: Threat Actor Profile & 3CX Supply Chain Attack - Complete Technical Analysis",
+    date: "2026-07-02",
+    tag: "APT",
+    severity: "CRITICAL",
+    readTime: "40 MIN READ",
+    excerpt: "An in-depth technical analysis of the Lazarus Group and its 3CX software supply chain attack. The report traces the campaign from the initial X_TRADER compromise through the trojanized 3CX DesktopApp, malicious ffmpeg.dll, GitHub dead-drop resolver, and the VEILEDSIGNAL backdoor. It includes full reverse engineering, execution flow, persistence mechanisms, malware capabilities, indicators of compromise (IOCs), and complete MITRE ATT&CK mapping for the entire campaign.",
+    iocs: [
+      { type: "SHA256", indicator: "DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC", family: "3CXDesktopApp.exe", confidence: "HIGH" },
+      { type: "SHA256", indicator: "7290A9AEFBB759C9B40EF8A197CF20FD098FD74DD413C4D9D81E77A31E643F49", family: "Trojanized ffmpeg.dll", confidence: "HIGH" },
+      { type: "SHA256", indicator: "11BE1803E2E307B647A8A7E02D128335C448FF741BF06BF52B332E0BBF423B03", family: "Trojanized d3dcompiler_47.dll", confidence: "HIGH" },
+      { type: "SHA256", indicator: "8AB3A5EAAF8C296080FADF56B265194681D7DA5DA7C02562953A4CB60E147423", family: "VEILEDSIGNAL", confidence: "HIGH" },
+
+      { type: "MD5", indicator: "00A43D64F9B5187A1E1F922B99B09B77", family: "X_TRADER", confidence: "HIGH" },
+
+      { type: "Directory", indicator: "C:\\ProgramData\\TPM\\", family: "X_TRADER", confidence: "MEDIUM" },
+      { type: "File", indicator: "C:\\ProgramData\\TPM\\TpmVscMgrSvr.exe", family: "X_TRADER", confidence: "MEDIUM" },
+      { type: "File", indicator: "C:\\ProgramData\\TPM\\devobj.dll", family: "X_TRADER", confidence: "MEDIUM" },
+      { type: "File", indicator: "X_TRADER-ja.mst", family: "X_TRADER", confidence: "MEDIUM" },
+      { type: "File", indicator: "%AppData%\\3CXDesktopApp\\config.json", family: "VEILEDSIGNAL", confidence: "MEDIUM" },
+
+      { type: "Scheduled Task", indicator: "Tpm-VscMgr", family: "Persistence", confidence: "MEDIUM" },
+      { type: "Event", indicator: "AVMonitorRefreshEvent", family: "Trojanized ffmpeg.dll", confidence: "MEDIUM" },
+
+      { type: "RC4 Key", indicator: "3jB(2bsG#@c7", family: "Trojanized ffmpeg.dll", confidence: "MEDIUM" },
+      { type: "XOR Key", indicator: "0x0DA39F274", family: "X_TRADER", confidence: "MEDIUM" },
+
+      { type: "GitHub", indicator: "https://raw[.]githubusercontent[.]com/IconStorages/images/main/", family: "Dead Drop Resolver", confidence: "HIGH" },
+
+      { type: "Domain", indicator: "msstorageazure[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "officestoragebox[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "visualstudiofactory[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "azuredeploystore[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "msstorageboxes[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "officeaddons[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "sourceslabs[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "zacharryblogs[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "pbxcloudeservices[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "akamaitechcloudservices[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "azureonlinestorage[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "msedgepackageinfo[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "glcloudservice[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+      { type: "Domain", indicator: "pbxsources[.]com", family: "Dead Drop Resolver", confidence: "MEDIUM" },
+    ],
+    yara: false,
   },
 
   {

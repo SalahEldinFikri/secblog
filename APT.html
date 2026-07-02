@@ -10,6 +10,130 @@
   <link rel="stylesheet" href="assets/css/style.css" />
 
   <style>
+    /* ── RESEARCH INTRO ── */
+    .research-intro {
+      max-width: 1100px;
+      margin: 2.5rem 0 0;
+    }
+
+    .ri-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    .ri-tab {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      padding: 9px 18px;
+      cursor: pointer;
+      color: var(--muted, #64748b);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color .2s, border-color .2s;
+      user-select: none;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+
+    .ri-tab:hover {
+      color: #00ff9d;
+    }
+
+    .ri-tab.active {
+      color: #00ff9d;
+      border-bottom-color: #00ff9d;
+    }
+
+    .ri-panels {
+      padding: 1.5rem 0 .5rem;
+    }
+
+    .ri-panel {
+      display: none;
+    }
+
+    .ri-panel.active {
+      display: block;
+    }
+
+    .ri-panel p {
+      color: var(--text, #e2e8f0);
+      font-size: 14px;
+      line-height: 1.9;
+      margin-bottom: 1rem;
+      max-width: 1000px;
+    }
+
+    .ri-panel p:last-child {
+      margin-bottom: 0;
+    }
+
+    .ri-panel ol,
+    .ri-panel ul {
+      padding-left: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .ri-panel li {
+      color: var(--text, #e2e8f0);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .ri-panel li::marker {
+      color: #00ff9d;
+    }
+
+    .ri-highlight {
+      color: #00ff9d;
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    .ri-phase {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 1rem;
+      align-items: flex-start;
+    }
+
+    .ri-phase-num {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: #00ff9d;
+      background: rgba(0, 255, 157, .08);
+      border: 1px solid rgba(0, 255, 157, .2);
+      padding: 3px 8px;
+      white-space: nowrap;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .ri-phase p {
+      margin: 0;
+    }
+
+    .ri-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+      max-width: 1100px;
+    }
+
+    @media(max-width:600px) {
+      .ri-tab {
+        padding: 8px 12px;
+        font-size: 10px;
+      }
+    }
+
     /* ======================================== */
     /* APT GRID */
     /* ======================================== */
@@ -240,20 +364,36 @@
 
   <nav>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
-      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
     </button>
-    <div class="logo">🦇 <span>//</span> Mr_MaTriX</div>
+    <div class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+          <path d="M12 2v13M12 2L7 7M12 2l5 5M5 9c0 3 2 5 2 5s-3 0-3 4 3 6 3 6M19 9c0 3-2 5-2 5s3 0 3 4-3 6-3 6"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <div>
+        Mr_MaTriX
+        <span class="logo-sub">SECBLOG // THREAT RESEARCH</span>
+      </div>
+    </div>
     <div class="nav-links">
       <a href="index.html" class="active">Home</a>
       <a href="reports.html" class="active">Reports</a>
+      <a href="APT.html" class="active">APTs</a>
       <a href="ioc-feed.html" class="active">IOCs</a>
       <a href="yara-feed.html" class="active">YARA Rules</a>
       <a href="siem-reference.html" class="active">SIEM Reference</a>
       <a href="malware-structures.html" class="active">Structures</a>
       <a href="achievements.html" class="active">Achievements</a>
       <a href="about.html" class="active">About Me</a>
-    
+
       <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
     </div>
     <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
@@ -282,288 +422,235 @@
 
     </p>
 
+    <!-- ══ RESEARCH INTRODUCTION ══ -->
+    <div class="research-intro">
+
+      <div class="ri-tabs">
+        <button class="ri-tab active" onclick="switchTab(this,'abstract')">// ABSTRACT</button>
+        <button class="ri-tab" onclick="switchTab(this,'objectives')">// RESEARCH OBJECTIVES</button>
+        <button class="ri-tab" onclick="switchTab(this,'methodology')">// METHODOLOGY</button>
+      </div>
+
+      <div class="ri-panels">
+
+        <!-- ABSTRACT -->
+        <div class="ri-panel active" id="panel-abstract">
+          <p>
+            This research presents a series of technical analyses of Advanced Persistent Threat (APT) groups —
+            nation-state actors, ransomware operators, and financially motivated threat actors responsible for some of
+            the most impactful cyber operations on record. Each entry combines threat intelligence with practical
+            malware analysis, examining malware samples attributed to the group through both <span
+              class="ri-highlight">static</span> and <span class="ri-highlight">dynamic analysis</span> techniques.
+            Reverse engineering is performed to understand the malware's internal functionality, including its execution
+            flow, persistence mechanisms, command-and-control (C2) communication, anti-analysis techniques, and overall
+            capabilities.
+          </p>
+          <p>
+            Based on the analysis, Indicators of Compromise (IOCs) are extracted and mapped to the <span
+              class="ri-highlight">MITRE ATT&CK</span> framework to provide a structured view of the adversary's
+            tactics, techniques, and procedures (TTPs). Detection artifacts such as YARA rules are developed to
+            facilitate malware identification and support threat hunting and incident response activities. The objective
+            of this research collection is to provide a comprehensive, practitioner-focused understanding of each threat
+            actor while demonstrating a repeatable malware analysis workflow applicable to future threat research.
+          </p>
+        </div>
+
+        <!-- OBJECTIVES -->
+        <div class="ri-panel" id="panel-objectives">
+          <p>The primary objectives of each threat actor research entry are:</p>
+          <ol>
+            <li>Provide an overview of the threat actor, including its history, attribution, objectives, and major cyber
+              campaigns.</li>
+            <li>Examine the group's tactics, techniques, and procedures (TTPs) using publicly available threat
+              intelligence and original analysis.</li>
+            <li>Analyze malware samples associated with the selected threat actor through static and dynamic analysis.
+            </li>
+            <li>Reverse engineer the malware to understand its internal architecture and functionality.</li>
+            <li>Identify persistence mechanisms, anti-analysis techniques, command-and-control protocols, and other
+              malicious capabilities.</li>
+            <li>Extract Indicators of Compromise (IOCs) including file hashes, domains, IP addresses, registry keys,
+              mutexes, and network artifacts.</li>
+            <li>Map observed behaviors to the <span class="ri-highlight">MITRE ATT&CK</span> framework.</li>
+            <li>Develop YARA rules capable of detecting the analyzed malware samples.</li>
+            <li>Document the complete analysis process to serve as a reference for malware analysts, reverse engineers,
+              and cybersecurity researchers.</li>
+          </ol>
+        </div>
+
+        <!-- METHODOLOGY -->
+        <div class="ri-panel" id="panel-methodology">
+          <p>Each research entry follows a structured malware analysis methodology consisting of multiple phases:</p>
+
+          <div class="ri-phase">
+            <span class="ri-phase-num">PHASE 01</span>
+            <p><strong style="color:#e2e8f0;">Threat Intelligence Collection</strong> — Collecting threat intelligence
+              from public reports, academic publications, security vendors, and malware repositories to establish
+              background information on the threat actor and the selected malware family.</p>
+          </div>
+
+          <div class="ri-phase">
+            <span class="ri-phase-num">PHASE 02</span>
+            <p><strong style="color:#e2e8f0;">Sample Collection &amp; Lab Setup</strong> — Representative malware
+              samples are collected and analyzed within an isolated virtual laboratory to ensure safe execution.</p>
+          </div>
+
+          <div class="ri-phase">
+            <span class="ri-phase-num">PHASE 03</span>
+            <p><strong style="color:#e2e8f0;">Static Analysis</strong> — Examining Portable Executable (PE) structures,
+              imported functions, embedded resources, strings, configurations, and indicators of obfuscation without
+              executing the sample.</p>
+          </div>
+
+          <div class="ri-phase">
+            <span class="ri-phase-num">PHASE 04</span>
+            <p><strong style="color:#e2e8f0;">Dynamic Analysis</strong> — Observing runtime behavior including process
+              creation, file system modifications, registry changes, persistence mechanisms, and network communications
+              in a controlled environment.</p>
+          </div>
+
+          <div class="ri-phase">
+            <span class="ri-phase-num">PHASE 05</span>
+            <p><strong style="color:#e2e8f0;">Reverse Engineering</strong> — Using professional disassembly and
+              debugging tools to understand the malware's internal logic, configuration parsing, encryption routines,
+              command handlers, and anti-analysis features.</p>
+          </div>
+
+          <div class="ri-phase">
+            <span class="ri-phase-num">PHASE 06</span>
+            <p><strong style="color:#e2e8f0;">IOC Extraction &amp; ATT&CK Mapping</strong> — Correlating static and
+              dynamic findings to extract IOCs, document capabilities, and map behaviors to the MITRE ATT&CK framework.
+            </p>
+          </div>
+
+          <div class="ri-phase">
+            <span class="ri-phase-num">PHASE 07</span>
+            <p><strong style="color:#e2e8f0;">Detection Engineering</strong> — Developing and validating YARA detection
+              rules to identify the analyzed malware samples and support threat hunting and incident response
+              activities.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <hr class="ri-divider" />
+
+    <!-- ══ APT LIST ══ -->
+    <div class="section-header" style="margin-top:0;">
+      <span class="section-title">// APT RESEARCH ENTRIES</span>
+    </div>
+
     <!-- ======================================== -->
     <!-- APT LIST -->
     <!-- ======================================== -->
+    <!-- ======================================== -->
+    <!-- LAZARUS -->
+    <!-- ======================================== -->
 
-    <div class="apt-grid">
+    <div class="apt-card">
 
-      <!-- ======================================== -->
-      <!-- APT28 -->
-      <!-- ======================================== -->
+      <!-- Preview -->
+      <div class="apt-preview" onclick="toggleAPT(this)">
 
-      <div class="apt-card">
+        <div class="apt-header">
 
-        <div class="apt-preview" onclick="toggleAPT(this)">
+          <img src="apts/lazarus.jpg" alt="Lazarus" class="apt-logo">
 
-          <div class="apt-header">
+          <div>
 
-            <img src="assets/apts/apt28.png" alt="APT28" class="apt-logo">
-
-            <div>
-
-              <div class="apt-name">
-                APT28
-              </div>
-
-              <div class="apt-alias">
-                Fancy Bear / Sofacy / STRONTIUM
-              </div>
-
+            <div class="apt-name">
+              Lazarus Group
             </div>
 
-          </div>
+            <div class="apt-alias">
+              Hidden Cobra / Zinc
+            </div>
 
-          <div class="apt-description">
-
-            Russian state-linked threat actor associated
-            with cyber espionage,
-            phishing campaigns,
-            malware delivery,
-            credential theft,
-            and government targeting.
-
-          </div>
-
-          <div class="apt-meta">
-
-            <span class="apt-tag">ESPIONAGE</span>
-            <span class="apt-tag">PHISHING</span>
-            <span class="apt-tag">C2</span>
-            <span class="apt-tag">MALWARE</span>
-
-          </div>
-
-          <div class="threat-level">
-            HIGH RISK
-          </div>
-
-          <div class="expand-text">
-            CLICK TO EXPAND ↓
           </div>
 
         </div>
 
-        <!-- DETAILS -->
+        <div class="apt-description">
+          North Korean threat actor associated with destructive malware,
+          cryptocurrency theft, ransomware, and financial attacks.
+        </div>
 
-        <div class="apt-details">
+        <div class="apt-meta">
+          <span class="apt-tag">RANSOMWARE</span>
+          <span class="apt-tag">CRYPTO</span>
+          <span class="apt-tag">BANKING</span>
+        </div>
 
-          <div class="details-section">
+        <div class="threat-level">
+          CRITICAL
+        </div>
 
-            <h3>OVERVIEW</h3>
-
-            <p>
-              APT28 is known for targeting
-              governments, military organizations,
-              journalists, media companies,
-              and research institutions using
-              spear-phishing and malware deployment.
-            </p>
-
-          </div>
-
-          <div class="details-section">
-
-            <h3>KNOWN MALWARE</h3>
-
-            <ul>
-              <li>X-Agent</li>
-              <li>Zebrocy</li>
-              <li>Sofacy</li>
-              <li>GAMEFISH</li>
-            </ul>
-
-          </div>
-
-          <div class="details-section">
-
-            <h3>MITRE ATT&CK</h3>
-
-            <div class="apt-meta">
-
-              <span class="apt-tag">T1566</span>
-              <span class="apt-tag">T1059</span>
-              <span class="apt-tag">T1003</span>
-              <span class="apt-tag">T1071</span>
-
-            </div>
-
-          </div>
-
-          <div class="details-section">
-
-            <h3>REFERENCES</h3>
-
-            <a href="#" class="apt-link">
-
-              VIEW FULL REPORT →
-
-            </a>
-
-          </div>
-
+        <div class="expand-text">
+          CLICK TO EXPAND ↓
         </div>
 
       </div>
 
-      <!-- ======================================== -->
-      <!-- LAZARUS -->
-      <!-- ======================================== -->
+      <!-- Expanded Details -->
+      <div class="apt-details">
 
-      <div class="apt-card">
+        <div class="details-section">
 
-        <div class="apt-preview" onclick="toggleAPT(this)">
+          <h3>OVERVIEW</h3>
 
-          <div class="apt-header">
-
-            <img src="assets/apts/lazarus.png" alt="Lazarus" class="apt-logo">
-
-            <div>
-
-              <div class="apt-name">
-                Lazarus Group
-              </div>
-
-              <div class="apt-alias">
-                Hidden Cobra / Zinc
-              </div>
-
-            </div>
-
-          </div>
-
-          <div class="apt-description">
-
-            North Korean threat actor associated
-            with destructive malware,
-            cryptocurrency theft,
-            ransomware,
-            and financial attacks.
-
-          </div>
-
-          <div class="apt-meta">
-
-            <span class="apt-tag">RANSOMWARE</span>
-            <span class="apt-tag">CRYPTO</span>
-            <span class="apt-tag">BANKING</span>
-
-          </div>
-
-          <div class="threat-level">
-            CRITICAL
-          </div>
-
-          <div class="expand-text">
-            CLICK TO EXPAND ↓
-          </div>
+          <p>
+            Lazarus Group is responsible for financial cyber operations,
+            destructive attacks, supply-chain compromises,
+            cryptocurrency theft, espionage campaigns,
+            and high-profile attacks against governments,
+            defense contractors, and financial institutions worldwide.
+          </p>
 
         </div>
 
-        <div class="apt-details">
+        <div class="details-section">
 
-          <div class="details-section">
+          <h3>KNOWN MALWARE</h3>
 
-            <h3>OVERVIEW</h3>
-
-            <p>
-              Lazarus Group is responsible
-              for financial cyber operations,
-              destructive attacks,
-              supply-chain compromises,
-              and crypto theft campaigns.
-            </p>
-
-          </div>
-
-          <div class="details-section">
-
-            <h3>KNOWN MALWARE</h3>
-
-            <ul>
-              <li>AppleJeus</li>
-              <li>Destover</li>
-              <li>Volgmer</li>
-            </ul>
-
-          </div>
+          <ul>
+            <li>AppleJeus</li>
+            <li>Destover</li>
+            <li>Volgmer</li>
+            <li>FALLCHILL</li>
+            <li>Dacls</li>
+            <li>Manuscrypt</li>
+            <li>Gopuram</li>
+            <li>VEILEDSIGNAL</li>
+            <li>ICONICSTEALER</li>
+            <li>AppleSeed</li>
+          </ul>
 
         </div>
 
-      </div>
+        <!-- View Research Button -->
+        <div class="research-container">
 
-      <!-- ======================================== -->
-      <!-- LOCKBIT -->
-      <!-- ======================================== -->
+          <a href="reports/lazarus.html" class="research-btn" onclick="event.stopPropagation();">
 
-      <div class="apt-card">
+            📄 View Research
 
-        <div class="apt-preview" onclick="toggleAPT(this)">
-
-          <div class="apt-header">
-
-            <img src="assets/apts/lockbit.png" alt="LockBit" class="apt-logo">
-
-            <div>
-
-              <div class="apt-name">
-                LockBit
-              </div>
-
-              <div class="apt-alias">
-                Ransomware-as-a-Service
-              </div>
-
-            </div>
-
-          </div>
-
-          <div class="apt-description">
-
-            One of the most active ransomware
-            groups targeting enterprises globally
-            using phishing and exposed services.
-
-          </div>
-
-          <div class="apt-meta">
-
-            <span class="apt-tag">RANSOMWARE</span>
-            <span class="apt-tag">EXFILTRATION</span>
-            <span class="apt-tag">DOUBLE EXTORTION</span>
-
-          </div>
-
-          <div class="threat-level">
-            SEVERE
-          </div>
-
-          <div class="expand-text">
-            CLICK TO EXPAND ↓
-          </div>
-
-        </div>
-
-        <div class="apt-details">
-
-          <div class="details-section">
-
-            <h3>TACTICS</h3>
-
-            <ul>
-              <li>Phishing</li>
-              <li>VPN Exploitation</li>
-              <li>Privilege Escalation</li>
-              <li>Data Exfiltration</li>
-            </ul>
-
-          </div>
+          </a>
 
         </div>
 
       </div>
 
     </div>
+
+    <!-- ======================================== -->
+    <!-- LOCKBIT -->
+    <!-- ======================================== -->
+
+
+  </div>
+
+  </div>
 
   </div>
 
@@ -586,7 +673,15 @@
   <!-- ======================================== -->
 
   <script>
+    function switchTab(btn, panelId) {
+      document.querySelectorAll('.ri-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.ri-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + panelId).classList.add('active');
+    }
+  </script>
 
+  <script>
     function toggleAPT(element) {
 
       const card = element.parentElement;

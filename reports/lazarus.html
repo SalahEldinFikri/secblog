@@ -54,6 +54,89 @@
       font-size: 14px;
       line-height: 1.7;
     }
+
+    /* ─────────────────────────────────────────────────────────────
+   Threat Intelligence Card
+───────────────────────────────────────────────────────────── */
+
+    .intel-card {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 2rem;
+
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--green);
+      border-radius: 8px;
+
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .intel-card-image {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .intel-card-image img {
+      width: 100%;
+      height: auto;
+
+      display: block;
+
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .intel-card-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .intel-card-label {
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--green);
+      margin-bottom: 1rem;
+    }
+
+    .intel-card-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .intel-card-text {
+      font-size: 16px;
+      line-height: 1.9;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .intel-card-source {
+      margin-top: auto;
+
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+
+      opacity: .7;
+    }
+
+    @media (max-width: 900px) {
+
+      .intel-card {
+        grid-template-columns: 1fr;
+      }
+
+      .intel-card-image img {
+        width: 100%;
+      }
+
+    }
   </style>
 </head>
 
@@ -121,6 +204,11 @@
 
     <div class="report-section">
       <h2>1. Threat Actor Profile — Overview</h2>
+
+      <div class="report-img-block">
+        <img src="images/lazarus/lazarus.WEBP" alt="Lazarus Group threat actor profile banner" />
+      </div>
+
       <p>
         Lazarus Group is a highly sophisticated Advanced Persistent Threat (APT) group widely recognized for
         conducting cyber espionage, financially motivated cybercrime, and destructive cyber operations. Active since
@@ -149,6 +237,13 @@
         known under several aliases. Although the naming conventions differ between organizations, these aliases
         generally refer to the same threat actor or closely related operational clusters.
       </p>
+
+      <div class="report-img-block">
+        <img src="images/lazarus/aliases-diagram.svg"
+          alt="Diagram of Lazarus Group aliases across vendors and agencies" />
+        <p class="img-caption">Figure: Cross-vendor alias mapping for Lazarus Group</p>
+      </div>
+
       <div class="table-wrap">
         <table class="ioc-table">
           <thead>
@@ -224,6 +319,69 @@
         evidence provides a high level of confidence that Lazarus operates as a North Korean state-sponsored threat
         actor.
       </p>
+
+      <div class="intel-card">
+
+        <div class="intel-card-image">
+
+          <img src="images/lazarus/Wanted1.png" alt="FBI WANTED poster for Park Jin Hyok">
+
+        </div>
+
+        <div class="intel-card-body">
+
+          <div class="intel-card-label">
+            // THREAT INTELLIGENCE — FBI ATTRIBUTION
+          </div>
+
+          <div class="intel-card-title">
+            FBI Indicts Park Jin Hyok
+          </div>
+
+          <p class="intel-card-text">
+            The FBI formally indicted <strong>Park Jin Hyok</strong>, a North Korean
+            operative linked to Lazarus Group, for conspiracy to commit wire fraud and
+            computer-related fraud. The indictment attributes his involvement to several
+            high-profile cyber operations, including the Sony Pictures attack, the
+            WannaCry ransomware outbreak, and multiple cryptocurrency theft campaigns.
+          </p>
+
+          <p class="intel-card-text">
+            Publicly attributed financial operations include the
+            <strong>$81M Bangladesh Bank heist</strong>,
+            <strong>$625M Axie Infinity compromise</strong>,
+            <strong>$100M Harmony Bridge theft</strong>,
+            <strong>$41M Stake breach</strong>,
+            and the
+            <strong>$1.5B Bybit compromise</strong>,
+            demonstrating Lazarus Group's continued focus on funding state-sponsored
+            operations through cyber-enabled financial theft.
+          </p>
+
+          <div class="intel-card-source">
+            Source: Cointelegraph • Feb 25, 2025
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="intel-card">
+        <img src="images/lazarus/mandiat.png" alt="Mandiant Greg Sinclair naming Lazarus Group" />
+        <div class="intel-card-body">
+          <div class="intel-card-label">// ATTRIBUTION — ORIGIN OF THE NAME</div>
+          <p class="intel-card-text">
+            The Lazarus Group name was coined by <strong>Greg Sinclair</strong>, a reverse engineer from Google's FLARE
+            team.
+            While reverse engineering malware samples tied to a series of attacks, Sinclair found shared code and
+            fingerprints
+            across seemingly unrelated incidents, linking them to a single North Korean threat actor. His work
+            established
+            the forensic foundation for what is now recognized as one of the most active nation-state APTs in the world.
+          </p>
+          <div class="intel-card-source">Source: Mandiant (Google Cloud) · @Mandiant · Jun 27, 2025</div>
+        </div>
+      </div>
     </div>
 
     <div class="report-section">
@@ -316,6 +474,22 @@
         operational portfolio distinguishes Lazarus from many other threat actors and reflects a mature organization
         capable of adapting its techniques to achieve a wide range of strategic objectives.
       </p>
+
+      <div class="intel-card">
+        <img src="images/lazarus/bug.png" alt="Lazarus Group 2025 crypto theft portfolio totaling $1.66B" />
+        <div class="intel-card-body">
+          <div class="intel-card-label">// FINANCIAL IMPACT — 2025 OPERATIONS</div>
+          <p class="intel-card-text">
+            In 2025 alone, Lazarus Group was responsible for an estimated <strong>$1.66 billion</strong> in
+            confirmed or suspected cryptocurrency theft — accounting for approximately 60% of all crypto stolen
+            globally that year. Major incidents include the Bybit multisig social engineering attack ($1.4B, FBI
+            confirmed), Phemex hot wallet drain ($73M), BtcTurk private key leak ($48M), CoinDCX server
+            compromise ($44M), and several others. This scale of financially motivated activity underscores the
+            group's central role in funding North Korean state operations.
+          </p>
+          <div class="intel-card-source">Source: @0x3b33 (Pyro) · Apr 5, 2025</div>
+        </div>
+      </div>
     </div>
 
     <!-- ================= CAMPAIGNS ================= -->
@@ -345,6 +519,27 @@
       <p><strong>Objectives:</strong> Cryptocurrency theft · Supply chain compromise · Financial gain ·
         Cryptocurrency laundering</p>
 
+      <div class="report-img-block">
+        <img src="images/lazarus/bybit.png" alt="On-chain fund flow diagram of the Bybit exploit, TRM Labs" />
+        <p class="img-caption">Figure: On-chain tracing of stolen Bybit funds moving through exploiter wallets
+          (TRM Labs)</p>
+      </div>
+
+      <div class="intel-card">
+        <img src="images/lazarus/wanted2.png" alt="Bitrefill hack linked to Lazarus Group" />
+        <div class="intel-card-body">
+          <div class="intel-card-label">// INTEL — ONGOING FINANCIAL TARGETING (2025)</div>
+          <p class="intel-card-text">
+            The Lazarus Group's financial campaigns continued beyond Bybit, with the group reportedly breaching
+            <strong>Bitrefill</strong>, draining hot wallets and compromising information belonging to approximately
+            18,500 customers. The operation is consistent with Lazarus's pattern of targeting cryptocurrency
+            infrastructure through insider-aware attack methods. The same FBI WANTED poster for Park Jin Hyok was
+            displayed at a press conference announcing related indictments.
+          </p>
+          <div class="intel-card-source">Source: @Cryptotea · Mar 18, 2025</div>
+        </div>
+      </div>
+
       <h3>Open-Source Package Supply Chain Campaigns (2025–Present)</h3>
       <p>
         Lazarus Group expanded its software supply chain operations by publishing malicious packages to popular
@@ -356,6 +551,23 @@
         installed, the packages deployed backdoors, harvested credentials, and established persistent access to
         developer workstations.
       </p>
+
+      <div class="intel-card">
+        <img src="images/lazarus/npm.png" alt="Lazarus Group hiding inside npm dependencies" />
+        <div class="intel-card-body">
+          <div class="intel-card-label">// INTEL — NPM SUPPLY CHAIN (2025)</div>
+          <p class="intel-card-text">
+            Researchers identified Lazarus Group hiding inside npm dependencies disguised as Rollup polyfill tools.
+            Once silently installed, the malicious packages perform sandbox checks, establish full remote access,
+            and steal SSH keys, cryptocurrency wallets, and cloud config files (Claude/AWS configs). The
+            end-to-end flow: silent install → dropper (JSONKeeper eval) → encrypted C2 fetch/decode → browser
+            theft (logins &amp; wallets) → file collection (secrets and histories). Seven supply chain attacks
+            of this type were discovered in a single week.
+          </p>
+          <div class="intel-card-source">Source: @CyberOps_I9801 (TeamCyberOps) · 2025</div>
+        </div>
+      </div>
+
       <p><strong>Objectives:</strong> Supply chain compromise · Developer workstation compromise · Credential theft ·
         Initial access to enterprise networks</p>
 
@@ -372,7 +584,50 @@
       <p><strong>Objectives:</strong> Social engineering · Initial access · Credential theft · Compromise of software
         developers</p>
 
+      <div class="report-img-block">
+        <img src="images/lazarus/interview.png"
+          alt="Fake recruiter profile on X used in the Contagious Interview campaign" />
+        <p class="img-caption">Figure: Fake recruiter profile ("Onder Kayabasi") advertising blockchain developer
+          roles on X, used to lure victims into the Contagious Interview campaign</p>
+      </div>
+
+      <h3>"Mach-O Man" macOS Malware Campaign (2025)</h3>
+      <p>
+        A 2025 Lazarus campaign targeted macOS users through a trojanized video conferencing application update.
+        The malware kit, dubbed <strong>PyLangGhostRAT</strong>, is a Python-based remote access trojan — a port of
+        the original Go-based GhostRAT — distributed via ClickFix-style social engineering that tricks users into
+        approving a fake "Update Completed" installation dialog.
+      </p>
+      <p>
+        Once installed, the malware establishes persistent remote access, enabling credential theft, file collection,
+        and long-term surveillance of macOS workstations. The campaign marks a continued expansion of Lazarus's
+        targeting beyond Windows environments.
+      </p>
+
+      <div class="intel-card">
+        <img src="images/lazarus/camp.png" alt="Lazarus Mach-O Man macOS malware kit campaign" />
+        <div class="intel-card-body">
+          <div class="intel-card-label">// INTEL — MACOS CAMPAIGN (APR 2025)</div>
+          <p class="intel-card-text">
+            Researchers reported a new Lazarus APT campaign: "Mach-O Man" distributing
+            <strong>PyLangGhostRAT</strong>, a Python-based vibe-ported version of the original Go-based RAT using
+            ClickFix attacks. The malware disguises itself as a Teams application update on macOS, then establishes
+            a full C2 channel visible in the Any.run sandbox analysis. The campaign targets macOS business users
+            and represents Lazarus's active investment in cross-platform malware development.
+          </p>
+          <div class="intel-card-source">Source: @5mukx (Smukx.E) · Apr 22, 2025</div>
+        </div>
+      </div>
+
+      <p><strong>Objectives:</strong> Remote access · Credential theft · Surveillance · macOS platform expansion</p>
+
       <h3>Fake IT Worker Campaign (2024–Present)</h3>
+      <div class="report-img-block">
+        <img src="images/lazarus/IT.jpg"
+          alt="Diagram of how North Korean IT workers carry out their scheme, Google Cloud" />
+        <p class="img-caption">Figure: How North Korean IT workers carry out the fake-employment scheme (Google
+          Cloud)</p>
+      </div>
       <p>
         Lazarus Group has also been linked to campaigns in which North Korean operatives pose as remote software
         engineers seeking employment with international technology companies. After obtaining legitimate
@@ -398,6 +653,11 @@
       </p>
       <p><strong>Objectives:</strong> Cryptocurrency theft · Financial gain · Cryptocurrency laundering</p>
 
+      <div class="report-img-block">
+        <img src="images/lazarus/wazirx.jpg" alt="WazirX security breach headline graphic" />
+        <p class="img-caption">Figure: WazirX security breach coverage following the 2024 exchange compromise</p>
+      </div>
+
       <h3>3CX Supply Chain Attack (2023)</h3>
       <p>
         The compromise of the 3CX Desktop Application represented one of Lazarus Group's most sophisticated software
@@ -409,6 +669,12 @@
       <p><strong>Objectives:</strong> Supply chain compromise · Malware distribution · Intelligence collection ·
         Long-term persistence</p>
 
+      <div class="report-img-block">
+        <img src="images/lazarus/3cx.png" alt="3CX supply chain attack flow diagram, Sophos" />
+        <p class="img-caption">Figure: End-to-end 3CX supply chain attack flow, from build server compromise to
+          in-memory payload delivery (Sophos)</p>
+      </div>
+
       <h3>Operation AppleJeus (2018–Present)</h3>
       <p>
         Operation AppleJeus targeted cryptocurrency users through trojanized cryptocurrency trading applications
@@ -419,6 +685,12 @@
       <p><strong>Objectives:</strong> Cryptocurrency theft · Credential harvesting · Remote access · Financial gain
       </p>
 
+      <div class="report-img-block">
+        <img src="images/lazarus/applejeus.png" alt="AppleJeus .NET loader and C2 architecture diagram" />
+        <p class="img-caption">Figure: AppleJeus loader and C2 architecture — encrypted config files loaded by a
+          .NET loader, with a port opener and tunneling tool enabling remote command and control</p>
+      </div>
+
       <h3>WannaCry Ransomware (2017)</h3>
       <p>
         The WannaCry ransomware outbreak spread rapidly across more than 150 countries by exploiting the EternalBlue
@@ -428,6 +700,12 @@
       </p>
       <p><strong>Objectives:</strong> Ransomware deployment · Rapid worm propagation · Operational disruption</p>
 
+      <div class="report-img-block">
+        <img src="images/lazarus/wannacry.webp" alt="WannaCry Wana Decrypt0r 2.0 ransom note" />
+        <p class="img-caption">Figure: The WannaCry "Wana Decrypt0r 2.0" ransom note displayed on infected systems
+        </p>
+      </div>
+
       <h3>Bangladesh Bank Heist (2016)</h3>
       <p>
         Lazarus Group compromised Bangladesh Bank's internal network and abused the SWIFT banking system to initiate
@@ -436,6 +714,29 @@
         was detected, making it one of the most significant cyber-enabled financial thefts ever recorded.
       </p>
       <p><strong>Objectives:</strong> Financial theft · SWIFT fraud · Banking infrastructure compromise</p>
+
+      <div class="report-img-block">
+        <img src="images/lazarus/bengladesh.jpg" alt="Bangladesh Bank Heist 2016 SWIFT fraud illustration" />
+        <p class="img-caption">Figure: The 2016 Bangladesh Bank heist abused the SWIFT interbank messaging system
+          to move stolen funds</p>
+      </div>
+
+      <div class="intel-card">
+        <img src="images/lazarus/moving.png"
+          alt="On-chain analysis of Lazarus Group moving $63.5M Harmony bridge funds through Railgun" />
+        <div class="intel-card-body">
+          <div class="intel-card-label">// INTEL — CRYPTOCURRENCY LAUNDERING (JAN 2023)</div>
+          <p class="intel-card-text">
+            Blockchain investigator <strong>ZachXBT</strong> documented Lazarus Group moving approximately
+            <strong>$63.5M (~41,000 ETH)</strong> from the Harmony bridge hack through the Railgun privacy
+            protocol before consolidating funds into three separate exchanges. The on-chain analysis revealed a
+            complex multi-hop laundering pattern: Tornado Cash withdrawals → Railgun deposits → Railgun withdrawals
+            → consolidation wallets → exchange deposits across three separate exchanges. This visualization
+            illustrates the group's sophisticated cryptocurrency laundering infrastructure and tradecraft.
+          </p>
+          <div class="intel-card-source">Source: @zachxbt (ZachXBT) · Jan 16, 2023</div>
+        </div>
+      </div>
 
       <h3>Sony Pictures Attack (2014)</h3>
       <p>
@@ -447,6 +748,12 @@
       </p>
       <p><strong>Objectives:</strong> Data theft · Corporate disruption · Destructive malware deployment ·
         Psychological impact</p>
+
+      <div class="report-img-block">
+        <img src="images/lazarus/sony.webp" alt="Hacked By #GOP message displayed on Sony Pictures workstations" />
+        <p class="img-caption">Figure: The "Hacked By #GOP" message displayed on compromised Sony Pictures
+          workstations during the 2014 attack</p>
+      </div>
     </div>
 
     <!-- ================= SAMPLE ANALYSIS: 3CX ================= -->

@@ -25,11 +25,7 @@ const REPORTS = [
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
 
-  {
-    slug: "lazarus-3cx-supply-chain",
-    title: "Lazarus Group Supply Chain Attack on 3CX Desktop App",
-    date: "2025-11-20",
-  },
+
 
 
   {

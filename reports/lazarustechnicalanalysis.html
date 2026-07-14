@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Lazarus Group — Campaigns Analyzed &amp; Technical Reports — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+  <style>
+    .report-section h3 {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--blue);
+      letter-spacing: .5px;
+      margin: 1.5rem 0 .75rem;
+    }
+
+    .report-section h4 {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      letter-spacing: .5px;
+      margin: 1.25rem 0 .5rem;
+      opacity: .9;
+    }
+
+    .report-section table.ioc-table {
+      width: 100%;
+      margin: 1rem 0;
+    }
+
+    .report-section table.ioc-table td,
+    .report-section table.ioc-table th {
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .vtable-offset {
+      color: var(--amber);
+      font-family: var(--mono);
+    }
+
+    blockquote.report-quote {
+      border-left: 3px solid var(--green);
+      background: var(--surface);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* ─────────────────────────────────────────────────────────────
+   Threat Intelligence Card
+───────────────────────────────────────────────────────────── */
+
+    .intel-card {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 2rem;
+
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--green);
+      border-radius: 8px;
+
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .intel-card-image {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .intel-card-image img {
+      width: 100%;
+      height: auto;
+
+      display: block;
+
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .intel-card-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .intel-card-label {
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--green);
+      margin-bottom: 1rem;
+    }
+
+    .intel-card-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .intel-card-text {
+      font-size: 16px;
+      line-height: 1.9;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .intel-card-source {
+      margin-top: auto;
+
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+
+      opacity: .7;
+    }
+
+    @media (max-width: 900px) {
+
+      .intel-card {
+        grid-template-columns: 1fr;
+      }
+
+      .intel-card-image img {
+        width: 100%;
+      }
+
+    }
+
+    /* Slightly larger titles for readability */
+    .report-title {
+      font-size: clamp(1.9rem, 4.6vw, 2.7rem) !important;
+      line-height: 1.25;
+    }
+
+    .report-section h2 {
+      font-size: 26px !important;
+      letter-spacing: .5px;
+      font-weight: 700;
+    }
+
+    .report-section h3 {
+      font-size: 17px !important;
+    }
+
+    .report-section p,
+    .report-section li {
+      font-size: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </button>
+    <div class="logo">&gt;_ <span>//</span> MR_MATRIX</div>
+    <div class="nav-links">
+      <a href="../index.html" class="active">Home</a>
+      <a href="../reports.html" class="active">Reports</a>
+      <a href="../APT.html" class="active">APT</a>
+      <a href="../ioc-feed.html" class="active">IOCs</a>
+      <a href="../yara-feed.html" class="active">YARA Rules</a>
+      <a href="../siem-reference.html" class="active">SIEM Reference</a>
+      <a href="../malware-structures.html" class="active">Structures</a>
+      <a href="../achievements.html" class="active">Achievements</a>
+      <a href="../about.html" class="active">About Me</a>
+
+      <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+
+
+    <div style="display:flex;gap:.85rem;flex-wrap:wrap;margin:0 0 2rem;"><a href="lazarusthreatactorprofile.html"
+        style="font-family:var(--mono);font-size:14px;color:var(--muted);border:1.5px solid var(--border);border-radius:6px;padding:8px 18px;text-decoration:none;">1
+        · Threat Actor Profile</a><span
+        style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--green);border:1.5px solid var(--green);border-radius:6px;padding:8px 18px;">2
+        · Technical Analysis</span><a href="lazarussummary.html"
+        style="font-family:var(--mono);font-size:14px;color:var(--muted);border:1.5px solid var(--border);border-radius:6px;padding:8px 18px;text-decoration:none;">3
+        · Summary</a></div>
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-malware">TECHNICAL ANALYSIS</span>
+        <span class="tag-pill tag-apt">CAMPAIGN INDEX</span>
+      </div>
+
+      <h1 class="report-title">
+        Lazarus Group — Campaigns Analyzed &amp; Technical Reports
+      </h1>
+
+      <div class="report-meta">
+        <span>📅 2026-07-01</span>
+        <span>⏱ 8 MIN READ</span>
+        <span>✍ SalahEldin Fikri (Mr_MaTriX)</span>
+        <span class="sev sev-crit">CRITICAL</span>
+      </div>
+
+      <div class="report-summary">
+        An index of every Lazarus Group campaign covered in this research, with a short summary for each. Campaigns
+        that received a full reverse-engineering / technical deep-dive link out to their own dedicated report;
+        the rest link back to their write-up in the Threat Actor Profile.
+      </div>
+    </div>
+
+    <!-- ================= CAMPAIGNS ANALYZED TABLE ================= -->
+
+    <div class="report-section">
+      <h2>1. Campaigns Analyzed</h2>
+      <p>
+        The table below lists every Lazarus Group campaign covered in this research, ordered most recent first.
+        Only the 3CX Supply Chain Attack received a full malware reverse-engineering pass; it has its own dedicated
+        technical report. Every other campaign links to its full write-up in the Threat Actor Profile.
+      </p>
+      <div class="table-wrap">
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>YEAR</th>
+              <th>CAMPAIGN</th>
+              <th>PRIMARY VECTOR</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2025</td>
+              <td>Bybit Cryptocurrency Heist</td>
+              <td>Wallet transaction-signing compromise</td>
+              <td><span style="color:#facc15;font-weight:700;">UNANALYZED</span></td>
+            </tr>
+
+            <tr>
+              <td>2025–Present</td>
+              <td>Open-Source Package Supply Chain Campaigns</td>
+              <td>Malicious npm / PyPI packages</td>
+              <td><span style="color:#facc15;font-weight:700;">UNANALYZED</span></td>
+            </tr>
+
+            <tr>
+              <td>2024–Present</td>
+              <td>Contagious Interview Campaign</td>
+              <td>Fake recruiter social engineering</td>
+              <td><span style="color:#facc15;font-weight:700;">UNANALYZED</span></td>
+            </tr>
+
+            <tr>
+              <td>2025</td>
+              <td>Mach-O Man macOS Malware Campaign</td>
+              <td>Trojanized video-conferencing update (ClickFix)</td>
+              <td><span style="color:#facc15;font-weight:700;">UNANALYZED</span></td>
+            </tr>
+
+            <tr>
+              <td>2024–Present</td>
+              <td>Fake IT Worker Campaign</td>
+              <td>Fraudulent remote employment / insider access</td>
+              <td><span style="color:#facc15;font-weight:700;">UNANALYZED</span></td>
+            </tr>
+
+            <tr>
+              <td>2024</td>
+              <td>WazirX Cryptocurrency Exchange Attack</td>
+              <td>Wallet infrastructure compromise</td>
+              <td><span style="color:#facc15;font-weight:700;">UNANALYZED</span></td>
+            </tr>
+
+            <tr data-highlight="true" style="background:rgba(0,255,157,0.05);">
+              <td>2023</td>
+              <td>
+                <a href="lazarus3cxsupplychainfullreport.html" style="color:var(--green);font-weight:700;">
+                  3CX Supply Chain Attack
+                </a>
+              </td>
+              <td>Signed build / CI/CD compromise</td>
+              <td><span style="color:var(--green);font-weight:700;">ANALYZED</span></td>
+            </tr>
+
+            <tr>
+              <td>2018–Present</td>
+              <td>Operation AppleJeus</td>
+              <td>Trojanized cryptocurrency trading applications</td>
+              <td><span style="color:#facc15;font-weight:700;">UNANALYZED</span></td>
+            </tr>
+
+            <tr>
+              <td>2017</td>
+              <td>WannaCry Ransomware</td>
+              <td>EternalBlue (MS17-010) SMB exploitation</td>
+              <td><span style="color:#facc15;font-weight:700;">UNANALYZED</span></td>
+            </tr>
+
+            <tr>
+              <td>2016</td>
+              <td>Bangladesh Bank Heist</td>
+              <td>SWIFT messaging system fraud</td>
+              <td><span style="color:#facc15;font-weight:700;">UNANALYZED</span></td>
+            </tr>
+
+            <tr>
+              <td>2014</td>
+              <td>Sony Pictures Attack</td>
+              <td>Network intrusion &amp; destructive malware</td>
+              <td><span style="color:#facc15;font-weight:700;">UNANALYZED</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= CAMPAIGN SUMMARIES ================= -->
+
+    <div class="report-section">
+      <h2>2. Campaign Analysis Status</h2>
+
+      <p>
+        Lazarus Group has been linked to numerous high-profile cyber operations spanning
+        espionage, financial theft, ransomware, software supply-chain compromises, and
+        cryptocurrency attacks. The table below summarizes the major publicly attributed
+        campaigns and their current analysis status within this research series.
+      </p>
+
+      <div class="report-section">
+
+        <h3 id="sum-bybit">Bybit Cryptocurrency Heist (2025)</h3>
+        <p>
+          Lazarus Group is attributed to the compromise of Bybit's wallet transaction-signing
+          infrastructure, enabling fraudulent transfers totaling approximately
+          <strong>$1.5 billion</strong> in cryptocurrency. The operation represents the largest
+          publicly reported cryptocurrency theft to date.
+          <strong>Analysis coming soon.</strong>
+        </p>
+
+        <h3 id="sum-oss">Open-Source Package Supply Chain Campaigns (2025–Present)</h3>
+        <p>
+          Lazarus distributed malicious npm and PyPI packages disguised as legitimate developer
+          libraries to compromise software engineers, steal credentials, and collect cloud
+          configuration files from development environments.
+          <strong>Analysis coming soon.</strong>
+        </p>
+
+        <h3 id="sum-interview">Contagious Interview Campaign (2024–Present)</h3>
+        <p>
+          Fake recruiter personas lure software developers into downloading malicious coding
+          challenges hosted on GitHub. Executing these projects installs malware capable of
+          credential theft and remote access.
+          <strong>Analysis coming soon.</strong>
+        </p>
+
+        <h3 id="sum-macho">Mach-O Man macOS Campaign (2025)</h3>
+        <p>
+          A macOS-focused campaign delivering the Python-based
+          <strong>PyLangGhostRAT</strong> through trojanized collaboration software and
+          ClickFix social engineering techniques, demonstrating Lazarus' continued expansion
+          into Apple platforms.
+          <strong>Analysis coming soon.</strong>
+        </p>
+
+        <h3 id="sum-itworker">Fake IT Worker Campaign (2024–Present)</h3>
+        <p>
+          North Korean operatives use fabricated identities to obtain remote software engineering
+          positions, leveraging insider access to steal sensitive information, generate revenue,
+          and facilitate additional cyber operations.
+          <strong>Analysis coming soon.</strong>
+        </p>
+
+        <h3 id="sum-wazirx">WazirX Cryptocurrency Exchange Attack (2024)</h3>
+        <p>
+          Approximately <strong>$235 million</strong> in cryptocurrency was stolen from the
+          Indian exchange WazirX through the compromise of wallet infrastructure, with the
+          stolen assets subsequently laundered through multiple blockchain services.
+          <strong>Analysis coming soon.</strong>
+        </p>
+
+        <h3 id="sum-3cx" style="color:var(--green);">
+          3CX Supply Chain Attack (2023) — Fully Analyzed
+        </h3>
+        <p>
+          Lazarus compromised the software supply chain of 3CX after first infiltrating a
+          3CX employee's workstation through the trojanized X_TRADER trading application.
+          The attackers inserted malicious code into the 3CX build pipeline, producing
+          digitally signed updates that distributed the trojanized
+          <code>3CXDesktopApp.exe</code>, <code>ffmpeg.dll</code>,
+          <code>d3dcompiler_47.dll</code>, and the
+          <strong>VEILEDSIGNAL</strong> backdoor to selected victims worldwide.
+          This campaign has been fully reverse engineered in this research series.
+        </p>
+
+        <p>
+          <a href="lazarus3cxsupplychainfullreport.html" style="color:var(--green);font-weight:700;">
+            → Read the full technical analysis
+          </a>
+        </p>
+
+        <h3 id="sum-applejeus">Operation AppleJeus (2018–Present)</h3>
+        <p>
+          Trojanized cryptocurrency trading applications masquerade as legitimate investment
+          software to deploy malware capable of persistence, credential theft, and direct
+          cryptocurrency wallet compromise.
+          <strong>Analysis coming soon.</strong>
+        </p>
+
+        <h3 id="sum-wannacry">WannaCry Ransomware (2017)</h3>
+        <p>
+          A self-propagating ransomware worm exploiting the EternalBlue SMB vulnerability
+          spread across more than 150 countries, encrypting hundreds of thousands of systems
+          and demanding cryptocurrency ransom payments.
+          <strong>Analysis coming soon.</strong>
+        </p>
+
+        <h3 id="sum-bangladesh">Bangladesh Bank Heist (2016)</h3>
+        <p>
+          Lazarus abused the SWIFT banking network to initiate fraudulent transfers totaling
+          nearly <strong>$1 billion</strong>, successfully stealing approximately
+          <strong>$81 million</strong> before the operation was disrupted.
+          <strong>Analysis coming soon.</strong>
+        </p>
+
+        <h3 id="sum-sony">Sony Pictures Attack (2014)</h3>
+        <p>
+          One of Lazarus Group's earliest globally recognized operations, involving long-term
+          network intrusion, large-scale data theft, destructive malware deployment, and the
+          public release of sensitive internal corporate information.
+          <strong>Analysis coming soon.</strong>
+        </p>
+
+      </div>
+
+
+      <footer>
+        <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+        <div class="footer-links" id="footer-links"></div>
+      </footer>
+
+      <script src="../assets/js/config.js"></script>
+      <script src="../assets/js/report-page.js"></script>
+
+      <script>
+        (function () {
+          var btn = document.getElementById('nav-toggle');
+          var links = document.querySelector('nav .nav-links');
+          if (!btn || !links) return;
+          btn.addEventListener('click', function () {
+            var isOpen = links.classList.toggle('open');
+            btn.classList.toggle('open', isOpen);
+            btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          });
+          links.querySelectorAll('a').forEach(function (a) {
+            a.addEventListener('click', function () {
+              links.classList.remove('open');
+              btn.classList.remove('open');
+              btn.setAttribute('aria-expanded', 'false');
+            });
+          });
+        })();
+      </script>
+</body>
+
+</html>

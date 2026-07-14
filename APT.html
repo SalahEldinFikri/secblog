@@ -352,6 +352,55 @@
       }
 
     }
+
+    .research-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .report-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+
+      padding: 16px 18px;
+
+      background: #131b2c;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--green);
+      border-radius: 6px;
+
+      text-decoration: none;
+      color: inherit;
+
+      transition: .2s ease;
+    }
+
+    .report-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--green);
+      box-shadow: 0 0 18px rgba(0, 255, 157, .15);
+    }
+
+    .report-icon {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .report-title {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .report-subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
   </style>
 
 </head>
@@ -572,14 +621,16 @@
         </div>
 
         <div class="apt-description">
-          North Korean threat actor associated with destructive malware,
-          cryptocurrency theft, ransomware, and financial attacks.
+          North Korean state-sponsored threat actor responsible for cyber espionage,
+          destructive attacks, cryptocurrency theft, supply-chain compromises,
+          and financially motivated cyber operations.
         </div>
 
         <div class="apt-meta">
-          <span class="apt-tag">RANSOMWARE</span>
+          <span class="apt-tag">APT</span>
+          <span class="apt-tag">SUPPLY CHAIN</span>
           <span class="apt-tag">CRYPTO</span>
-          <span class="apt-tag">BANKING</span>
+          <span class="apt-tag">ESPIONAGE</span>
         </div>
 
         <div class="threat-level">
@@ -592,7 +643,7 @@
 
       </div>
 
-      <!-- Expanded Details -->
+      <!-- Expanded -->
       <div class="apt-details">
 
         <div class="details-section">
@@ -600,11 +651,10 @@
           <h3>OVERVIEW</h3>
 
           <p>
-            Lazarus Group is responsible for financial cyber operations,
-            destructive attacks, supply-chain compromises,
-            cryptocurrency theft, espionage campaigns,
-            and high-profile attacks against governments,
-            defense contractors, and financial institutions worldwide.
+            Lazarus Group is one of the world's most active nation-state threat actors.
+            The group conducts cyber espionage, destructive attacks, software
+            supply-chain compromises, cryptocurrency theft, and long-term financial
+            operations supporting North Korean strategic objectives.
           </p>
 
         </div>
@@ -628,14 +678,41 @@
 
         </div>
 
-        <!-- View Research Button -->
-        <div class="research-container">
+        <div class="details-section">
 
-          <a href="reports/lazarus.html" class="research-btn" onclick="event.stopPropagation();">
+          <h3>RESEARCH SERIES</h3>
 
-            📄 View Research
+          <div class="research-list">
 
-          </a>
+            <div class="research-grid">
+
+              <a href="reports/lazarusthreatactorprofile.html" class="report-card" onclick="event.stopPropagation();">
+                <span class="report-icon">📘</span>
+                <div class="report-info">
+                  <div class="report-title">Threat Actor Profile</div>
+                  <div class="report-subtitle">Complete overview of Lazarus Group</div>
+                </div>
+              </a>
+
+              <a href="reports/lazarustechnicalanalysis.html" class="report-card" onclick="event.stopPropagation();">
+                <span class="report-icon">🔬</span>
+                <div class="report-info">
+                  <div class="report-title">Technical Analysis</div>
+                  <div class="report-subtitle">Reverse engineering report</div>
+                </div>
+              </a>
+
+              <a href="reports/lazarussummary.html" class="report-card" onclick="event.stopPropagation();">
+                <span class="report-icon">📄</span>
+                <div class="report-info">
+                  <div class="report-title">Executive Summary</div>
+                  <div class="report-subtitle">High-level overview</div>
+                </div>
+              </a>
+
+            </div>
+
+          </div>
 
         </div>
 

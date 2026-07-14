@@ -29,7 +29,7 @@ const REPORTS = [
 
 
   {
-    slug: "lazarus",
+    slug: "lazarusthreatactorprofile",
     title: "Lazarus Group: Threat Actor Profile & 3CX Supply Chain Attack - Complete Technical Analysis",
     date: "2026-07-02",
     tag: "APT",

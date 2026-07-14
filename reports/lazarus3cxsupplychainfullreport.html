@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">3CX Supply Chain Attack — Full Campaign Report — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+  <style>
+    .report-section h3 {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--blue);
+      letter-spacing: .5px;
+      margin: 1.5rem 0 .75rem;
+    }
+
+    .report-section h4 {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      letter-spacing: .5px;
+      margin: 1.25rem 0 .5rem;
+      opacity: .9;
+    }
+
+    .report-section table.ioc-table {
+      width: 100%;
+      margin: 1rem 0;
+    }
+
+    .report-section table.ioc-table td,
+    .report-section table.ioc-table th {
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .vtable-offset {
+      color: var(--amber);
+      font-family: var(--mono);
+    }
+
+    blockquote.report-quote {
+      border-left: 3px solid var(--green);
+      background: var(--surface);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* ─────────────────────────────────────────────────────────────
+   Threat Intelligence Card
+───────────────────────────────────────────────────────────── */
+
+    .intel-card {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 2rem;
+
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--green);
+      border-radius: 8px;
+
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .intel-card-image {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .intel-card-image img {
+      width: 100%;
+      height: auto;
+
+      display: block;
+
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .intel-card-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .intel-card-label {
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--green);
+      margin-bottom: 1rem;
+    }
+
+    .intel-card-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .intel-card-text {
+      font-size: 16px;
+      line-height: 1.9;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .intel-card-source {
+      margin-top: auto;
+
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+
+      opacity: .7;
+    }
+
+    @media (max-width: 900px) {
+
+      .intel-card {
+        grid-template-columns: 1fr;
+      }
+
+      .intel-card-image img {
+        width: 100%;
+      }
+
+    }
+
+    /* Slightly larger titles for readability */
+    .report-title {
+      font-size: clamp(1.9rem, 4.6vw, 2.7rem) !important;
+      line-height: 1.25;
+    }
+
+    .report-section h2 {
+      font-size: 26px !important;
+      letter-spacing: .5px;
+      font-weight: 700;
+    }
+
+    .report-section h3 {
+      font-size: 17px !important;
+    }
+
+    .report-section p,
+    .report-section li {
+      font-size: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </button>
+    <div class="logo">&gt;_ <span>//</span> MR_MATRIX</div>
+    <div class="nav-links">
+      <a href="../index.html" class="active">Home</a>
+      <a href="../reports.html" class="active">Reports</a>
+      <a href="../APT.html" class="active">APT</a>
+      <a href="../ioc-feed.html" class="active">IOCs</a>
+      <a href="../yara-feed.html" class="active">YARA Rules</a>
+      <a href="../siem-reference.html" class="active">SIEM Reference</a>
+      <a href="../malware-structures.html" class="active">Structures</a>
+      <a href="../achievements.html" class="active">Achievements</a>
+      <a href="../about.html" class="active">About Me</a>
+
+      <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+    <div class="report-breadcrumb">
+      <a href="../reports.html">Reports</a>
+    </div>
+
+
+    <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:0 0 2rem;">
+      <a href="lazarus-technical-analysis.html"
+        style="font-family:var(--mono);font-size:13px;color:var(--muted);text-decoration:none;">← Back to Technical
+        Analysis</a>
+      <span style="font-family:var(--mono);font-size:13px;color:var(--border);">/</span>
+      <span style="font-family:var(--mono);font-size:13px;color:var(--green);">3CX Supply Chain Attack — Full Campaign
+        Report</span>
+    </div>
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-malware">SUPPLY CHAIN</span>
+        <span class="tag-pill tag-malware">TECHNICAL ANALYSIS</span>
+      </div>
+
+      <h1 class="report-title">
+        3CX Supply Chain Attack — Full Technical Analysis
+      </h1>
+
+      <div class="report-meta">
+        <span>📅 2026-07-01</span>
+        <span>⏱ 30 MIN READ</span>
+        <span>✍ SalahEldin Fikri (Mr_MaTriX)</span>
+        <span class="sev sev-crit">CRITICAL</span>
+      </div>
+
+      <div class="report-summary">
+        A full technical breakdown of the Lazarus Group's 3CX supply chain attack, tracing the intrusion from the
+        X_TRADER initial compromise through the trojanized 3CX Desktop App, the malicious ffmpeg.dll loader, the
+        GitHub-hosted dead-drop resolver, and the VEILEDSIGNAL backdoor — ending with a consolidated IOC set and a
+        full MITRE ATT&amp;CK mapping.
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>1. Sample Analysis — 3CX Supply Chain Attack Campaign</h2>
+
+      <div class="report-img-block">
+        <img src="images/lazarus/first.png" alt="3CX supply chain attack illustration" />
+      </div>
+
+
+      <p>
+        The 3CX Supply Chain Attack, publicly disclosed in March 2023, is regarded as one of the most sophisticated
+        software supply chain compromises attributed to the Lazarus Group. Unlike traditional attacks that directly
+        target victims, this operation focused on compromising a trusted software vendor and using its software
+        distribution infrastructure to deliver malware to thousands of organizations worldwide.
+      </p>
+
+      <h3>Background</h3>
+      <p>
+        3CX is a software company that develops Voice over Internet Protocol (VoIP) communication solutions used by
+        more than 600,000 organizations worldwide. Its desktop application is available for both Windows and macOS
+        and is digitally signed to ensure authenticity and integrity. Because of its widespread adoption in
+        enterprise environments, compromising the 3CX software supply chain provided the attackers with access to a
+        large number of potential victims through a single trusted distribution channel.
+      </p>
+
+      <h3>Stage 1 — Initial Compromise</h3>
+      <p>
+        The attack did not begin at 3CX. According to the joint investigation conducted by Mandiant and 3CX, the
+        attackers first compromised a 3CX employee's workstation through an earlier supply chain attack involving
+        the <strong>X_TRADER</strong> financial trading software developed by Trading Technologies International,
+        Inc.
+      </p>
+      <p>
+        Years before the 3CX incident, Lazarus had compromised the X_TRADER software distribution process,
+        embedding malware within legitimate software updates. A 3CX employee installed the compromised application,
+        unknowingly infecting their workstation. The malware established persistence, collected credentials, and
+        allowed the attackers to maintain long-term access to the employee's system.
+      </p>
+
+      <h3>Stage 2 — Compromise of the Build Environment</h3>
+      <p>
+        After obtaining access to the employee's workstation, the attackers performed internal reconnaissance and
+        harvested credentials that enabled them to move laterally within the corporate network. Eventually, they
+        compromised the 3CX Continuous Integration and Continuous Delivery (CI/CD) build environment.
+      </p>
+      <p>
+        The CI/CD infrastructure is responsible for automatically compiling, testing, digitally signing, and
+        publishing official software releases. By compromising this environment, the attackers gained the ability to
+        modify legitimate application components before they were digitally signed and distributed to customers.
+        Rather than stealing the company's code-signing certificate, the attackers inserted malicious components
+        directly into the official build process, allowing the compromised software to retain its trusted digital
+        signature.
+      </p>
+
+      <h3>Stage 3 — Trojanized Software Distribution</h3>
+      <p>
+        The attackers modified the Windows and macOS versions of the 3CX Desktop Application by replacing legitimate
+        Dynamic Link Libraries (DLLs) with trojanized versions. When users installed or updated the software, the
+        malicious DLLs were executed alongside legitimate application components without raising immediate
+        suspicion. Because the software remained digitally signed by 3CX, endpoint security products and users
+        generally trusted the application. Thousands of organizations unknowingly installed the compromised software
+        during routine software updates.
+      </p>
+
+      <h3>Stage 4 — Multi-Stage Malware Execution</h3>
+      <p>
+        The trojanized application initiated a carefully designed multi-stage infection chain. During execution,
+        malicious DLLs decrypted embedded shellcode that established communication with attacker-controlled
+        infrastructure. The malware downloaded additional payloads only after performing victim profiling, reducing
+        the likelihood of detection. Researchers identified several malware families associated with the operation,
+        including:
+      </p>
+      <ul class="report-list">
+        <li><strong>SIGFLIP</strong> — used to modify signed Portable Executable (PE) files while preserving their
+          Authenticode signatures.</li>
+        <li><strong>DAVESHELL</strong> — a lightweight shellcode loader responsible for executing subsequent
+          payloads in memory.</li>
+        <li><strong>VEILEDSIGNAL</strong> — a modular backdoor used to establish persistent command-and-control
+          communications.</li>
+        <li><strong>ICONICSTEALER</strong> — an information-stealing malware deployed against selected victims.</li>
+        <li><strong>Gopuram</strong> — a sophisticated backdoor delivered only to high-value targets during later
+          stages of the campaign.</li>
+      </ul>
+      <p>
+        This staged architecture allowed Lazarus to limit exposure by deploying advanced malware only to
+        organizations considered strategically valuable.
+      </p>
+
+      <h3>Stage 5 — Target Selection</h3>
+      <p>
+        Unlike indiscriminate malware campaigns, the attackers carefully selected follow-on targets. The initial
+        trojanized software acted as a filtering mechanism. Systems meeting predefined criteria received additional
+        malware capable of credential theft, intelligence collection, and long-term remote access. Victims included
+        organizations operating in sectors such as financial services, information technology, government,
+        aerospace, and critical infrastructure.
+      </p>
+
+      <h3>Discovery</h3>
+      <p>
+        The attack was first identified in March 2023 after security researchers observed suspicious behavior
+        associated with the signed 3CX Desktop Application. Subsequent investigations by multiple cybersecurity
+        vendors, including Mandiant, SentinelOne, CrowdStrike, Sophos, Elastic Security, and Kaspersky, revealed that
+        the application had been compromised during the software build process rather than after distribution.
+      </p>
+      <p>
+        The investigation also uncovered the connection between the 3CX compromise and the earlier X_TRADER supply
+        chain attack, demonstrating how Lazarus leveraged one software supply chain compromise to facilitate
+        another.
+      </p>
+      <blockquote class="report-quote">
+        The campaign remains one of the most significant examples of a modern software supply chain attack and
+        illustrates the growing importance of securing software development pipelines, code-signing processes, and
+        CI/CD infrastructure against nation-state adversaries.
+      </blockquote>
+    </div>
+
+    <!-- ================= TECHNICAL ANALYSIS ================= -->
+
+    <div class="report-section">
+      <h2>2. Technical Analysis</h2>
+      <div class="table-wrap">
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>PHASE</th>
+              <th>COMPONENT</th>
+              <th>PURPOSE</th>
+              <th>ANALYSIS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0</td>
+              <td>Attack Execution Overview</td>
+              <td>Complete execution chain of the 3CX supply chain attack.</td>
+              <td>Attack Flow</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>X_TRADER Supply Chain</td>
+              <td>Initial compromise that led to the infection of a 3CX employee workstation.</td>
+              <td>Full Reverse Engineering</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>3CXDesktopApp.exe</td>
+              <td>Legitimate signed application abused to initiate the malicious execution chain.</td>
+              <td>Static Analysis</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Trojanized ffmpeg.dll</td>
+              <td>First malicious DLL loaded by the application via DLL side-loading.</td>
+              <td>Full Reverse Engineering</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>GitHub Dead Drop Resolver</td>
+              <td>Retrieves the encrypted configuration and C2 information from GitHub.</td>
+              <td>Reverse Engineering</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>VEILEDSIGNAL</td>
+              <td>Primary modular backdoor deployed during the campaign.</td>
+              <td>Full Malware Analysis</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Campaign IOC Summary</td>
+              <td>Consolidated indicators extracted from every analyzed component.</td>
+              <td>IOC Table</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>MITRE ATT&amp;CK Mapping</td>
+              <td>Complete mapping of the campaign to MITRE ATT&amp;CK techniques.</td>
+              <td>ATT&amp;CK</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Phase 0 — Attack Execution Overview</h3>
+      <p>
+        Before analyzing the individual malware components, it is important to understand how they interact
+        throughout the 3CX supply chain attack. Unlike conventional malware campaigns that rely on a single
+        executable, the 3CX attack employed a multi-stage execution chain in which each component was responsible
+        for loading or enabling the next stage.
+      </p>
+      <p>
+        The attack originated from a previously compromised X_TRADER installation, which provided the attackers
+        with initial access to a 3CX employee's workstation. After compromising the company's CI/CD build
+        environment, Lazarus inserted malicious components into the signed 3CX Desktop Application. When the
+        application was executed, a sequence of malicious DLLs, shellcode, and payloads were loaded, ultimately
+        leading to the deployment of advanced backdoors on selected victim systems.
+      </p>
+      <p>The following sections analyze each component in the order it executes during the attack.</p>
+
+      <h3>Phase 1 — X_TRADER Supply Chain</h3>
+      <p>
+        The first stage of the attack begins with the trojanized X_TRADER application, which served as the initial
+        access vector into the 3CX environment. By compromising the software supply chain of X_TRADER, Lazarus Group
+        was able to execute malicious code on a 3CX employee's workstation while the application appeared
+        legitimate.
+      </p>
+      <p>
+        This initial compromise provided the attackers with a foothold inside the corporate network, allowing them
+        to establish persistence, collect system information, and ultimately obtain access to the 3CX CI/CD build
+        environment. The following analysis examines the malicious X_TRADER sample to identify its execution flow,
+        capabilities, and role in the overall attack chain.
+      </p>
+
+      <h4>Starting the analysis of X_TRADER</h4>
+      <div class="report-img-block">
+        <img src="images/lazarus/second.png" alt="X_TRADER sample static properties" />
+        <p class="img-caption">Figure 1: X_TRADER sample static properties</p>
+      </div>
+      <p>
+        The analyzed sample is a 32-bit Portable Executable (PE32) designed to run on Microsoft Windows. The
+        executable targets the x86 architecture and uses the Windows GUI subsystem, indicating that it is intended
+        to execute as a graphical application rather than a console program.
+      </p>
+      <p>
+        Compiled using Microsoft VS Code, it only imports four libraries: Kernel32.dll, SHELL32.dll, ole32.dll,
+        OLEAUT32.dll. From these libraries, some of its functionalities can be inferred:
+      </p>
+      <ul class="report-list">
+        <li>Dynamic API loading (LoadLibraryExW, GetProcAddress)</li>
+        <li>File operations (CreateFileW, ReadFile, WriteFile, CopyFileW, DeleteFileW)</li>
+        <li>File discovery (FindFirstFileExW, FindNextFileW)</li>
+        <li>Memory management (HeapAlloc, HeapReAlloc, HeapFree)</li>
+        <li>Process information (GetCurrentProcess, GetCurrentProcessId, GetCurrentThreadId)</li>
+        <li>Anti-analysis (IsDebuggerPresent, QueryPerformanceCounter)</li>
+        <li>COM initialization (CoInitializeEx, CoCreateInstance)</li>
+        <li>BSTR/VARIANT handling (SysAllocString, VariantClear, SysFreeString, VariantCopy)</li>
+        <li>Shell execution (ShellExecuteExW)</li>
+      </ul>
+      <p>It also has data stored in the resource section with a size of 001e1048.</p>
+      <p>
+        Moving to IDA to confirm this functionality: uploading the sample to IDA and starting at the WinMain
+        function, the function has only three calls. The program begins execution by calling a function that,
+        based on its return value, decides whether to proceed to the next function or jump to the third.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/WinMain.png" alt="WinMain control flow in IDA" />
+        <p class="img-caption">Figure 2: WinMain control flow in IDA</p>
+      </div>
+      <p>
+        Entering the first function, <code>sub_401090</code>, the malware begins by allocating and initializing
+        several buffers used throughout the routine. It then retrieves the full path of the running executable and
+        locates the last directory separator ('\') to isolate the installation directory. Using this path, it
+        constructs the full path to <code>X_TRADER-ja.mst</code>.
+      </p>
+      <p>
+        Next, the malware opens <code>X_TRADER-ja.mst</code>, moves the file pointer to offset <code>0x167000</code>,
+        and reads the embedded encrypted payload. It then creates a new directory named <code>TPM</code> under
+        <code>C:\ProgramData</code>. After creating the directory, the malware copies
+        <code>immersivetpmvscmgrsvr.exe</code> into the newly created location and renames it to
+        <code>TpmVscMgrSvr.exe</code>. Finally, it creates a new DLL named <code>devobj.dll</code> within the same
+        directory, which is later populated with the decrypted payload extracted from <code>X_TRADER-ja.mst</code>.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/Payload.png" alt="Payload staging under C:\ProgramData\TPM" />
+        <p class="img-caption">Figure 3: Payload staging under C:\ProgramData\TPM</p>
+      </div>
+      <p>
+        The malware proceeds to decrypt an embedded payload from <code>X_TRADER-ja.mst</code> into a temporary
+        memory buffer. Once the decryption process is complete, the recovered payload is written to
+        <code>devobj.dll</code>, preparing it for execution in the next stage of the attack.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/decryption.png" alt="Payload decryption routine" />
+        <p class="img-caption">Figure 4: Payload decryption routine writing devobj.dll</p>
+      </div>
+      <p>
+        At this point, the first function completes its execution, and control is transferred to the second
+        function, <code>sub_4013C0</code>. The function begins by constructing the full path
+        <code>C:\ProgramData\TPM\TpmVscMgrSvr.exe</code>. It then initializes the COM library and creates an instance
+        of the Task Scheduler COM object using the CLSID <code>{0F87369F-A4E5-4CFC-BD3E-73E6154572DD}</code>, while
+        requesting the <code>ITaskService</code> interface identified by the IID
+        <code>{2FABA4C7-4DA9-4013-9697-20CC3FD40F85}</code> through <code>CoCreateInstance()</code>.
+      </p>
+      <p>
+        Since COM methods are invoked through a virtual function table (vtable), the imported interface can be
+        reconstructed using the ITaskService method offsets shown below. This mapping allows the indirect calls
+        observed during reverse engineering to be resolved to their corresponding COM methods.
+      </p>
+      <div class="table-wrap">
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>OFFSET</th>
+              <th>INDEX</th>
+              <th>METHOD</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="vtable-offset">0x00</td>
+              <td>0</td>
+              <td>QueryInterface</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x04</td>
+              <td>1</td>
+              <td>AddRef</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x08</td>
+              <td>2</td>
+              <td>Release</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x0C</td>
+              <td>3</td>
+              <td>GetTypeInfoCount</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x10</td>
+              <td>4</td>
+              <td>GetTypeInfo</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x14</td>
+              <td>5</td>
+              <td>GetIDsOfNames</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x18</td>
+              <td>6</td>
+              <td>Invoke</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x1C</td>
+              <td>7</td>
+              <td>GetFolder</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x20</td>
+              <td>8</td>
+              <td>GetRunningTasks</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x24</td>
+              <td>9</td>
+              <td>NewTask</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x28</td>
+              <td>10</td>
+              <td>Connect</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x2C</td>
+              <td>11</td>
+              <td>get_Connected</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x30</td>
+              <td>12</td>
+              <td>get_TargetServer</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x34</td>
+              <td>13</td>
+              <td>get_ConnectedUser</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x38</td>
+              <td>14</td>
+              <td>get_ConnectedDomain</td>
+            </tr>
+            <tr>
+              <td class="vtable-offset">0x3C</td>
+              <td>15</td>
+              <td>get_HighestVersion</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="report-img-block">
+        <img src="images/lazarus/ITaskService.png" alt="ITaskService COM interface acquisition" />
+        <p class="img-caption">Figure 5: ITaskService COM interface acquisition</p>
+      </div>
+      <p>
+        The malware initializes four empty <code>VARIANT</code> structures using <code>VariantInit()</code>. These
+        VARIANTs are later passed as arguments to the first method retrieved from the ITaskService COM interface.
+        Before the call, the compiler copies each VARIANT onto the stack, after which the malware invokes the
+        function located at offset <code>0x28</code> in the ITaskService vtable, corresponding to
+        <code>ITaskService::Connect()</code>. By passing empty VARIANTs, the malware connects to the local Task
+        Scheduler service using the current user's security context without explicitly specifying a server,
+        username, domain, or password.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/ITaskService_Connect.png" alt="ITaskService::Connect call with empty VARIANTs" />
+        <p class="img-caption">Figure 6: ITaskService::Connect() call with empty VARIANTs</p>
+      </div>
+      <p>
+        The malware abuses the COM object to establish persistence by creating a scheduled task within the
+        <code>\Microsoft\Windows\TPM</code> folder. It sets the task author to "Microsoft Corporation" to imitate a
+        legitimate Microsoft task and configures an execution action that launches
+        <code>C:\ProgramData\TPM\TpmVscMgrSvr.exe</code>. The task also uses the identifier <code>Tpm-VscMgr</code>,
+        further reinforcing the appearance of a legitimate TPM-related scheduled task.
+      </p>
+      <pre class="code-block">Task Scheduler
+
+Name:        Tpm-VscMgr
+Author:      Microsoft Corporation
+Action:      C:\ProgramData\TPM\TpmVscMgrSvr.exe</pre>
+      <div class="report-img-block">
+        <img src="images/lazarus/ScheduledTask.png" alt="Scheduled task creation for persistence" />
+        <p class="img-caption">Figure 7: Scheduled task creation for persistence</p>
+      </div>
+      <p>
+        Moving to the third function, the malware begins by searching the resource section for an embedded payload.
+        After locating the appropriate resource, it loads the encrypted data into memory. The malware then retrieves
+        the full path of <code>X_TRADER.exe</code>, opens the executable, and decrypts the embedded payload using
+        the XOR key <code>0x0DA39F274</code>. The decrypted code is written into the target executable, effectively
+        patching it with the malicious payload extracted from the resource section. Once the modification is
+        complete, the malware executes the newly patched <code>X_TRADER.exe</code> and finally deletes its original
+        executable from disk to remove traces of the initial infection.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/XOR_decryption.png" alt="XOR decryption and patching of X_TRADER.exe" />
+        <p class="img-caption">Figure 8: XOR decryption and patching of X_TRADER.exe, followed by self-deletion</p>
+      </div>
+
+
+
+      <h3>Phase 2 — 3CXDesktopApp.exe</h3>
+      <p>
+        Unlike the previously analyzed X_TRADER sample, <code>3CXDesktopApp.exe</code> does not contain the primary
+        malicious functionality. Static and dynamic analysis, along with multiple public threat intelligence
+        reports, show that the executable remains a legitimate, digitally signed 3CX application. Its role in the
+        attack is to act as a trusted loader for the malicious components deployed by the attackers.
+      </p>
+      <p>
+        During startup, the application follows its normal initialization process and loads its required
+        dynamic-link libraries (DLLs). Due to the supply-chain compromise, the legitimate ffmpeg.dll included with
+        the application was replaced with a trojanized version. As a result, when <code>3CXDesktopApp.exe</code>
+        starts, the Windows loader automatically loads the malicious <code>ffmpeg.dll</code>, transferring execution
+        to the attacker's code while the application continues to function normally from the user's perspective.
+      </p>
+      <p>
+        Therefore, the analysis of <code>3CXDesktopApp.exe</code> focuses primarily on its role in initiating the
+        execution chain rather than implementing the malicious logic itself. The actual payload execution begins
+        inside the trojanized <code>ffmpeg.dll</code>, which is analyzed in the next phase.
+      </p>
+
+      <h3>Phase 3 — Trojanized ffmpeg.dll</h3>
+      <div class="report-img-block">
+        <img src="images/lazarus/ffmpeg.png" alt="Trojanized ffmpeg.dll analysis illustration" />
+      </div>
+      <p>
+        Starting the analysis of the trojanized <code>ffmpeg.dll</code>, the DLL was loaded into IDA for static
+        analysis. The entry point contains only a single function call, which immediately transfers execution to the
+        DLL's primary initialization routine. As a result, the remainder of the analysis focuses on this function,
+        where the malicious behavior is implemented.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/ffmpeg_entry_point.png"
+          alt="ffmpeg.dll entry point transferring to initialization routine" />
+        alt="ffmpeg.dll entry point transferring to initialization routine" />
+        <p class="img-caption">Figure 9: ffmpeg.dll entry point transferring to initialization routine</p>
+      </div>
+      <p>
+        Going deeper into the primary initialization routine to determine the purpose of the trojanized
+        <code>ffmpeg.dll</code>, the malware begins by creating a named event called
+        <code>AVMonitorRefreshEvent</code> using <code>CreateEventW()</code>. Immediately afterward, it calls
+        <code>GetLastError()</code> to determine whether the event already exists. If <code>GetLastError()</code>
+        returns <code>ERROR_ALREADY_EXISTS (0xB7)</code>, the malware concludes that another instance is already
+        running and terminates its execution. This mechanism acts as a single-instance check, ensuring that only one
+        instance of the DLL executes at a time.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/AVMonitorRefreshEvent.png" alt="Single-instance check via AVMonitorRefreshEvent" />
+        <p class="img-caption">Figure 10: Single-instance check via the AVMonitorRefreshEvent named event</p>
+      </div>
+      <p>
+        Moreover, the malware retrieves the full path of the running module and locates the last directory separator
+        ('\') to obtain the application's installation directory. It then appends the string
+        <code>d3dcompiler_47.dll</code> to construct the full path to the target DLL. The file is opened using
+        <code>CreateFileW()</code> with <code>GENERIC_READ</code> access, <code>OPEN_EXISTING</code> disposition,
+        and <code>FILE_ATTRIBUTE_NORMAL</code> attributes. The malware then reads the DLL from disk into memory.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/d3dcompiler_47.png" alt="Reading d3dcompiler_47.dll into memory" />
+        <p class="img-caption">Figure 11: Reading d3dcompiler_47.dll into memory</p>
+      </div>
+      <p>
+        Afterward, the malware parses the contents of <code>d3dcompiler_47.dll</code> in search of the byte sequence
+        <code>FE ED FA CE</code>, which serves as a marker indicating the beginning of the embedded shellcode. Once
+        this signature is located, the malware extracts the encrypted payload and decrypts it using the RC4 stream
+        cipher with the hardcoded key <code>3jB(2bsG#@c7</code>. The decrypted shellcode is a downloader that
+        retrieves icon files from a GitHub repository at
+        <code>https://raw.githubusercontent[.]com/IconStorages/images/main/</code>, which are later used to
+        download the final payload.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/RC4_decryption.png" alt="RC4 decryption of embedded shellcode marked by FE ED FA CE" />
+        <p class="img-caption">Figure 12: RC4 decryption of embedded shellcode, marked by the FE ED FA CE signature
+        </p>
+      </div>
+
+      <h3>Phase 4 — GitHub Dead Drop Resolver</h3>
+      <div class="report-img-block">
+        <img src="images/lazarus/ICO_parsing.png" alt="ICO file parsing for embedded C2 configuration" />
+        <p class="img-caption">Figure 13: ICO file parsing for embedded, encoded C2 configuration</p>
+      </div>
+      <p>
+        Each downloaded ICO file contains an embedded, encoded configuration rather than a standard icon resource.
+        The malware parses the files, extracts the hidden data, and decodes it to recover the command-and-control
+        (C2) configuration used by the final-stage payload. This technique enables the attackers to distribute
+        updated C2 information through seemingly benign icon files hosted on remote servers.
+      </p>
+      <div class="table-wrap">
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>ICON FILE</th>
+              <th>URL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ioc-hash">icon0.ico</td>
+              <td class="ioc-domain">https://www.3cx[.]com/blog/event-trainings/</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon1.ico</td>
+              <td class="ioc-domain">https://msstorageazure[.]com/window</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon2.ico</td>
+              <td class="ioc-domain">https://officestoragebox[.]com/api/session</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon3.ico</td>
+              <td class="ioc-domain">https://visualstudiofactory[.]com/workload</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon4.ico</td>
+              <td class="ioc-domain">https://azuredeploystore[.]com/cloud/services</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon5.ico</td>
+              <td class="ioc-domain">https://msstorageboxes[.]com/office</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon6.ico</td>
+              <td class="ioc-domain">https://officeaddons[.]com/technologies</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon7.ico</td>
+              <td class="ioc-domain">https://sourceslabs[.]com/downloads</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon8.ico</td>
+              <td class="ioc-domain">https://zacharryblogs[.]com/feed</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon9.ico</td>
+              <td class="ioc-domain">https://pbxcloudeservices[.]com/phonesystem</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon10.ico</td>
+              <td class="ioc-domain">https://akamaitechcloudservices[.]com/v2/storage</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon11.ico</td>
+              <td class="ioc-domain">https://akamaitechcloudservices[.]com/v2/storage</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon12.ico</td>
+              <td class="ioc-domain">https://azureonlinestorage[.]com/azure/storage</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon13.ico</td>
+              <td class="ioc-domain">https://msedgepackageinfo[.]com/microsoft-edge</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon14.ico</td>
+              <td class="ioc-domain">https://glcloudservice[.]com/v1/console</td>
+            </tr>
+            <tr>
+              <td class="ioc-hash">icon15.ico</td>
+              <td class="ioc-domain">https://pbxsources[.]com/exchange</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Phase 5 — VEILEDSIGNAL</h3>
+      <p>
+        Moving to the final phase, VEILEDSIGNAL, the malware begins by retrieving workstation network information
+        using the <code>NetWkstaGetInfo()</code> API, obtaining both the hostname and the domain name. It then loads
+        <code>ntdll.dll</code> and resolves the <code>RtlGetVersion</code> API to retrieve the operating system
+        version. Afterward, the malware obtains the path to the <code>AppData\Roaming</code> directory and appends
+        <code>\3CXDesktopApp\config.json</code> to construct the full path to the configuration file. The malware
+        then opens <code>config.json</code>, reads its contents into memory, and constructs a new JSON object by
+        appending the previously collected system information, including the hostname, domain name, operating
+        system version, and the data from the <code>config.json</code> file.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/host_info.png" alt="Collection of host information and config.json contents" />
+        <p class="img-caption">Figure 14: Collection of host information and config.json contents into a JSON buffer
+        </p>
+      </div>
+      <p>
+        The malware targets the browsing history of several Chromium- and Gecko-based web browsers, including
+        Google Chrome, Microsoft Edge, Brave, and Mozilla Firefox. It locates each browser's profile directory and
+        accesses the corresponding history database (<code>History</code> for Chromium-based browsers and
+        <code>places.sqlite</code> for Firefox). The malware then executes SQL queries to retrieve the 500 most
+        recent visited URLs and their associated page titles, appending the extracted information to the in-memory
+        JSON buffer for later use.
+      </p>
+      <div class="report-img-block">
+        <img src="images/lazarus/browser_history.png" alt="Browser history harvesting via SQL queries" />
+        <p class="img-caption">Figure 15: Browser history harvesting via SQL queries against History and
+          places.sqlite</p>
+      </div>
+    </div>
+
+    <!-- ================= CAMPAIGN IOC SUMMARY ================= -->
+
+    <div class="report-section">
+      <h2>3. Campaign IOC Summary</h2>
+      <p>All indicators extracted across every analyzed component of the 3CX supply chain attack.</p>
+
+      <div class="ioc-block" style="margin-top:1rem;">
+        <div class="ioc-header"><span class="dot"></span> IOCs — THIS REPORT</div>
+        <table class="ioc-table ioc-report-table">
+          <thead>
+            <tr>
+              <th>TYPE</th>
+              <th>INDICATOR</th>
+              <th>DESCRIPTION</th>
+              <th>CONFIDENCE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-type="SHA256" data-confidence="HIGH" data-family="3CX Supply Chain">
+              <td style="color:var(--blue)">SHA256</td>
+              <td class="ioc-hash">DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC</td>
+              <td>3CXDesktopApp.exe</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="SHA256" data-confidence="HIGH" data-family="3CX Supply Chain">
+              <td style="color:var(--blue)">SHA256</td>
+              <td class="ioc-hash">7290A9AEFBB759C9B40EF8A197CF20FD098FD74DD413C4D9D81E77A31E643F49</td>
+              <td>Trojanized ffmpeg.dll</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="SHA256" data-confidence="HIGH" data-family="3CX Supply Chain">
+              <td style="color:var(--blue)">SHA256</td>
+              <td class="ioc-hash">11BE1803E2E307B647A8A7E02D128335C448FF741BF06BF52B332E0BBF423B03</td>
+              <td>Trojanized d3dcompiler_47.dll</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="SHA256" data-confidence="HIGH" data-family="VEILEDSIGNAL">
+              <td style="color:var(--blue)">SHA256</td>
+              <td class="ioc-hash">8AB3A5EAAF8C296080FADF56B265194681D7DA5DA7C02562953A4CB60E147423</td>
+              <td>Final-stage payload (VEILEDSIGNAL)</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="OTHER" data-confidence="HIGH" data-family="X_TRADER">
+              <td style="color:var(--blue)">MD5</td>
+              <td class="ioc-hash">00a43d64f9b5187a1e1f922b99b09b77</td>
+              <td>X_TRADER initial-access sample</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="OTHER" data-confidence="MEDIUM" data-family="X_TRADER">
+              <td style="color:var(--amber)">DIRECTORY</td>
+              <td class="ioc-hash">C:\ProgramData\TPM\</td>
+              <td>Staging directory created by the first-stage malware</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="OTHER" data-confidence="MEDIUM" data-family="X_TRADER">
+              <td style="color:var(--amber)">FILE</td>
+              <td class="ioc-hash">C:\ProgramData\TPM\TpmVscMgrSvr.exe</td>
+              <td>Dropped executable used for persistence</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="OTHER" data-confidence="MEDIUM" data-family="X_TRADER">
+              <td style="color:var(--amber)">FILE</td>
+              <td class="ioc-hash">C:\ProgramData\TPM\devobj.dll</td>
+              <td>Decrypted second-stage DLL</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="OTHER" data-confidence="MEDIUM" data-family="X_TRADER">
+              <td style="color:var(--amber)">FILE</td>
+              <td class="ioc-hash">X_TRADER-ja.mst</td>
+              <td>Installer transform containing the encrypted payload</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="OTHER" data-confidence="MEDIUM" data-family="VEILEDSIGNAL">
+              <td style="color:var(--amber)">FILE</td>
+              <td class="ioc-hash">%AppData%\3CXDesktopApp\config.json</td>
+              <td>Configuration file read by VEILEDSIGNAL</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="OTHER" data-confidence="MEDIUM" data-family="X_TRADER">
+              <td style="color:var(--amber)">TASK</td>
+              <td class="ioc-hash">Tpm-VscMgr</td>
+              <td>Scheduled task created for persistence</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="OTHER" data-confidence="LOW" data-family="ffmpeg.dll">
+              <td style="color:var(--muted)">EVENT</td>
+              <td class="ioc-hash">AVMonitorRefreshEvent</td>
+              <td>Named event used as a single-instance check</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="OTHER" data-confidence="MEDIUM" data-family="ffmpeg.dll">
+              <td style="color:var(--muted)">KEY</td>
+              <td class="ioc-hash">RC4: 3jB(2bsG#@c7</td>
+              <td>RC4 key used to decrypt the embedded shellcode</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="OTHER" data-confidence="MEDIUM" data-family="X_TRADER">
+              <td style="color:var(--muted)">KEY</td>
+              <td class="ioc-hash">XOR: 0x0DA39F274</td>
+              <td>XOR key used by X_TRADER to decrypt the embedded DLL</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="HIGH" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">raw.githubusercontent[.]com/IconStorages/images/main/</td>
+              <td>GitHub dead-drop repository hosting encoded ICO configs</td>
+              <td style="color:var(--red)">HIGH</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">msstorageazure[.]com</td>
+              <td>icon1.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">officestoragebox[.]com</td>
+              <td>icon2.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">visualstudiofactory[.]com</td>
+              <td>icon3.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">azuredeploystore[.]com</td>
+              <td>icon4.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">msstorageboxes[.]com</td>
+              <td>icon5.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">officeaddons[.]com</td>
+              <td>icon6.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">sourceslabs[.]com</td>
+              <td>icon7.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">zacharryblogs[.]com</td>
+              <td>icon8.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">pbxcloudeservices[.]com</td>
+              <td>icon9.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">akamaitechcloudservices[.]com</td>
+              <td>icon10 / icon11.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">azureonlinestorage[.]com</td>
+              <td>icon12.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">msedgepackageinfo[.]com</td>
+              <td>icon13.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">glcloudservice[.]com</td>
+              <td>icon14.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+            <tr data-type="DOMAIN" data-confidence="MEDIUM" data-family="3CX Dead Drop Resolver">
+              <td style="color:var(--red)">DOMAIN</td>
+              <td class="ioc-domain">pbxsources[.]com</td>
+              <td>icon15.ico dead-drop host</td>
+              <td style="color:var(--amber)">MEDIUM</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:1rem;">
+        In addition to the network and host-based indicators above, VEILEDSIGNAL targets the following browser
+        profile paths and databases for history collection:
+      </p>
+      <div class="table-wrap">
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>BROWSER</th>
+              <th>PROFILE PATH</th>
+              <th>DATABASE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Google Chrome</td>
+              <td class="ioc-hash">AppData\Local\Google\Chrome\User Data</td>
+              <td>History</td>
+            </tr>
+            <tr>
+              <td>Microsoft Edge</td>
+              <td class="ioc-hash">AppData\Local\Microsoft\Edge\User Data</td>
+              <td>History</td>
+            </tr>
+            <tr>
+              <td>Brave</td>
+              <td class="ioc-hash">AppData\Local\BraveSoftware\Brave-Browser\User Data</td>
+              <td>History</td>
+            </tr>
+            <tr>
+              <td>Mozilla Firefox</td>
+              <td class="ioc-hash">AppData\Roaming\Mozilla\Firefox\Profiles</td>
+              <td>places.sqlite</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <pre class="code-block">-- Chromium-based browsers
+SELECT url, title FROM urls ORDER BY id DESC LIMIT 500
+
+-- Firefox
+SELECT url, title FROM moz_places ORDER BY id DESC LIMIT 500</pre>
+    </div>
+
+    <!-- ================= MITRE ATT&CK ================= -->
+
+    <div class="report-section">
+      <h2>4. MITRE ATT&amp;CK Mapping — Full Campaign</h2>
+      <p>Complete mapping of the 3CX supply chain campaign to MITRE ATT&amp;CK techniques.</p>
+      <div class="table-wrap">
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>TACTIC</th>
+              <th>TECHNIQUE</th>
+              <th>ATT&amp;CK ID</th>
+              <th>EVIDENCE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Initial Access</td>
+              <td>Compromise Software Supply Chain</td>
+              <td>T1195.002</td>
+              <td>3CX DesktopApp distributed with trojanized DLLs.</td>
+            </tr>
+            <tr>
+              <td>Initial Access</td>
+              <td>Trusted Relationship</td>
+              <td>T1199</td>
+              <td>Attack leveraged the trust relationship between 3CX and its customers.</td>
+            </tr>
+            <tr>
+              <td>Execution</td>
+              <td>Shared Modules</td>
+              <td>T1129</td>
+              <td>3CXDesktopApp.exe loads the trojanized ffmpeg.dll.</td>
+            </tr>
+            <tr>
+              <td>Execution</td>
+              <td>User Execution: Malicious File</td>
+              <td>T1204.002</td>
+              <td>Malware executes when the victim launches the legitimate 3CX DesktopApp.</td>
+            </tr>
+            <tr>
+              <td>Execution</td>
+              <td>Command and Scripting Interpreter</td>
+              <td>T1059</td>
+              <td>Later-stage payloads execute downloaded commands/scripts.</td>
+            </tr>
+            <tr>
+              <td>Persistence</td>
+              <td>Scheduled Task/Job: Scheduled Task</td>
+              <td>T1053.005</td>
+              <td>Creates the Tpm-VscMgr scheduled task.</td>
+            </tr>
+            <tr>
+              <td>Persistence</td>
+              <td>DLL Search Order Hijacking</td>
+              <td>T1574.001</td>
+              <td>Trojanized ffmpeg.dll is loaded by the legitimate application.</td>
+            </tr>
+            <tr>
+              <td>Persistence</td>
+              <td>Event Triggered Execution</td>
+              <td>T1546</td>
+              <td>Persistence established through Task Scheduler.</td>
+            </tr>
+            <tr>
+              <td>Privilege Escalation</td>
+              <td>DLL Search Order Hijacking</td>
+              <td>T1574.001</td>
+              <td>Malicious DLL executes inside a trusted process.</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>Deobfuscate/Decode Files or Information</td>
+              <td>T1140</td>
+              <td>RC4 and XOR decrypt embedded payloads and shellcode.</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>Masquerading</td>
+              <td>T1036</td>
+              <td>Uses legitimate filenames, Microsoft task names, and trusted application components.</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>Indicator Removal on Host: File Deletion</td>
+              <td>T1070.004</td>
+              <td>Initial dropper deletes itself after execution.</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>Hide Artifacts</td>
+              <td>T1564</td>
+              <td>Payloads stored in legitimate-looking locations.</td>
+            </tr>
+            <tr>
+              <td>Defense Evasion</td>
+              <td>System Binary Proxy Execution</td>
+              <td>T1218</td>
+              <td>Abuses Windows Task Scheduler COM interfaces.</td>
+            </tr>
+            <tr>
+              <td>Discovery</td>
+              <td>System Information Discovery</td>
+              <td>T1082</td>
+              <td>Collects operating system version.</td>
+            </tr>
+            <tr>
+              <td>Discovery</td>
+              <td>System Owner/User Discovery</td>
+              <td>T1033</td>
+              <td>Collects hostname and domain/workgroup information.</td>
+            </tr>
+            <tr>
+              <td>Discovery</td>
+              <td>File and Directory Discovery</td>
+              <td>T1083</td>
+              <td>Enumerates browser profile directories and user files.</td>
+            </tr>
+            <tr>
+              <td>Collection</td>
+              <td>Data from Local System</td>
+              <td>T1005</td>
+              <td>Collects browser history and configuration files.</td>
+            </tr>
+            <tr>
+              <td>Collection</td>
+              <td>Data from Information Repositories</td>
+              <td>T1213</td>
+              <td>Reads SQLite browser history databases.</td>
+            </tr>
+            <tr>
+              <td>Collection</td>
+              <td>Archive Collected Data</td>
+              <td>T1560</td>
+              <td>Aggregates collected information into an in-memory JSON buffer.</td>
+            </tr>
+            <tr>
+              <td>Credential Access</td>
+              <td>Credentials from Password Stores</td>
+              <td>T1555</td>
+              <td>Later-stage payloads target browser credentials.</td>
+            </tr>
+            <tr>
+              <td>Command and Control</td>
+              <td>Application Layer Protocol: Web Protocols</td>
+              <td>T1071.001</td>
+              <td>Uses HTTP/HTTPS for C2 communication.</td>
+            </tr>
+            <tr>
+              <td>Command and Control</td>
+              <td>Dynamic Resolution</td>
+              <td>T1568</td>
+              <td>Retrieves encrypted configuration from remote resources.</td>
+            </tr>
+            <tr>
+              <td>Command and Control</td>
+              <td>Dead Drop Resolver</td>
+              <td>T1102.001</td>
+              <td>Uses GitHub and remote ICO files as dead-drop resolvers.</td>
+            </tr>
+            <tr>
+              <td>Exfiltration</td>
+              <td>Exfiltration Over Web Service</td>
+              <td>T1567</td>
+              <td>Sends collected victim information to the C2 infrastructure.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= CONCLUSION ================= -->
+
+    <div class="report-section">
+      <h2>5. Conclusion &amp; Recommendations</h2>
+      <p>
+        The 3CX supply chain attack illustrates how Lazarus Group leverages a chain of trust — compromising one
+        vendor (X_TRADER) to reach another (3CX) — to gain scalable initial access without directly touching the
+        end victim. Because the trojanized components were inserted during the signed build process rather than
+        after distribution, traditional signature and reputation-based trust models failed to flag the malicious
+        DLLs.
+      </p>
+      <ul class="report-list">
+        <li>Block and monitor the domains and IPs listed in the IOC summary at the DNS/firewall layer.</li>
+        <li>Hunt for the file, registry, and scheduled task artifacts listed above across endpoints, particularly
+          the <code>Tpm-VscMgr</code> scheduled task and the <code>C:\ProgramData\TPM\</code> directory.</li>
+        <li>Treat unexpected outbound connections to raw.githubusercontent.com or unusual ICO downloads from
+          business applications as suspicious, since dead-drop resolvers abuse trusted platforms to blend in with
+          normal traffic.</li>
+        <li>Harden CI/CD build environments with code-signing integrity checks, build provenance attestation, and
+          strict access controls, since this was the actual point of compromise rather than the distribution
+          channel itself.</li>
+        <li>Apply enhanced scrutiny to third-party software updates from vendors handling sensitive financial or
+          communications infrastructure, and validate signed binaries against known-good hashes where possible.</li>
+      </ul>
+    </div>
+
+    <div class="report-section">
+      <h2>References</h2>
+      <ul class="report-list">
+        <li>
+          Mandiant / Google Cloud –
+          <a href="https://cloud.google.com/blog/topics/threat-intelligence/3cx-software-supply-chain-compromise"
+            target="_blank">
+            3CX Software Supply Chain Compromise Initiated by a Previous Software Supply Chain Compromise
+          </a>
+        </li>
+
+        <li>
+          Google Cloud Threat Intelligence –
+          <a href="https://cloud.google.com/blog/topics/threat-intelligence/3cx-software-supply-chain-compromise-follow-on-activity"
+            target="_blank">
+            3CX Supply Chain Compromise: Follow-on Activity
+          </a>
+        </li>
+
+        <li>
+          SentinelOne –
+          <a href="https://www.sentinelone.com/blog/3cx-supply-chain-attack/" target="_blank">
+            3CX Supply Chain Attack Analysis
+          </a>
+        </li>
+
+        <li>
+          CrowdStrike –
+          <a href="https://www.crowdstrike.com/blog/" target="_blank">
+            3CX DesktopApp Supply Chain Compromise
+          </a>
+        </li>
+
+        <li>
+          Elastic Security Labs –
+          <a href="https://www.elastic.co/security-labs" target="_blank">
+            3CX Supply Chain Attack Research
+          </a>
+        </li>
+
+        <li>
+          Sophos X-Ops –
+          <a href="https://news.sophos.com/" target="_blank">
+            3CX Supply Chain Attack Analysis
+          </a>
+        </li>
+
+        <li>
+          Kaspersky Securelist –
+          <a href="https://securelist.com/" target="_blank">
+            Gopuram Backdoor Deployed Through the 3CX Supply Chain Attack
+          </a>
+        </li>
+
+
+
+
+
+        <li>
+          MITRE ATT&amp;CK –
+          <a href="https://attack.mitre.org/groups/G0032/" target="_blank">
+            Lazarus Group (G0032)
+          </a>
+        </li>
+
+
+
+      </ul>
+    </div>
+
+
+    <div class="report-footer">
+      <a href="../reports.html" class="read-more">The Ruins</a>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">All findings shared for educational
+        &amp; defensive purposes only.</span>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/report-page.js"></script>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('nav-toggle');
+      var links = document.querySelector('nav .nav-links');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function () {
+        var isOpen = links.classList.toggle('open');
+        btn.classList.toggle('open', isOpen);
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+      links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          links.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>

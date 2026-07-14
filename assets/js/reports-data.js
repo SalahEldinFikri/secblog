@@ -35,7 +35,7 @@ const REPORTS = [
     tag: "APT",
     severity: "CRITICAL",
     readTime: "40 MIN READ",
-    excerpt: "An in-depth technical analysis of the Lazarus Group and its 3CX software supply chain attack. The report traces the campaign from the initial X_TRADER compromise through the trojanized 3CX DesktopApp, malicious ffmpeg.dll, GitHub dead-drop resolver, and the VEILEDSIGNAL backdoor. It includes full reverse engineering, execution flow, persistence mechanisms, malware capabilities, indicators of compromise (IOCs), and complete MITRE ATT&CK mapping for the entire campaign.",
+    excerpt: "A comprehensive research series covering the Lazarus Group, one of the world's most active nation-state threat actors. The collection includes an in-depth threat actor profile, campaign analyses, reverse engineering reports, malware analysis, indicators of compromise (IOCs), MITRE ATT&CK mappings, and technical investigations into operations attributed to Lazarus. Each report examines different aspects of the group's evolving tactics, techniques, procedures (TTPs), and operational infrastructure.",
     iocs: [
       { type: "SHA256", indicator: "DDE03348075512796241389DFEA5560C20A3D2A2EAC95C894E7BBED5E85A0ACC", family: "3CXDesktopApp.exe", confidence: "HIGH" },
       { type: "SHA256", indicator: "7290A9AEFBB759C9B40EF8A197CF20FD098FD74DD413C4D9D81E77A31E643F49", family: "Trojanized ffmpeg.dll", confidence: "HIGH" },

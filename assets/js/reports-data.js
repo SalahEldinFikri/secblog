@@ -77,6 +77,18 @@ const REPORTS = [
   },
 
   {
+    slug: "lazarus3cxsupplychainfullreport",
+    title: "Lazarus 3cxSupplyChain Full Report",
+    date: "2026-07-01",
+    tag: "Malware Supply Chain Attack",
+    severity: "CRITICAL",
+    readTime: "14 MIN READ",
+    excerpt: "Analysis of the 3CX supply chain attack attributed to the Lazarus Group. The report details the trojanized 3CXDesktopApp.exe, its multi-stage payloads, and the C2 infrastructure used for data exfiltration and remote control.",
+    iocs: null,
+    yara: null,
+  },
+
+  {
     slug: "adobe-reader-zerodday",
     title: "Adobe Reader Zero-Day: Malicious PDF with Embedded JavaScript & Multi-Stage Payload",
     date: "2026-04-15",

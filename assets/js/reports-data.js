@@ -89,6 +89,30 @@ const REPORTS = [
   },
 
   {
+    slug: "lazarusthreatactorprofile",
+    title: "Lazarus APT Group: Threat Actor Profile",
+    date: "2026-07-01",
+    tag: "Malware Supply Chain Attack",
+    severity: "CRITICAL",
+    readTime: "14 MIN READ",
+    excerpt: "Lazarus APT Group: Threat Actor Profile. This report provides an in-depth analysis of the Lazarus Group, including their tactics, techniques, and procedures (TTPs), as well as their operational infrastructure and notable campaigns.",
+    iocs: null,
+    yara: null,
+  },
+
+  {
+    slug: "lazarussummary",
+    title: "Executive Summary: Lazarus APT Group",
+    date: "2026-07-01",
+    tag: "Malware Supply Chain Attack",
+    severity: "CRITICAL",
+    readTime: "5 MIN READ",
+    excerpt: "Executive summary of the Lazarus APT Group's activities, including their tactics, techniques, and procedures (TTPs), as well as their operational infrastructure and notable campaigns.",
+    iocs: null,
+    yara: null,
+  },
+
+  {
     slug: "adobe-reader-zerodday",
     title: "Adobe Reader Zero-Day: Malicious PDF with Embedded JavaScript & Multi-Stage Payload",
     date: "2026-04-15",

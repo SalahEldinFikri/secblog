@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Silver Fox APT: Threat Actor Profile — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+  <style>
+    /* ── Section headings ── */
+    .report-section h2 {
+      font-family: var(--mono);
+      font-size: 17px !important;
+      color: var(--green);
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: .6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .report-section h3 {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--blue);
+      letter-spacing: .5px;
+      margin: 1.75rem 0 .75rem;
+    }
+
+    .report-section h4 {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--amber);
+      letter-spacing: .5px;
+      margin: 1.25rem 0 .5rem;
+    }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    .report-section table.ioc-table { width: 100%; margin: .5rem 0; }
+    .report-section table.ioc-table td,
+    .report-section table.ioc-table th { font-size: 12.5px; }
+
+    /* ── Blockquote ── */
+    blockquote.report-quote {
+      border-left: 3px solid var(--green);
+      background: var(--surface);
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* ── Intel card (tweet/social posts) ── */
+    .intel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      border-radius: 4px;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .intel-card img {
+      width: 240px;
+      max-width: 100%;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .intel-card-body { flex: 1; min-width: 220px; }
+
+    .intel-card-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--green);
+      margin-bottom: .5rem;
+    }
+
+    .intel-card-text {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .intel-card-source {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: .75rem;
+      opacity: .65;
+    }
+
+    /* ── Report image block ── */
+    .report-img-block {
+      margin: 1.25rem 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .report-img-block img {
+      width: 100%;
+      display: block;
+      max-height: 480px;
+      object-fit: contain;
+      background: #0d1117;
+    }
+
+    .img-caption {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      padding: .6rem 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Technique card ── */
+    .technique-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .technique-card h4 {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--blue);
+      margin: 0 0 .6rem;
+    }
+
+    .technique-card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0 0 .5rem;
+    }
+
+    .technique-card ul {
+      padding-left: 1.25rem;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .technique-card ul li::marker { color: var(--green); }
+
+    /* ── Campaign card ── */
+    .campaign-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      border-radius: 4px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .campaign-card h3 {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--blue);
+      margin: 0 0 .75rem;
+      letter-spacing: .5px;
+    }
+
+    .campaign-card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: .6rem;
+    }
+
+    .campaign-card ul {
+      padding-left: 1.25rem;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-top: .4rem;
+    }
+
+    .campaign-card ul li::marker { color: var(--blue); }
+
+    /* ── Arsenal row ── */
+    .arsenal-tag {
+      display: inline-flex;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      letter-spacing: .5px;
+      white-space: nowrap;
+    }
+
+    .tag-rat    { background: rgba(255,77,109,.1);  color: var(--red);   border: 1px solid rgba(255,77,109,.3); }
+    .tag-loader { background: rgba(56,189,248,.1);  color: var(--blue);  border: 1px solid rgba(56,189,248,.3); }
+    .tag-kernel { background: rgba(245,158,11,.1);  color: var(--amber); border: 1px solid rgba(245,158,11,.3); }
+    .tag-back   { background: rgba(167,139,250,.1); color: #a78bfa;      border: 1px solid rgba(167,139,250,.3); }
+    .tag-trojan { background: rgba(0,255,157,.08);  color: var(--green); border: 1px solid rgba(0,255,157,.25); }
+
+    /* ── MITRE table ── */
+    .mitre-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: .75rem;
+      margin: 1rem 0;
+    }
+
+    .mitre-cell {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: .75rem 1rem;
+    }
+
+    .mitre-id {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--amber);
+      margin-bottom: .3rem;
+      font-weight: 700;
+    }
+
+    .mitre-name {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── TOC ── */
+    .report-toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .report-toc h3 {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--green);
+      margin-bottom: .75rem;
+    }
+
+    .report-toc ol {
+      padding-left: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .report-toc li {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .report-toc a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .report-toc a:hover { color: var(--green); }
+
+    /* ── Responsive ── */
+    @media(max-width:640px) {
+      .intel-card { flex-direction: column; }
+      .intel-card img { width: 100%; }
+      .mitre-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="logo">&gt;_ <span>//</span> MR_MATRIX</div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../reports.html">Reports</a>
+      <a href="../APT.html">APTs</a>
+      <a href="../ioc-feed.html">IOCs</a>
+      <a href="../yara-feed.html">YARA Rules</a>
+      <a href="../siem-reference.html">SIEM Reference</a>
+      <a href="../malware-structures.html">Structures</a>
+      <a href="../achievements.html">Achievements</a>
+      <a href="../about.html">About Me</a>
+      <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+    <!-- ── BREADCRUMB ── -->
+    <div class="report-breadcrumb">
+      <a href="../index.html">Home</a> &rsaquo;
+      <a href="../APT.html">APTs</a> &rsaquo;
+      Silver Fox
+    </div>
+
+    <!-- ── HEADER ── -->
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-apt">APT PROFILE</span>
+        <span class="tag-pill tag-malware">THREAT INTEL</span>
+        <span class="tag-pill" style="background:rgba(56,189,248,.1);color:var(--blue);border:1px solid rgba(56,189,248,.3);">CHINA-ALIGNED</span>
+        <span class="tag-pill" style="background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.3);">APAC</span>
+      </div>
+
+      <h1 class="report-title">Silver Fox APT: Threat Actor Profile</h1>
+
+      <div class="report-meta">
+        <span>📅 2026-07-11</span>
+        <span>⏱ 22 MIN READ</span>
+        <span>✍ SalahEldin Fikri (Mr_MaTriX)</span>
+        <span class="sev sev-high">HIGH</span>
+      </div>
+
+      <div class="report-summary">
+        A comprehensive threat actor profile of Silver Fox — a China-aligned APT targeting
+        Asia-Pacific organizations through spear phishing, SEO poisoning, trojanized software,
+        BYOVD kernel evasion, and a modular RAT ecosystem including ValleyRAT, ABCDoor,
+        HoldingHands RAT, and the newly discovered MODBEACON. Active since 2019, the group
+        has rapidly evolved from financially motivated cybercrime into a full-spectrum
+        espionage operation targeting governments, enterprises, and critical infrastructure.
+      </div>
+    </div>
+
+    <!-- ── TABLE OF CONTENTS ── -->
+    <div class="report-toc">
+      <h3>// TABLE OF CONTENTS</h3>
+      <ol>
+        <li><a href="#overview">1. Overview</a></li>
+        <li><a href="#aliases">2. Aliases</a></li>
+        <li><a href="#attribution">3. Attribution</a></li>
+        <li><a href="#timeline">4. Historical Timeline</a></li>
+        <li><a href="#objectives">5. Objectives &amp; Motivation</a></li>
+        <li><a href="#techniques">6. Common Techniques</a></li>
+        <li><a href="#campaigns">7. Campaigns</a></li>
+        <li><a href="#arsenal">8. Malware Arsenal</a></li>
+        <li><a href="#mitre">9. MITRE ATT&amp;CK Mapping</a></li>
+      </ol>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         1. OVERVIEW
+    ════════════════════════════════════════ -->
+    <div class="report-section" id="overview">
+      <h2>1. Overview</h2>
+
+      <p>
+        Silver Fox is a sophisticated threat cluster primarily associated with cyber espionage campaigns
+        targeting organizations across the Asia-Pacific (APAC) region. The group has attracted increasing
+        attention since 2024 due to its rapid operational evolution, expanding from financially motivated
+        malware distribution to conducting advanced, intelligence-driven intrusion campaigns against
+        governments, enterprises, and critical industries.
+      </p>
+      <p>
+        Recent operations demonstrate a high degree of technical maturity, employing customized malware
+        frameworks, modular remote access trojans (RATs), Bring Your Own Vulnerable Driver (BYOVD)
+        techniques, kernel-level evasion, and long-term persistence mechanisms.
+      </p>
+      <p>
+        Unlike many traditional Advanced Persistent Threat (APT) groups, Silver Fox has demonstrated
+        remarkable flexibility in both targeting and tooling. The group frequently distributes malware
+        through phishing campaigns, fake software installers, Search Engine Optimization (SEO) poisoning,
+        malicious Telegram channels, and trojanized applications. Their malware ecosystem commonly
+        includes ValleyRAT, Winos 4.0, ABCDoor, HoldingHands RAT, and Gh0st RAT variants, enabling
+        operators to maintain persistent remote access, steal credentials, collect intelligence, and
+        exfiltrate sensitive information.
+      </p>
+
+      <!-- Hunt.io tweet: MODBEACON — current activity intel -->
+      <div class="intel-card">
+        <img src="../assets/apts/intel/Screenshot_2026-07-11_201527.png"
+             alt="Hunt.io tweet: Silver Fox deploys MODBEACON RAT through fake software installers" />
+        <div class="intel-card-body">
+          <div class="intel-card-label">// CURRENT INTEL — LATEST CAMPAIGN (JUL 2026)</div>
+          <p class="intel-card-text">
+            Silver Fox has added <strong>MODBEACON</strong>, a new Rust-based Remote Access Trojan, to its
+            malware arsenal. Delivered through fake software installers and SEO poisoning, MODBEACON runs
+            entirely in memory and uses <strong>encrypted gRPC streaming</strong> for C2 traffic — making
+            it significantly harder to detect via traditional network monitoring. Capabilities include host
+            fingerprinting, scheduled task persistence, remote command execution, and loading additional
+            modules without writing them to disk. The modular design also supports credential theft,
+            lateral movement, and proxy functionality.
+          </p>
+          <div class="intel-card-source">Source: Hunt.io (@Huntio) · Jul 2026 · thehackernews.com</div>
+        </div>
+      </div>
+
+      <!-- CyberAtlas tweet: Silver Fox in broader threat context -->
+      <div class="intel-card">
+        <img src="../assets/apts/intel/Screenshot_2026-07-11_201643.png"
+             alt="CyberAtlas tweet: China-linked Silver Fox deploys MODBEACON RAT targeting Asian tech sectors" />
+        <div class="intel-card-body">
+          <div class="intel-card-label">// CURRENT INTEL — THREAT CONTEXT (JUL 2026)</div>
+          <p class="intel-card-text">
+            CyberAtlas confirmed Silver Fox targeting Asian technology sector organizations with MODBEACON,
+            adding it to a broader cyber news bulletin alongside ransomware attacks on financial institutions
+            and critical infrastructure intrusions. The confirmation from multiple intelligence sources
+            corroborates the group's continued evolution and active operational tempo as of mid-2026.
+          </p>
+          <div class="intel-card-source">Source: CyberAtlas (@cyberatlas_ai) · Jul 2026</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ════════════════════════════════════════
+         2. ALIASES
+    ════════════════════════════════════════ -->
+    <div class="report-section" id="aliases">
+      <h2>2. Aliases</h2>
+
+      <p>
+        Silver Fox is tracked under several names by different cybersecurity vendors and threat intelligence
+        organizations. The use of multiple aliases reflects independent attribution efforts and differences
+        in tracking methodologies rather than the existence of separate threat groups.
+      </p>
+
+      <div class="table-wrap">
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>ALIAS</th>
+              <th>ORGANIZATION / VENDOR</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Silver Fox</td><td>ThreatBook</td></tr>
+            <tr><td>Void Arachne</td><td>Trend Micro / Industry Reporting</td></tr>
+            <tr><td>SwimSnake</td><td>Security Researchers</td></tr>
+            <tr><td>The Great Thief of Valley</td><td>Chinese Threat Intelligence</td></tr>
+            <tr><td>UTG-Q-1000</td><td>Palo Alto Networks Unit 42</td></tr>
+            <tr><td>Valley Thief</td><td>Regional Threat Intelligence</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <blockquote class="report-quote">
+        <strong>Note:</strong> Not all security vendors agree that these aliases refer to the exact same
+        threat actor. Some researchers classify them as overlapping activity clusters due to shared malware
+        families, infrastructure, and tactics.
+      </blockquote>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         3. ATTRIBUTION
+    ════════════════════════════════════════ -->
+    <div class="report-section" id="attribution">
+      <h2>3. Attribution</h2>
+
+      <p>
+        Silver Fox is widely assessed to be a <strong>China-aligned threat actor</strong>, although public
+        attribution remains at <strong>moderate confidence</strong>. Multiple threat intelligence vendors
+        have observed targeting patterns, malware development practices, infrastructure reuse, and
+        victimology that align with Chinese strategic interests. However, no publicly available evidence
+        definitively links the group to a specific government agency or military organization.
+      </p>
+      <p>
+        The group's earliest campaigns primarily focused on financially motivated cybercrime targeting
+        Chinese-speaking users. Beginning in 2024, researchers observed a gradual transition toward cyber
+        espionage, with operations increasingly targeting government agencies, telecommunications providers,
+        healthcare organizations, manufacturing companies, research institutions, and critical infrastructure
+        across Taiwan, Japan, India, Russia, and Southeast Asia.
+      </p>
+
+      <h3>// Capability Indicators (APT Confidence)</h3>
+
+      <div class="technique-card">
+        <ul>
+          <li>Custom malware development across multiple languages (Python, Rust, C++)</li>
+          <li>Multi-stage infection chains with encrypted payload delivery</li>
+          <li>Bring Your Own Vulnerable Driver (BYOVD) for kernel-level EDR evasion</li>
+          <li>Long-term persistence across victim environments</li>
+          <li>Sophisticated, localized social engineering campaigns</li>
+          <li>Improved operational security (OPSEC)</li>
+          <li>Living-Off-The-Land (LOTL) abuse of Windows utilities</li>
+          <li>Geofencing and sandbox/VM detection</li>
+        </ul>
+      </div>
+
+      <p>
+        These characteristics suggest that Silver Fox has evolved beyond traditional cybercrime operations
+        into a threat actor capable of conducting sustained intelligence collection campaigns.
+      </p>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         4. HISTORICAL TIMELINE
+    ════════════════════════════════════════ -->
+    <div class="report-section" id="timeline">
+      <h2>4. Historical Timeline</h2>
+
+      <div class="technique-card">
+        <h4>// 2019–2023 · EARLY OPERATIONS</h4>
+        <p>Financially motivated campaigns targeting Chinese-speaking users via Gh0st RAT variants and
+        early ValleyRAT. Distribution through phishing emails, messaging platforms, and malicious
+        software downloads.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>// 2023–2024 · SEO POISONING EXPANSION</h4>
+        <p>Rapid adoption of SEO poisoning to distribute trojanized popular software (Chrome, Telegram,
+        WPS Office, AI tools). Introduction of HoldingHands RAT and Winos 4.0 alongside ValleyRAT.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>// 2024 · TELEGRAM & TAIWAN PIVOT</h4>
+        <p>Abuse of Telegram channels for malware distribution. Major Taiwan espionage campaigns begin,
+        targeting government, finance, and technology organizations. First observed BYOVD techniques
+        against security products.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>// 2024–2025 · ESPIONAGE ESCALATION</h4>
+        <p>Healthcare and manufacturing targeting across Asia. Introduction of ABCDoor Python backdoor
+        via ValleyRAT. Geographic expansion to Japan, Malaysia, Indonesia, India, and Russia.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>// 2025–2026 · FULL APT MATURITY</h4>
+        <p>Large-scale tax-themed phishing campaigns (1,600+ emails in a single operation). Introduction
+        of RustSL loader, PNGPlug, Catena, and Nidhogg kernel rootkit. AtlasCross RAT deployed through
+        fake Teams, Zoom, and VPN installers.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>// 2026–PRESENT · MODBEACON & ONGOING EVOLUTION</h4>
+        <p>Introduction of MODBEACON — a Rust-based in-memory RAT using encrypted gRPC C2. Continued
+        modular architecture expansion, stolen digital certificate abuse, and targeting across global
+        Asian tech sectors.</p>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         5. OBJECTIVES & MOTIVATION
+    ════════════════════════════════════════ -->
+    <div class="report-section" id="objectives">
+      <h2>5. Objectives &amp; Motivation</h2>
+
+      <p>
+        Silver Fox appears to operate under a <strong>dual-purpose model</strong>, combining financially
+        motivated cybercrime with long-term cyber espionage. While earlier campaigns focused on credential
+        theft and malware distribution for financial gain, more recent operations emphasize maintaining
+        persistent access to high-value organizations for intelligence collection.
+      </p>
+
+      <h3>// Primary Objectives</h3>
+      <div class="technique-card">
+        <ul>
+          <li>Conduct cyber espionage against government and enterprise networks</li>
+          <li>Establish long-term persistence within victim environments</li>
+          <li>Steal credentials and authentication tokens</li>
+          <li>Collect sensitive corporate and governmental information</li>
+          <li>Deploy modular remote access tools for post-compromise operations</li>
+          <li>Generate revenue through credential theft and opportunistic cybercrime</li>
+          <li>Expand operational access across the Asia-Pacific region</li>
+        </ul>
+      </div>
+
+      <p>
+        Operationally, Silver Fox prioritizes stealth and persistence. Campaigns frequently employ layered
+        malware execution, encrypted payload delivery, customized loaders, anti-analysis techniques,
+        kernel-level privilege abuse, and trusted software impersonation to evade detection and maximize
+        dwell time.
+      </p>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         6. COMMON TECHNIQUES
+    ════════════════════════════════════════ -->
+    <div class="report-section" id="techniques">
+      <h2>6. Common Techniques</h2>
+
+      <p>
+        Throughout its operations, Silver Fox has demonstrated a consistent set of tactics, techniques,
+        and procedures (TTPs) that enable successful initial access, long-term persistence, privilege
+        escalation, and intelligence collection.
+      </p>
+
+      <h3>// Initial Access</h3>
+
+      <div class="technique-card">
+        <h4>Spear Phishing</h4>
+        <p>Primary initial access vector. Campaigns impersonate government agencies, taxation authorities,
+        software vendors, and financial institutions. Common lures include tax notifications, salary
+        adjustment notices, government documents, payment invoices, and corporate announcements.
+        Typical payloads: PDF documents, ZIP/RAR archives, LNK shortcut files, MSI/EXE installers.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>SEO Poisoning</h4>
+        <p>Attackers register domains impersonating legitimate software vendors and optimize them to rank
+        in search results. Victims download trojanized installers instead of legitimate software. Commonly
+        impersonated: Google Chrome, Telegram, WPS Office, Microsoft Office, DeepSeek, ChatGPT, Sogou AI,
+        and VPN clients.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>Trojanized Software Distribution</h4>
+        <p>Modified installers silently install multiple malware components while simultaneously presenting
+        the expected software installation to avoid suspicion. Significantly improves infection success
+        rates versus pure phishing.</p>
+      </div>
+
+      <h3>// Execution &amp; Evasion</h3>
+
+      <div class="technique-card">
+        <h4>DLL Sideloading</h4>
+        <p>Frequently abuses trusted executables that automatically load malicious DLL files from the same
+        directory. Benefits: executing malicious code through signed binaries, bypassing application control
+        policies, reducing antivirus detection.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>Multi-Stage Loaders</h4>
+        <p>Attacks typically involve: initial loader → shellcode execution → payload decryption →
+        ValleyRAT deployment → additional modules → ABCDoor installation. This layered architecture
+        complicates analysis and increases detection resilience.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>Shellcode-Based Payload Delivery</h4>
+        <p>Many campaigns execute encrypted shellcode entirely in memory before loading malware. Reduces
+        disk artifacts, improves stealth, and evades signature-based detection.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>Bring Your Own Vulnerable Driver (BYOVD)</h4>
+        <p>Attackers install legitimate but vulnerable drivers to execute privileged kernel operations.
+        Objectives: disabling EDR, terminating antivirus processes, kernel privilege abuse, and process
+        protection bypass. One of the group's most advanced defensive evasion techniques. Observed drivers:
+        Zemana driver, WatchDog Driver, Nidhogg kernel rootkit.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>Anti-VM / Anti-Sandbox Detection</h4>
+        <p>Environment validation before payload execution. Checks include: VM detection, sandbox
+        identification, username validation, hostname checks, process enumeration, hardware inspection,
+        and memory analysis. Execution terminates if analysis environments are detected.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>Geofencing</h4>
+        <p>Malware execution limited based on victim's geographic location, reducing exposure to
+        researchers while ensuring execution only within intended target regions.</p>
+      </div>
+
+      <h3>// Persistence &amp; C2</h3>
+
+      <div class="technique-card">
+        <h4>Scheduled Task Persistence</h4>
+        <p>Tasks configured to execute malware after reboot, relaunch payloads after termination,
+        and periodically contact C2 servers for updated commands and modules.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>Registry-Based Persistence</h4>
+        <p>Common methods: Run Keys, RunOnce Keys, registry-based configuration storage, and encrypted
+        malware configuration. Blends into normal Windows registry activity.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>Command and Control (C2)</h4>
+        <p>Resilient C2 infrastructure featuring: encrypted communications, multiple fallback servers,
+        dynamic configuration updates, custom network protocols, and modular plugin delivery. Recent
+        campaigns use encrypted gRPC streaming (MODBEACON) for C2 traffic.</p>
+      </div>
+
+      <h3>// Collection &amp; Exfiltration</h3>
+
+      <div class="technique-card">
+        <h4>Intelligence Collection</h4>
+        <p>Collected information commonly includes: system information, running processes, user documents,
+        clipboard contents, screenshots, file system data, network configuration, browser credentials
+        and session cookies, and organizational documents. Data is exfiltrated to remote C2
+        infrastructure for operator analysis.</p>
+      </div>
+
+      <div class="technique-card">
+        <h4>Living-Off-the-Land (LotL)</h4>
+        <p>Abuses legitimate Windows components including PowerShell, WMI, Task Scheduler, Registry,
+        cmd.exe, Rundll32, and Regsvr32 to blend malicious activity into normal system behavior.</p>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         7. CAMPAIGNS
+    ════════════════════════════════════════ -->
+    <div class="report-section" id="campaigns">
+      <h2>7. Campaigns</h2>
+
+      <!-- Campaign 1 -->
+      <div class="campaign-card">
+        <h3>// Early Financially Motivated Campaigns (2019–2023)</h3>
+        <p>
+          The earliest known Silver Fox operations primarily targeted Chinese-speaking users through
+          phishing emails, fake software downloads, and trojanized applications. Malware was commonly
+          distributed via messaging platforms, malicious websites, and counterfeit software installers
+          to steal credentials and establish remote access using Gh0st RAT variants and early versions
+          of ValleyRAT.
+        </p>
+      </div>
+
+      <!-- Campaign 2 -->
+      <div class="campaign-card">
+        <h3>// SEO Poisoning &amp; Fake Software Distribution (2023–2025)</h3>
+        <p>
+          Silver Fox increasingly abused SEO poisoning to distribute malware disguised as legitimate
+          software. Victims searching for popular applications were redirected to attacker-controlled
+          websites hosting trojanized installers deploying ValleyRAT, Winos 4.0, HoldingHands RAT,
+          or additional malware components.
+        </p>
+        <p>
+          The group continuously refined its fake download infrastructure by registering domains
+          closely resembling legitimate software vendors, optimizing them for search engine prominence.
+        </p>
+      </div>
+
+      <!-- Campaign 3: Telegram — with Telegram.webp -->
+      <div class="campaign-card">
+        <h3>// Telegram Malware Distribution Campaigns (2024)</h3>
+        <p>
+          Silver Fox abused Telegram channels and groups to deliver malicious software to
+          Chinese-speaking users. Attackers created fake channels impersonating legitimate software
+          communities and distributed trojanized installers through shared download links.
+        </p>
+
+        <div class="intel-card" style="margin:1rem 0;">
+          <img src="../assets/apts/intel/Telegram.webp"
+               alt="Telegram channel фото-архив.apk distribution — Silver Fox 2024 campaign" />
+          <div class="intel-card-body">
+            <div class="intel-card-label">// EVIDENCE — TELEGRAM APK DISTRIBUTION (2024)</div>
+            <p class="intel-card-text">
+              A Telegram channel impersonating a legitimate hotel (Гостиница «Байкал» ВДНХ, Москва)
+              distributed a malicious <code>фото-архив.apk</code> (1.7 MB) file labeled as a photo
+              archive to its 56 subscribers. This is a characteristic Silver Fox social engineering
+              technique: repurposing legitimate-looking channels to distribute malware files disguised
+              as expected content. The APK was downloaded 95 times within the first few minutes of
+              posting, demonstrating the effectiveness of trust-based social engineering on community
+              messaging platforms.
+            </p>
+            <div class="intel-card-source">Source: Threat Intelligence Observation · Telegram Campaign 2024</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campaign 4 -->
+      <div class="campaign-card">
+        <h3>// Taiwan Espionage Campaigns (2024–2025)</h3>
+        <p>
+          Silver Fox significantly expanded its cyber espionage operations against organizations in
+          Taiwan during 2024 and 2025. Campaigns primarily relied on phishing emails impersonating
+          Taiwanese government agencies, financial institutions, and taxation authorities.
+        </p>
+        <p>
+          Researchers observed deployment of ValleyRAT, Winos 4.0, HoldingHands RAT, and Gh0stCringe
+          through complex multi-stage infection chains involving malicious PDF documents, ZIP archives,
+          shellcode loaders, and DLL sideloading techniques.
+        </p>
+      </div>
+
+      <!-- Campaign 5 -->
+      <div class="campaign-card">
+        <h3>// Healthcare &amp; Manufacturing Campaigns (2024)</h3>
+        <p>
+          As Silver Fox evolved from cybercrime into an espionage-focused threat actor, the group
+          broadened targeting to include healthcare and manufacturing sectors across Asia.
+          These operations are believed to target intellectual property, operational information,
+          research data, and sensitive organizational information rather than immediate financial theft.
+        </p>
+      </div>
+
+      <!-- Campaign 6 -->
+      <div class="campaign-card">
+        <h3>// Fake Browser, AI &amp; Productivity Software Campaigns (2025)</h3>
+        <p>
+          Silver Fox heavily invested in counterfeit software download websites promoted via SEO
+          poisoning, impersonating Google Chrome, Telegram, WPS Office, Youdao Dictionary, DeepSeek,
+          Sogou AI, VPN clients, and productivity utilities.
+        </p>
+        <p>
+          Installers executed multi-stage loaders deploying ValleyRAT, Winos 4.0, HoldingHands RAT,
+          or Gh0st-derived malware. Many campaigns utilized encrypted shellcode, DLL sideloading,
+          and multiple fallback C2 servers.
+        </p>
+      </div>
+
+      <!-- Campaign 7 -->
+      <div class="campaign-card">
+        <h3>// Bring Your Own Vulnerable Driver (BYOVD) Campaign (2025)</h3>
+        <p>
+          One of Silver Fox's most technically advanced campaigns involved BYOVD techniques to disable
+          security products before deploying malware. The group abused vulnerable Microsoft-signed and
+          third-party drivers including <code>amsdk.sys</code> and Zemana AntiMalware drivers to
+          terminate antivirus and EDR processes directly from kernel mode.
+        </p>
+        <p>
+          This campaign represented a significant leap in technical sophistication, demonstrating
+          capabilities commonly associated with mature APT operators.
+        </p>
+      </div>
+
+      <!-- Campaign 8 -->
+      <div class="campaign-card">
+        <h3>// HoldingHands RAT Campaigns (2025)</h3>
+        <p>
+          Campaigns deployed HoldingHands RAT against organizations in Taiwan, Japan, and Malaysia.
+          Operations began with phishing emails containing malicious PDF documents, leading to
+          sophisticated infection chains involving shellcode loaders, privilege escalation, DLL
+          sideloading, and encrypted payload decryption before deploying the RAT entirely in memory.
+        </p>
+        <p>Capabilities: remote command execution, file upload/download, process management,
+        screen capture, credential theft, registry modification, and dynamic C2 updates.</p>
+      </div>
+
+      <!-- Campaign 9 -->
+      <div class="campaign-card">
+        <h3>// Japan &amp; Malaysia Expansion (2025)</h3>
+        <p>
+          By mid-to-late 2025, Silver Fox expanded beyond China and Taiwan, targeting organizations
+          throughout Japan and Malaysia using salary adjustment, tax regulation, government notice,
+          and corporate communication phishing themes.
+        </p>
+        <p>
+          Many executables were digitally signed using stolen certificates. Attack chains incorporated
+          DLL sideloading, TrustedInstaller privilege abuse, scheduled task persistence, and registry-based
+          C2 configuration updates.
+        </p>
+      </div>
+
+      <!-- Campaign 10 -->
+      <div class="campaign-card">
+        <h3>// ABCDoor Deployment Campaign (2025–2026)</h3>
+        <p>
+          Silver Fox deployed <strong>ABCDoor</strong>, a previously undocumented Python-based backdoor,
+          as an additional module through ValleyRAT. This modular architecture extended functionality
+          without replacing the existing malware framework.
+        </p>
+        <p>ABCDoor capabilities: remote shell access, file upload/download, clipboard monitoring,
+        multi-monitor screen streaming, remote process execution, self-updating functionality,
+        system reconnaissance, and persistence management.</p>
+      </div>
+
+      <!-- Campaign 11: Tax phishing — with ABCDoor tweet -->
+      <div class="campaign-card">
+        <h3>// Tax-Themed Espionage Campaigns (2025–2026)</h3>
+        <p>
+          Highly localized phishing campaigns impersonating national tax authorities across Taiwan,
+          India, Indonesia, Russia, and South Africa. Attackers distributed thousands of emails
+          containing malicious PDF documents, LNK files, or compressed archives claiming to contain
+          tax audit notifications or financial reports.
+        </p>
+
+        <p>Infection chain:</p>
+        <ol style="padding-left:1.5rem;font-size:13px;color:var(--muted);line-height:1.85;">
+          <li>Tax-themed phishing email</li>
+          <li>Malicious PDF or compressed archive</li>
+          <li>Modified RustSL loader</li>
+          <li>Encrypted shellcode execution</li>
+          <li>ValleyRAT deployment</li>
+          <li>ABCDoor installation</li>
+          <li>Persistent C2 communication</li>
+        </ol>
+
+        <p style="margin-top:.75rem;">Primary targets: Government · Industrial Manufacturing ·
+        Transportation · Consulting · Retail · Trade · Logistics. Researchers recorded more than
+        <strong>1,600 malicious phishing emails</strong> in the initial stages — one of the largest
+        documented Silver Fox campaigns.</p>
+
+        <div class="intel-card" style="margin:1rem 0;">
+          <img src="../assets/apts/intel/Screenshot_2026-07-11_201755.png"
+               alt="Tweet: Silver Fox linked to ABCDoor malware via tax-themed phishing India and Russia" />
+          <div class="intel-card-body">
+            <div class="intel-card-label">// INTEL — ABCDOOR TAX PHISHING (DEC 2025 – JAN 2026)</div>
+            <p class="intel-card-text">
+              Cyber_OSINT confirmed China-based Silver Fox linking the ABCDoor backdoor to tax-themed
+              phishing campaigns. The campaign impersonated India's Income Tax Department (December 2025)
+              and targeted Russia-based organizations (January 2026). The malware employed
+              <strong>HalosGate indirect syscalls</strong> for telemetry blinding, a
+              <strong>Phantom Persistence Module</strong> in hijack mode using
+              <code>RegisterApplicationRestart</code>, and sandbox/VM detection before executing
+              the payload. This level of anti-analysis sophistication confirms ABCDoor as a mature
+              second-stage backdoor, not an opportunistic dropper.
+            </p>
+            <div class="intel-card-source">Source: Cyber_OSINT (@Cyber_O51NT) · May 5, 2026 · thehackernews.com</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Campaign 12 -->
+      <div class="campaign-card">
+        <h3>// MODBEACON &amp; Ongoing Evolution (2026–Present)</h3>
+        <p>
+          Silver Fox continues to rapidly evolve its malware ecosystem. Recent campaigns demonstrate
+          increased use of modular malware architectures, Python-based backdoors, Rust-based loaders,
+          stolen digital certificates, kernel-level privilege escalation, BYOVD techniques, and
+          sophisticated anti-analysis mechanisms.
+        </p>
+        <p>
+          The group has expanded geographically beyond Greater China into Southeast Asia and other
+          regions. The introduction of MODBEACON — using in-memory execution and encrypted gRPC C2
+          streaming — represents the group's latest evolution in stealth capability.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ════════════════════════════════════════
+         8. MALWARE ARSENAL
+    ════════════════════════════════════════ -->
+    <div class="report-section" id="arsenal">
+      <h2>8. Malware Arsenal</h2>
+
+      <p>
+        Silver Fox doesn't rely on a single malware family — it runs a modular toolkit built to cover
+        the full intrusion lifecycle, from initial access through long-term espionage. Components are
+        interchangeable by design: loaders, RATs, and kernel-level evasion tools can be swapped in and
+        out while the overall attack chain stays consistent across campaigns.
+      </p>
+
+      <p>
+        <strong>Core payload.</strong> ValleyRAT (also tracked as Winos 4.0) is the group's flagship
+        RAT and the centerpiece of most operations. It's typically delivered via trojanized software
+        installers, SEO poisoning, and phishing lures. Once deployed, ValleyRAT can pull down secondary
+        payloads — ABCDoor, HoldingHands RAT, or AtlasCross RAT — to extend functionality or maintain
+        redundant access.
+      </p>
+
+      <p>
+        <strong>Delivery and evasion.</strong> Lightweight loaders (RustSL, Catena, PNGPlug) handle
+        the decrypt-and-launch step for secondary payloads while evading AV. Recent campaigns layer
+        in BYOVD techniques — abusing the Zemana driver, WatchDog Driver, and Nidhogg — to kill EDR
+        and gain kernel-level control before the main payload lands.
+      </p>
+
+      <div class="table-wrap">
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>MALWARE</th>
+              <th>TYPE</th>
+              <th>FIRST SEEN</th>
+              <th>PURPOSE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ValleyRAT / Winos 4.0</strong></td>
+              <td><span class="arsenal-tag tag-rat">RAT</span></td>
+              <td>2022–2023</td>
+              <td>Primary backdoor — C2, plugin loading, persistence, file management</td>
+            </tr>
+            <tr>
+              <td><strong>ABCDoor</strong></td>
+              <td><span class="arsenal-tag tag-back">BACKDOOR</span></td>
+              <td>Late 2024</td>
+              <td>Second-stage — remote desktop, screen/clipboard theft, file management, self-update</td>
+            </tr>
+            <tr>
+              <td><strong>MODBEACON</strong></td>
+              <td><span class="arsenal-tag tag-rat">RAT</span></td>
+              <td>2026</td>
+              <td>In-memory Rust RAT — gRPC C2, fingerprinting, scheduled task persistence, modular</td>
+            </tr>
+            <tr>
+              <td><strong>HoldingHands RAT</strong></td>
+              <td><span class="arsenal-tag tag-rat">RAT</span></td>
+              <td>2024–2025</td>
+              <td>Remote administration, file management, remote desktop, espionage</td>
+            </tr>
+            <tr>
+              <td><strong>AtlasCross RAT</strong></td>
+              <td><span class="arsenal-tag tag-rat">RAT</span></td>
+              <td>2026</td>
+              <td>Memory-resident, encrypted C2, PowerShell framework, remote shell, file ops</td>
+            </tr>
+            <tr>
+              <td><strong>Gh0stCringe</strong></td>
+              <td><span class="arsenal-tag tag-rat">RAT</span></td>
+              <td>2025</td>
+              <td>Gh0st RAT variant — remote control, persistence, modular espionage payload</td>
+            </tr>
+            <tr>
+              <td><strong>RustSL</strong></td>
+              <td><span class="arsenal-tag tag-loader">LOADER</span></td>
+              <td>2025</td>
+              <td>Decrypts shellcode, delivers ValleyRAT, bypasses AV</td>
+            </tr>
+            <tr>
+              <td><strong>PNGPlug</strong></td>
+              <td><span class="arsenal-tag tag-loader">LOADER</span></td>
+              <td>2025</td>
+              <td>Downloads and decrypts additional payloads during multi-stage infections</td>
+            </tr>
+            <tr>
+              <td><strong>Catena</strong></td>
+              <td><span class="arsenal-tag tag-loader">LOADER</span></td>
+              <td>2025</td>
+              <td>Loads encrypted payloads and executes second-stage malware</td>
+            </tr>
+            <tr>
+              <td><strong>CleverSoar</strong></td>
+              <td><span class="arsenal-tag tag-trojan">TROJAN</span></td>
+              <td>2025</td>
+              <td>Fake installer deploying Silver Fox malware alongside a legitimate application</td>
+            </tr>
+            <tr>
+              <td><strong>Nidhogg</strong></td>
+              <td><span class="arsenal-tag tag-kernel">KERNEL</span></td>
+              <td>2025</td>
+              <td>Kernel rootkit / BYOVD — abuses vulnerable drivers to disable EDR</td>
+            </tr>
+            <tr>
+              <td><strong>WatchDog Driver</strong></td>
+              <td><span class="arsenal-tag tag-kernel">KERNEL</span></td>
+              <td>2025</td>
+              <td>Undetected driver for defense evasion and kernel-level operations</td>
+            </tr>
+            <tr>
+              <td><strong>Zemana Driver</strong></td>
+              <td><span class="arsenal-tag tag-kernel">KERNEL</span></td>
+              <td>Reused 2025</td>
+              <td>Exploited for BYOVD attacks to disable endpoint protection</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         9. MITRE ATT&CK
+    ════════════════════════════════════════ -->
+    <div class="report-section" id="mitre">
+      <h2>9. MITRE ATT&amp;CK Mapping</h2>
+
+      <div class="mitre-grid">
+        <div class="mitre-cell">
+          <div class="mitre-id">T1566.001</div>
+          <div class="mitre-name">Spearphishing Attachment</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1566.002</div>
+          <div class="mitre-name">Spearphishing Link</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1195.002</div>
+          <div class="mitre-name">Software Supply Chain</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1574.002</div>
+          <div class="mitre-name">DLL Side-Loading</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1055</div>
+          <div class="mitre-name">Process Injection</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1620</div>
+          <div class="mitre-name">Reflective Code Loading</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1543.003</div>
+          <div class="mitre-name">Windows Service</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1053.005</div>
+          <div class="mitre-name">Scheduled Task</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1547.001</div>
+          <div class="mitre-name">Registry Run Keys</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1014</div>
+          <div class="mitre-name">Rootkit</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1562.001</div>
+          <div class="mitre-name">Disable/Modify Tools</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1027</div>
+          <div class="mitre-name">Obfuscated Files or Info</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1140</div>
+          <div class="mitre-name">Deobfuscate/Decode</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1497</div>
+          <div class="mitre-name">Virtualization/Sandbox Evasion</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1059.001</div>
+          <div class="mitre-name">PowerShell</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1218</div>
+          <div class="mitre-name">System Binary Proxy Exec</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1003</div>
+          <div class="mitre-name">OS Credential Dumping</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1539</div>
+          <div class="mitre-name">Steal Web Session Cookie</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1113</div>
+          <div class="mitre-name">Screen Capture</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1115</div>
+          <div class="mitre-name">Clipboard Data</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1041</div>
+          <div class="mitre-name">Exfil Over C2 Channel</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1071.001</div>
+          <div class="mitre-name">Web Protocols (gRPC/HTTP)</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1573</div>
+          <div class="mitre-name">Encrypted Channel</div>
+        </div>
+        <div class="mitre-cell">
+          <div class="mitre-id">T1608.006</div>
+          <div class="mitre-name">SEO Poisoning</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FOOTER CREDITS ── -->
+    <div style="margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.9;">
+      <p>References: ThreatBook · Trend Micro · Palo Alto Unit 42 · Hunt.io · Hacker News · Mandiant · CISA · Cyber_OSINT</p>
+      <p style="margin-top:.5rem;">⚠ All research documented for educational and defensive purposes only. TLP: WHITE</p>
+    </div>
+
+  </div><!-- /report-container -->
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('nav-toggle');
+      var links = document.querySelector('nav .nav-links');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function () {
+        var open = links.classList.toggle('open');
+        btn.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          links.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

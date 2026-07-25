@@ -8,6 +8,8 @@
   <meta name="description" content="Independent malware analysis, threat intelligence, and cybersecurity research." />
   <link rel="stylesheet" href="assets/css/style.css" />
   <link rel="stylesheet" href="assets/css/home.css" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
   <style>
     /* ── HOME: THREAT ACTORS ── */
     .home-apt-grid {
@@ -101,6 +103,95 @@
       .home-apt-threat {
         margin-left: 0;
       }
+    }
+
+    /* ── HOME: FEATURED CODE (2 TABS) ── */
+    .home-code-panel {
+      background: var(--surface, #0d1117);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .home-code-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .home-code-tab {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .5px;
+      color: var(--muted, #8b949e);
+      background: none;
+      border: none;
+      border-right: 1px solid var(--border);
+      padding: 12px 22px;
+      cursor: pointer;
+      transition: color .2s ease, background .2s ease;
+    }
+
+    .home-code-tab:hover {
+      color: var(--text, #e2e8f0);
+    }
+
+    .home-code-tab.active {
+      color: #00ff9d;
+      background: rgba(0, 255, 157, 0.06);
+      box-shadow: inset 0 -2px 0 #00ff9d;
+    }
+
+    .home-code-body {
+      position: relative;
+    }
+
+    .home-code-view {
+      display: none;
+    }
+
+    .home-code-view.active {
+      display: block;
+    }
+
+    .home-code-view pre {
+      margin: 0;
+      padding: 1.4rem 1.6rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.7;
+      max-height: 480px;
+      overflow-y: auto;
+      background: transparent !important;
+    }
+
+    .home-code-view pre code.hljs {
+      background: transparent !important;
+      padding: 0;
+    }
+
+    .home-code-copy {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      letter-spacing: .5px;
+      color: var(--muted, #8b949e);
+      background: var(--surface, #0d1117);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: color .2s ease, border-color .2s ease;
+    }
+
+    .home-code-copy:hover {
+      color: #00ff9d;
+      border-color: #00ff9d;
+    }
+
+    .home-code-copy.copied {
+      color: #00ff9d;
+      border-color: #00ff9d;
     }
   </style>
 </head>
@@ -347,6 +438,375 @@
     </div>
   </div>
 
+  <!-- ── FEATURED CODE (2 TABS) ── -->
+  <div class="atl-section">
+    <div class="atl-section-header">
+      <span class="atl-section-title">
+        <svg class="atl-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M9 18l-6-6 6-6M15 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        Featured Code
+      </span>
+    </div>
+
+    <div class="home-code-panel">
+      <div class="home-code-tabs">
+        <!-- TODO: rename these two tabs to whatever you're showing -->
+        <button class="home-code-tab active" data-code-tab="tab1" onclick="homeCodeSwitch('tab1')">Malware
+          Collector</button>
+        <button class="home-code-tab" data-code-tab="tab2" onclick="homeCodeSwitch('tab2')">Extension Remover</button>
+      </div>
+      <div class="home-code-body">
+        <button class="home-code-copy" onclick="homeCodeCopy(this)">COPY</button>
+
+        <div class="home-code-view active" data-code-view="tab1">
+          <pre><code class="language-python">import re
+import sys
+import requests
+from pathlib import Path
+
+# --------------------------------------------------------------------------- #
+# Config
+# --------------------------------------------------------------------------- #
+
+MB_API = "https://mb-api.abuse.ch/api/v1/"
+MALSHARE_API = "https://malshare.com/api.php"
+
+MB_API_KEY = "your-malwarebazaar-key-here"       
+MALSHARE_API_KEY = "your-malwareshare-key-here"        
+
+
+DOWNLOAD_ROOT = Path("./samples")
+ARCHIVE_PASSWORD = "infected"  # standard password used by MalwareBazaar
+
+SHA256_RE = re.compile(r"^[A-Fa-f0-9]{64}$")
+
+
+def is_sha256(value: str) -&gt; bool:
+    return bool(SHA256_RE.match(value.strip()))
+
+
+def safe_name(name: str) -&gt; str:
+    return re.sub(r"[^A-Za-z0-9_.-]", "_", name)[:150]
+
+
+# --------------------------------------------------------------------------- #
+# MalwareBazaar
+# --------------------------------------------------------------------------- #
+
+class MalwareBazaar:
+    name = "malwarebazaar"
+    enabled = bool(MB_API_KEY) and MB_API_KEY != "your-malwarebazaar-key-here"
+
+    @staticmethod
+    def _headers():
+        return {"Auth-Key": MB_API_KEY}
+
+    @staticmethod
+    def search_by_tag(tag: str, limit: int = 1000):
+        """Return a list of dicts: {sha256, file_name} for samples matching a tag.
+        1000 is MalwareBazaar's own hard cap for this endpoint - there's no pagination,
+        so this is the maximum number of matches obtainable per tag."""
+        try:
+            resp = requests.post(
+                MB_API, data={"query": "get_taginfo", "tag": tag, "limit": str(limit)},
+                headers=MalwareBazaar._headers(),
+                timeout=30,
+            )
+            data = resp.json()
+        except Exception as e:
+            print(f"[malwarebazaar] tag search error: {e}")
+            return []
+
+        if data.get("query_status") != "ok":
+            print(f"[malwarebazaar] no results for tag '{tag}' (status: {data.get('query_status')})")
+            return []
+
+        results = []
+        for entry in data.get("data", []):
+            results.append({
+                "sha256": entry.get("sha256_hash"),
+                "file_name": entry.get("file_name") or entry.get("sha256_hash"),
+            })
+        return results
+
+    @staticmethod
+    def get_tags_for_hash(sha256: str):
+        """Return list of tags associated with a given sha256, or [] if not found."""
+        try:
+            resp = requests.post(
+                MB_API, data={"query": "get_info", "hash": sha256},
+                headers=MalwareBazaar._headers(),
+                timeout=30,
+            )
+            data = resp.json()
+        except Exception as e:
+            print(f"[malwarebazaar] hash lookup error: {e}")
+            return []
+
+        if data.get("query_status") != "ok":
+            return []
+
+        info = data["data"][0]
+        return info.get("tags", []) or []
+
+    @staticmethod
+    def download_sample(sha256: str, dest_dir: Path):
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        zip_path = dest_dir / f"{sha256}.zip"
+        try:
+            resp = requests.post(
+                MB_API, data={"query": "get_file", "sha256_hash": sha256},
+                headers=MalwareBazaar._headers(),
+                timeout=60,
+            )
+            if resp.status_code != 200 or resp.headers.get("Content-Type", "").startswith("application/json"):
+                print(f"[malwarebazaar] could not download {sha256} (not found / API error)")
+                return None
+            zip_path.write_bytes(resp.content)
+            return zip_path
+        except Exception as e:
+            print(f"[malwarebazaar] download error for {sha256}: {e}")
+            return None
+
+
+# --------------------------------------------------------------------------- #
+# MalShare (requires free API key)
+# --------------------------------------------------------------------------- #
+
+class MalShare:
+    name = "malshare"
+    enabled = bool(MALSHARE_API_KEY) and MALSHARE_API_KEY != "your-malshare-key-here"
+
+    @staticmethod
+    def search_by_tag(tag: str, limit: int = None):
+        """MalShare's search endpoint matches on filenames/type strings, not a formal
+        tagging system like MalwareBazaar. Used as a best-effort keyword search.
+        Returns every matching hash the API gives back (no artificial client-side cap)."""
+        try:
+            resp = requests.get(
+                MALSHARE_API,
+                params={"api_key": MALSHARE_API_KEY, "action": "search", "query": tag},
+                timeout=30,
+            )
+            data = resp.json()
+        except Exception as e:
+            print(f"[malshare] search error: {e}")
+            return []
+
+        if not isinstance(data, list):
+            return []
+
+        results = []
+        for h in data:
+            if is_sha256(h):
+                results.append({"sha256": h, "file_name": h})
+        return results
+
+    @staticmethod
+    def download_sample(sha256: str, dest_dir: Path):
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        out_path = dest_dir / f"{sha256}.bin"
+        try:
+            resp = requests.get(
+                MALSHARE_API,
+                params={"api_key": MALSHARE_API_KEY, "action": "getfile", "hash": sha256},
+                timeout=60,
+            )
+            if resp.status_code != 200 or len(resp.content) &lt; 16:
+                print(f"[malshare] could not download {sha256}")
+                return None
+            out_path.write_bytes(resp.content)
+            return out_path
+        except Exception as e:
+            print(f"[malshare] download error for {sha256}: {e}")
+            return None
+
+
+PLATFORMS = [MalwareBazaar, MalShare]
+
+
+# --------------------------------------------------------------------------- #
+# Core workflows
+# --------------------------------------------------------------------------- #
+
+def download_for_tag(tag: str, limit_per_platform: int = 1000):
+    tag_dir_name = safe_name(tag)
+    total_downloaded = 0
+
+    for platform in PLATFORMS:
+        if not platform.enabled:
+            print(f"\n[{platform.name}] skipped (not configured / no API key set)")
+            continue
+
+        print(f"\n[{platform.name}] searching tag '{tag}' ...")
+        matches = platform.search_by_tag(tag, limit=limit_per_platform)
+        if not matches:
+            print(f"[{platform.name}] no matches")
+            continue
+
+        print(f"[{platform.name}] found {len(matches)} sample(s)")
+        dest_dir = DOWNLOAD_ROOT / platform.name / tag_dir_name
+
+        for m in matches:
+            sha256 = m["sha256"]
+            print(f"  -&gt; downloading {sha256} ...", end=" ")
+            path = platform.download_sample(sha256, dest_dir)
+
+            if path:
+                print(f"saved to {path}")
+                total_downloaded += 1
+            else:
+                print("failed")
+
+    print(f"\nDone. {total_downloaded} sample(s) downloaded across all enabled platforms.")
+    print(f"NOTE: MalwareBazaar archives are password protected, password: {ARCHIVE_PASSWORD}")
+    print("Handle everything on an isolated analysis VM only.")
+
+
+def download_for_hash(sha256: str, limit_per_platform: int = 1000):
+    sha256 = sha256.strip().lower()
+
+    if not MalwareBazaar.enabled:
+        print("MalwareBazaar is not configured (MB_API_KEY is still the placeholder), "
+              "and it's the only platform here that can resolve a hash to its tag(s).")
+        print("Get a free key at https://auth.abuse.ch/ and paste it into the "
+              "MB_API_KEY variable near the top of this script, then try again.")
+        return
+
+    print(f"\nLooking up tags for hash {sha256} ...")
+    tags = MalwareBazaar.get_tags_for_hash(sha256)
+
+    if not tags:
+        print("[malwarebazaar] no tags found for this hash.")
+        print("Attempting direct download by hash from platforms that support it instead.")
+        total = 0
+        for platform in PLATFORMS:
+            if not platform.enabled:
+                continue
+            dest_dir = DOWNLOAD_ROOT / platform.name / safe_name(sha256)
+            print(f"[{platform.name}] downloading {sha256} directly ...", end=" ")
+            path = platform.download_sample(sha256, dest_dir)
+            if path:
+                print(f"saved to {path}")
+                total += 1
+            else:
+                print("failed / unavailable")
+        print(f"\nDone. {total} sample(s) downloaded directly by hash.")
+        return
+
+    print(f"Found tag(s): {', '.join(tags)}")
+    for tag in tags:
+        print(f"\n=== Searching all platforms using tag: '{tag}' ===")
+        download_for_tag(tag, limit_per_platform=limit_per_platform)
+
+
+# --------------------------------------------------------------------------- #
+# Entry point
+# --------------------------------------------------------------------------- #
+
+def main():
+    global DOWNLOAD_ROOT
+
+    print("=" * 60)
+    print("Malware Sample Fetcher — free public platforms")
+    print("=" * 60)
+    print(f"Enabled platforms: {', '.join(p.name for p in PLATFORMS if p.enabled) or 'none!'}")
+    if not MalwareBazaar.enabled:
+        print("WARNING: MB_API_KEY is still the placeholder - MalwareBazaar requires an Auth-Key.")
+        print("         Get a free one at https://auth.abuse.ch/ and paste it into")
+        print("         the MB_API_KEY variable near the top of this script.")
+    if not MalShare.enabled:
+        print("(Paste a real MALSHARE_API_KEY near the top of this script to also enable MalShare)")
+
+    custom_path = input(f"\nWhere should samples be saved? [default: {DOWNLOAD_ROOT}]: ").strip()
+    if custom_path:
+        DOWNLOAD_ROOT = Path(custom_path).expanduser()
+    try:
+        DOWNLOAD_ROOT.mkdir(parents=True, exist_ok=True)
+    except Exception as e:
+        print(f"Could not create/access '{DOWNLOAD_ROOT}': {e}")
+        sys.exit(1)
+    print(f"Samples will be saved under: {DOWNLOAD_ROOT.resolve()}")
+
+    choice = input("\nSearch by [t]ag or [h]ash? ").strip().lower()
+
+    if choice.startswith("t"):
+        tag = input("Enter tag (e.g. AgentTesla, LazarusGroup, njrat): ").strip()
+        if not tag:
+            print("No tag provided, exiting.")
+            sys.exit(1)
+        download_for_tag(tag)
+
+    elif choice.startswith("h"):
+        h = input("Enter SHA256 hash: ").strip()
+        if not is_sha256(h):
+            print("That doesn't look like a valid SHA256 hash (64 hex chars). Exiting.")
+            sys.exit(1)
+        download_for_hash(h)
+
+    else:
+        print("Please answer 't' or 'h'.")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+        </div>
+
+        <div class="home-code-view" data-code-view="tab2">
+          <pre><code class="language-python">from pathlib import Path
+
+
+def remove_extensions(directory):
+    directory = Path(directory)
+
+    if not directory.exists():
+        print(f"[ERROR] Directory not found: {directory}")
+        return
+
+    renamed = 0
+    skipped = 0
+
+    for file in directory.rglob("*"):
+        if not file.is_file():
+            continue
+
+        # Skip files that already have no extension
+        if file.suffix == "":
+            skipped += 1
+            continue
+
+        new_file = file.with_suffix("")
+
+        # Don't overwrite existing files
+        if new_file.exists():
+            print(f"[SKIP] {new_file} already exists")
+            skipped += 1
+            continue
+
+        try:
+            file.rename(new_file)
+            print(f"[OK] {file.name} -&gt; {new_file.name}")
+            renamed += 1
+        except Exception as e:
+            print(f"[ERROR] {file}: {e}")
+
+    print("\n========== Summary ==========")
+    print(f"Renamed : {renamed}")
+    print(f"Skipped : {skipped}")
+
+
+if __name__ == "__main__":
+    directory = input("Enter the directory path: ").strip().strip('"')
+
+    remove_extensions(directory)</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── BOTTOM 4-UP SECTION CARDS ── -->
   <div class="atl-section">
     <div class="atl-card-row">
@@ -508,11 +968,45 @@
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/reports-data.js"></script>
   <script src="assets/js/charts.js"></script>
   <script src="assets/js/home.js"></script>
   <script src="assets/js/main.js"></script>
+
+  <script>
+    if (window.hljs) {
+      hljs.highlightAll();
+    }
+  </script>
+
+  <script>
+    function homeCodeSwitch(id) {
+      document.querySelectorAll('.home-code-tab').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-code-tab') === id);
+      });
+      document.querySelectorAll('.home-code-view').forEach(function (view) {
+        view.classList.toggle('active', view.getAttribute('data-code-view') === id);
+      });
+    }
+
+    function homeCodeCopy(btn) {
+      var panel = btn.closest('.home-code-panel');
+      var activeView = panel.querySelector('.home-code-view.active pre');
+      var text = activeView ? activeView.innerText : '';
+      navigator.clipboard.writeText(text).then(function () {
+        var original = btn.textContent;
+        btn.textContent = 'COPIED';
+        btn.classList.add('copied');
+        setTimeout(function () {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    }
+  </script>
 
   <script>
     (function () {

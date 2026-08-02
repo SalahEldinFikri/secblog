@@ -180,6 +180,7 @@
       margin-bottom: 0;
       border-bottom: 1px solid var(--border);
     }
+
     .ytab {
       font-family: var(--mono);
       font-size: 11px;
@@ -193,83 +194,209 @@
       transition: all .15s;
       text-transform: uppercase;
     }
-    .ytab:hover { color: var(--green); background: var(--surface2); }
-    .ytab.active { color: var(--green); background: var(--surface2); border-bottom: 2px solid var(--green); }
 
-    .ytab-panel { display: none; background: transparent; border: none; border-top: 1px solid var(--border); padding: 1.5rem 0; }
-    .ytab-panel.active { display: block; }
+    .ytab:hover {
+      color: var(--green);
+      background: var(--surface2);
+    }
+
+    .ytab.active {
+      color: var(--green);
+      background: var(--surface2);
+      border-bottom: 2px solid var(--green);
+    }
+
+    .ytab-panel {
+      display: none;
+      background: transparent;
+      border: none;
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 0;
+    }
+
+    .ytab-panel.active {
+      display: block;
+    }
 
     /* ── Carousel ── */
-    .yref-carousel-wrap { position: relative; }
+    .yref-carousel-wrap {
+      position: relative;
+    }
+
     .yref-carousel-nav {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: .85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: .85rem;
     }
+
     .yref-carousel-counter {
-      font-family: var(--mono); font-size: 11px;
-      color: var(--muted); letter-spacing: 1px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
     }
-    .yref-carousel-counter span { color: var(--green); }
-    .yref-nav-btns { display: flex; gap: 6px; }
+
+    .yref-carousel-counter span {
+      color: var(--green);
+    }
+
+    .yref-nav-btns {
+      display: flex;
+      gap: 6px;
+    }
+
     .yref-nav-btn {
-      font-family: var(--mono); font-size: 14px;
-      width: 32px; height: 32px;
-      background: var(--surface); border: 1px solid var(--border);
-      color: var(--muted); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all .15s; user-select: none;
+      font-family: var(--mono);
+      font-size: 14px;
+      width: 32px;
+      height: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s;
+      user-select: none;
     }
+
     .yref-nav-btn:hover:not(:disabled) {
-      border-color: var(--green); color: var(--green); background: var(--surface2);
+      border-color: var(--green);
+      color: var(--green);
+      background: var(--surface2);
     }
-    .yref-nav-btn:disabled { opacity: .25; cursor: not-allowed; }
-    .yref-carousel-viewport { overflow: visible; }
+
+    .yref-nav-btn:disabled {
+      opacity: .25;
+      cursor: not-allowed;
+    }
+
+    .yref-carousel-viewport {
+      overflow: visible;
+    }
+
     .yref-grid {
       display: block;
       width: 100%;
     }
+
     .yref-card {
       width: 100%;
       min-width: 0;
       box-sizing: border-box;
-      background: var(--surface); border: 1px solid var(--border);
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-top: 2px solid var(--green);
       padding: 1.1rem 1.25rem 1.25rem;
-      display: flex; flex-direction: column; gap: .7rem;
+      display: flex;
+      flex-direction: column;
+      gap: .7rem;
       transition: background .15s;
     }
-    .yref-card:hover { background: var(--surface2); }
-    .yref-dots { display: flex; gap: 5px; justify-content: center; margin-top: .85rem; }
+
+    .yref-card:hover {
+      background: var(--surface2);
+    }
+
+    .yref-dots {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      margin-top: .85rem;
+    }
+
     .yref-dot {
-      width: 18px; height: 3px; background: var(--border);
-      cursor: pointer; transition: background .2s, width .2s;
+      width: 18px;
+      height: 3px;
+      background: var(--border);
+      cursor: pointer;
+      transition: background .2s, width .2s;
     }
-    .yref-dot.active { background: var(--green); width: 28px; }
+
+    .yref-dot.active {
+      background: var(--green);
+      width: 28px;
+    }
+
     .yref-card-title {
-      font-family: var(--mono); font-size: 10px;
-      color: var(--green); letter-spacing: 2px; text-transform: uppercase;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--green);
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
+
     .yref-code {
-      background: rgba(2,8,20,.7); border: 1px solid rgba(31,45,69,.6);
-      padding: .85rem 1rem; font-family: var(--mono); font-size: 11px;
-      color: var(--text); line-height: 1.75; overflow-x: auto; white-space: pre; flex: 1;
+      background: rgba(2, 8, 20, .7);
+      border: 1px solid rgba(31, 45, 69, .6);
+      padding: .85rem 1rem;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text);
+      line-height: 1.75;
+      overflow-x: auto;
+      white-space: pre;
+      flex: 1;
     }
-    .yref-code::-webkit-scrollbar { height: 3px; }
-    .yref-code::-webkit-scrollbar-thumb { background: var(--border); }
-    .tok-comment { color: var(--muted); font-style: italic; }
-    .tok-string  { color: var(--amber); }
-    .tok-var     { color: var(--green); }
-    .tok-num     { color: var(--blue); }
-    .tok-flag    { color: var(--blue); }
-    .tok-kw      { color: var(--red); }
+
+    .yref-code::-webkit-scrollbar {
+      height: 3px;
+    }
+
+    .yref-code::-webkit-scrollbar-thumb {
+      background: var(--border);
+    }
+
+    .tok-comment {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .tok-string {
+      color: var(--amber);
+    }
+
+    .tok-var {
+      color: var(--green);
+    }
+
+    .tok-num {
+      color: var(--blue);
+    }
+
+    .tok-flag {
+      color: var(--blue);
+    }
+
+    .tok-kw {
+      color: var(--red);
+    }
+
     .yref-note {
-      font-size: 12px; color: var(--muted); line-height: 1.6;
-      border-top: 1px solid var(--border); padding-top: .6rem;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+      border-top: 1px solid var(--border);
+      padding-top: .6rem;
     }
-    .yref-note code { font-family: var(--mono); font-size: 11px; color: var(--green); }
+
+    .yref-note code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--green);
+    }
+
     @media(max-width:700px) {
-      .yref-card { width: 100%; }
-      .ytab { font-size: 10px; padding: 6px 9px; }
+      .yref-card {
+        width: 100%;
+      }
+
+      .ytab {
+        font-size: 10px;
+        padding: 6px 9px;
+      }
     }
 
     /* ── Page hero ── */
@@ -418,7 +545,9 @@
     }
 
     @media(max-width:700px) {
-      .yara-hero-sub { font-size: 13px; }
+      .yara-hero-sub {
+        font-size: 13px;
+      }
     }
   </style>
 </head>
@@ -447,15 +576,15 @@
       </div>
     </div>
     <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="reports.html">Reports</a>
-      <a href="APT.html">APTs</a>
-      <a href="ioc-feed.html">IOCs</a>
+      <a href="index.html" class="active">Home</a>
+      <a href="reports.html" class="active">Reports</a>
+      <a href="APT.html" class="active">APTs</a>
+      <a href="ioc-feed.html" class="active">IOCs</a>
       <a href="yara-feed.html" class="active">YARA Rules</a>
-      <a href="siem-reference.html">SIEM Reference</a>
-      <a href="malware-structures.html">Structures</a>
-      <a href="achievements.html">Achievements</a>
-      <a href="about.html">About Me</a>
+      <a href="siem-reference.html" class="active">SIEM Reference</a>
+      <a href="malware-structures.html" class="active">Structures</a>
+      <a href="achievements.html" class="active">Achievements</a>
+      <a href="about.html" class="active">About Me</a>
 
       <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
     </div>
@@ -493,69 +622,73 @@
 
     <!-- ── CLI USAGE ── -->
     <div class="ytab-panel active" id="tab-cli">
-    <div class="yref-carousel-wrap">
-      <div class="yref-carousel-nav">
-        <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp; <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
-        <div class="yref-nav-btns">
-          <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
-          <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+      <div class="yref-carousel-wrap">
+        <div class="yref-carousel-nav">
+          <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+          <div class="yref-nav-btns">
+            <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
+            <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+          </div>
         </div>
-      </div>
-      <div class="yref-carousel-viewport">
-        <div class="yref-grid">
+        <div class="yref-carousel-viewport">
+          <div class="yref-grid">
 
 
-        <div class="yref-card">
-          <div class="yref-card-title">Basic Scan</div>
-          <pre class="yref-code">yara rule.yar target_file
+            <div class="yref-card">
+              <div class="yref-card-title">Basic Scan</div>
+              <pre class="yref-code">yara rule.yar target_file
 yara rule.yar target_directory/
 yara rules/ target_directory/</pre>
-          <div class="yref-note">Scan a file, directory, or folder of rules against a folder of samples.</div>
-      </div>
+              <div class="yref-note">Scan a file, directory, or folder of rules against a folder of samples.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Recursive Scan</div>
-          <pre class="yref-code">yara -r rule.yar /path/to/dir/
+            <div class="yref-card">
+              <div class="yref-card-title">Recursive Scan</div>
+              <pre class="yref-code">yara -r rule.yar /path/to/dir/
 yara -r rules/ /samples/</pre>
-          <div class="yref-note"><code>-r</code> recurses into subdirectories. Essential for bulk sample scanning.</div>
-        </div>
+              <div class="yref-note"><code>-r</code> recurses into subdirectories. Essential for bulk sample scanning.
+              </div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Scan Running Processes</div>
-          <pre class="yref-code">yara rule.yar $(pgrep -x notepad)
+            <div class="yref-card">
+              <div class="yref-card-title">Scan Running Processes</div>
+              <pre class="yref-code">yara rule.yar $(pgrep -x notepad)
 yara rule.yar &lt;PID&gt;
 
 # Scan ALL running processes
 for pid in /proc/[0-9]*/; do
   yara rule.yar ${pid##*/} 2>/dev/null
 done</pre>
-          <div class="yref-note">Pass a PID instead of a file to scan a process's memory. Requires appropriate privileges.</div>
-        </div>
+              <div class="yref-note">Pass a PID instead of a file to scan a process's memory. Requires appropriate
+                privileges.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Scan with Timeout &amp; Size Limit</div>
-          <pre class="yref-code"># Timeout per file (seconds)
+            <div class="yref-card">
+              <div class="yref-card-title">Scan with Timeout &amp; Size Limit</div>
+              <pre class="yref-code"># Timeout per file (seconds)
 yara --timeout=30 rule.yar /samples/
 
 # Skip files larger than N bytes
 yara -z 5242880 rule.yar /samples/
 # (-z = max file size, here 5MB)</pre>
-          <div class="yref-note">Prevents hung scans on large files or complex rules.</div>
-        </div>
+              <div class="yref-note">Prevents hung scans on large files or complex rules.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Show Matching Strings</div>
-          <pre class="yref-code">yara -s rule.yar target.exe
+            <div class="yref-card">
+              <div class="yref-card-title">Show Matching Strings</div>
+              <pre class="yref-code">yara -s rule.yar target.exe
 # Output:
 # RuleName target.exe
 # 0x1234:$string1: 4d 5a 90 00
 # 0x5678:$string2: This program</pre>
-          <div class="yref-note"><code>-s</code> prints the offset and value of every matched string. Critical for triage.</div>
-        </div>
+              <div class="yref-note"><code>-s</code> prints the offset and value of every matched string. Critical for
+                triage.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Print Only Matching / Non-Matching</div>
-          <pre class="yref-code"># Only print matching files
+            <div class="yref-card">
+              <div class="yref-card-title">Print Only Matching / Non-Matching</div>
+              <pre class="yref-code"># Only print matching files
 yara rule.yar /samples/
 
 # Only print NON-matching files
@@ -563,12 +696,13 @@ yara -n rule.yar /samples/
 
 # Invert: alert on files that DON'T match
 yara --negate rule.yar /samples/</pre>
-          <div class="yref-note"><code>-n</code> is useful for allowlisting — finding samples that evade a rule.</div>
-        </div>
+              <div class="yref-note"><code>-n</code> is useful for allowlisting — finding samples that evade a rule.
+              </div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Multiple Rule Files</div>
-          <pre class="yref-code"># Two rule files
+            <div class="yref-card">
+              <div class="yref-card-title">Multiple Rule Files</div>
+              <pre class="yref-code"># Two rule files
 yara rule1.yar rule2.yar target.exe
 
 # Entire rules directory
@@ -577,12 +711,13 @@ yara rules/*.yar target.exe
 # Compiled rules (faster)
 yarac rules/*.yar compiled.yarc
 yara compiled.yarc /samples/</pre>
-          <div class="yref-note">Compile rules with <code>yarac</code> for repeated scans — much faster than re-parsing.</div>
-        </div>
+              <div class="yref-note">Compile rules with <code>yarac</code> for repeated scans — much faster than
+                re-parsing.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Output &amp; Logging</div>
-          <pre class="yref-code"># Save results to file
+            <div class="yref-card">
+              <div class="yref-card-title">Output &amp; Logging</div>
+              <pre class="yref-code"># Save results to file
 yara -r rule.yar /samples/ > results.txt
 
 # Print rule name only (no filename)
@@ -596,12 +731,12 @@ import yara, json
 rules = yara.compile('rule.yar')
 matches = rules.match('target.exe')
 print(json.dumps([str(m) for m in matches]))</pre>
-          <div class="yref-note">For automation pipelines, use <code>yara-python</code> for structured output.</div>
-        </div>
+              <div class="yref-note">For automation pipelines, use <code>yara-python</code> for structured output.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">External Variables</div>
-          <pre class="yref-code"># Pass external vars at runtime
+            <div class="yref-card">
+              <div class="yref-card-title">External Variables</div>
+              <pre class="yref-code"># Pass external vars at runtime
 yara -d filename=malware.exe rule.yar target.exe
 yara -d extension=.exe -d size=1024 rule.yar /samples/
 
@@ -610,12 +745,13 @@ rule uses_ext {
   condition:
     filename matches /malware/
 }</pre>
-          <div class="yref-note">External variables let you pass context (filename, path, size) into conditions at scan time.</div>
-        </div>
+              <div class="yref-note">External variables let you pass context (filename, path, size) into conditions at
+                scan time.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">yara-python Quickstart</div>
-          <pre class="yref-code">import yara
+            <div class="yref-card">
+              <div class="yref-card-title">yara-python Quickstart</div>
+              <pre class="yref-code">import yara
 
 # Compile from file or string
 rules = yara.compile(filepath='rule.yar')
@@ -635,31 +771,33 @@ matches = rules.match(data=b'\x4d\x5a...')
 
 for m in matches:
     print(m.rule, m.strings)</pre>
-          <div class="yref-note">yara-python is the standard way to integrate YARA into analysis pipelines and sandboxes.</div>
-        </div>
+              <div class="yref-note">yara-python is the standard way to integrate YARA into analysis pipelines and
+                sandboxes.</div>
+            </div>
 
+          </div>
+        </div>
       </div>
     </div>
-    </div>
-  </div>
 
     <!-- ── RULE SYNTAX ── -->
     <div class="ytab-panel" id="tab-syntax">
-    <div class="yref-carousel-wrap">
-      <div class="yref-carousel-nav">
-        <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp; <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
-        <div class="yref-nav-btns">
-          <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
-          <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+      <div class="yref-carousel-wrap">
+        <div class="yref-carousel-nav">
+          <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+          <div class="yref-nav-btns">
+            <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
+            <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+          </div>
         </div>
-      </div>
-      <div class="yref-carousel-viewport">
-        <div class="yref-grid">
+        <div class="yref-carousel-viewport">
+          <div class="yref-grid">
 
 
-        <div class="yref-card">
-          <div class="yref-card-title">Full Rule Anatomy</div>
-          <pre class="yref-code">rule RuleName : tag1 tag2 {
+            <div class="yref-card">
+              <div class="yref-card-title">Full Rule Anatomy</div>
+              <pre class="yref-code">rule RuleName : tag1 tag2 {
 
   meta:
     author      = "SalahEldin Kamil"
@@ -679,12 +817,13 @@ for m in matches:
     filesize < 2MB and
     any of them
 }</pre>
-          <div class="yref-note">Every rule has an optional <code>meta</code>, optional <code>strings</code>, and a mandatory <code>condition</code>.</div>
-      </div>
+              <div class="yref-note">Every rule has an optional <code>meta</code>, optional <code>strings</code>, and a
+                mandatory <code>condition</code>.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Private &amp; Global Rules</div>
-          <pre class="yref-code">// Private: matches but never reported
+            <div class="yref-card">
+              <div class="yref-card-title">Private &amp; Global Rules</div>
+              <pre class="yref-code">// Private: matches but never reported
 private rule IsPE {
   condition:
     uint16(0) == 0x5A4D and
@@ -702,12 +841,13 @@ rule Malware {
   condition:
     IsPE and $string1
 }</pre>
-          <div class="yref-note">Private rules are helpers — reusable conditions that don't generate output. Global rules act as pre-filters.</div>
-        </div>
+              <div class="yref-note">Private rules are helpers — reusable conditions that don't generate output. Global
+                rules act as pre-filters.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Rule Inheritance / Chaining</div>
-          <pre class="yref-code">private rule HasMZHeader {
+            <div class="yref-card">
+              <div class="yref-card-title">Rule Inheritance / Chaining</div>
+              <pre class="yref-code">private rule HasMZHeader {
   condition:
     uint16(0) == 0x5A4D
 }
@@ -724,12 +864,13 @@ rule SuspiciousPE {
   condition:
     HasPEHeader and $s
 }</pre>
-          <div class="yref-note">Chain private rules to build layered, reusable logic without repeating conditions.</div>
-        </div>
+              <div class="yref-note">Chain private rules to build layered, reusable logic without repeating conditions.
+              </div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Includes</div>
-          <pre class="yref-code">// In your rule file:
+            <div class="yref-card">
+              <div class="yref-card-title">Includes</div>
+              <pre class="yref-code">// In your rule file:
 include "common/pe_helpers.yar"
 include "common/anti_debug.yar"
 
@@ -737,31 +878,33 @@ rule MyRule {
   condition:
     IsPE and HasAntiDebug
 }</pre>
-          <div class="yref-note">Split large rulesets into included files. Paths are relative to the including file.</div>
-        </div>
+              <div class="yref-note">Split large rulesets into included files. Paths are relative to the including file.
+              </div>
+            </div>
 
+          </div>
+        </div>
       </div>
     </div>
-    </div>
-  </div>
 
     <!-- ── STRINGS ── -->
     <div class="ytab-panel" id="tab-strings">
-    <div class="yref-carousel-wrap">
-      <div class="yref-carousel-nav">
-        <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp; <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
-        <div class="yref-nav-btns">
-          <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
-          <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+      <div class="yref-carousel-wrap">
+        <div class="yref-carousel-nav">
+          <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+          <div class="yref-nav-btns">
+            <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
+            <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+          </div>
         </div>
-      </div>
-      <div class="yref-carousel-viewport">
-        <div class="yref-grid">
+        <div class="yref-carousel-viewport">
+          <div class="yref-grid">
 
 
-        <div class="yref-card">
-          <div class="yref-card-title">String Types</div>
-          <pre class="yref-code">strings:
+            <div class="yref-card">
+              <div class="yref-card-title">String Types</div>
+              <pre class="yref-code">strings:
   // Plain text (case-sensitive)
   $plain = "This program cannot be run"
 
@@ -785,12 +928,13 @@ rule MyRule {
 
   // XOR with specific key range
   $xor2  = "cmd.exe" xor(0x01-0xff)</pre>
-          <div class="yref-note">Most important modifiers: <code>nocase</code>, <code>wide</code>, <code>ascii</code>, <code>xor</code>. Combine as needed.</div>
-      </div>
+              <div class="yref-note">Most important modifiers: <code>nocase</code>, <code>wide</code>,
+                <code>ascii</code>, <code>xor</code>. Combine as needed.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Hex Strings &amp; Wildcards</div>
-          <pre class="yref-code">strings:
+            <div class="yref-card">
+              <div class="yref-card-title">Hex Strings &amp; Wildcards</div>
+              <pre class="yref-code">strings:
   // Wildcard byte (?? = any byte)
   $h1 = { 4D 5A ?? 00 ?? ?? 00 00 }
 
@@ -806,12 +950,13 @@ rule MyRule {
   // Alternatives (OR within pattern)
   $h5 = { ( 4D 5A | 7F 45 4C 46 ) }
   // matches MZ or ELF magic</pre>
-          <div class="yref-note">Hex wildcards are essential for matching code patterns that change across compiler versions or obfuscation.</div>
-        </div>
+              <div class="yref-note">Hex wildcards are essential for matching code patterns that change across compiler
+                versions or obfuscation.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">String Modifiers</div>
-          <pre class="yref-code">strings:
+            <div class="yref-card">
+              <div class="yref-card-title">String Modifiers</div>
+              <pre class="yref-code">strings:
   $s1 = "CreateRemoteThread" nocase
   $s2 = "kernel32.dll" wide nocase
   $s3 = "payload" base64
@@ -820,12 +965,13 @@ rule MyRule {
   $s6 = "shellcode" xor(0x20-0x7f)
   $s7 = "config" fullword
   // fullword: won't match "myconfig"</pre>
-          <div class="yref-note"><code>fullword</code> enforces word boundary — prevents matching if adjacent to alphanumeric chars. <code>base64</code> matches all 3 base64 alignments automatically.</div>
-        </div>
+              <div class="yref-note"><code>fullword</code> enforces word boundary — prevents matching if adjacent to
+                alphanumeric chars. <code>base64</code> matches all 3 base64 alignments automatically.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">String Sets &amp; Wildcards</div>
-          <pre class="yref-code">strings:
+            <div class="yref-card">
+              <div class="yref-card-title">String Sets &amp; Wildcards</div>
+              <pre class="yref-code">strings:
   $inject_1 = "VirtualAllocEx"
   $inject_2 = "WriteProcessMemory"
   $inject_3 = "CreateRemoteThread"
@@ -845,12 +991,13 @@ condition:
 
   // All of a set
   all of ($inject_*)</pre>
-          <div class="yref-note">Wildcard sets (<code>$name_*</code>) are the most powerful grouping tool in YARA — match N of M related strings.</div>
-        </div>
+              <div class="yref-note">Wildcard sets (<code>$name_*</code>) are the most powerful grouping tool in YARA —
+                match N of M related strings.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">String Offset &amp; Count</div>
-          <pre class="yref-code">condition:
+            <div class="yref-card">
+              <div class="yref-card-title">String Offset &amp; Count</div>
+              <pre class="yref-code">condition:
   // String at a specific offset
   $mz at 0
   $pe at uint32(0x3C)
@@ -867,12 +1014,13 @@ condition:
   @string[0]  // offset of 1st match
   @string[1]  // offset of 2nd match
   !string[0]  // length of 1st match</pre>
-          <div class="yref-note"><code>#</code> = count, <code>@</code> = offset, <code>!</code> = length. Combine for precise positional logic.</div>
-        </div>
+              <div class="yref-note"><code>#</code> = count, <code>@</code> = offset, <code>!</code> = length. Combine
+                for precise positional logic.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Regex Patterns</div>
-          <pre class="yref-code">strings:
+            <div class="yref-card">
+              <div class="yref-card-title">Regex Patterns</div>
+              <pre class="yref-code">strings:
   // IPv4 address
   $ip  = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/
 
@@ -890,42 +1038,44 @@ condition:
 
   // Hex-encoded shellcode blob
   $shx = /([0-9a-fA-F]{2}){16,}/</pre>
-          <div class="yref-note">YARA regex uses PCRE syntax. Always add <code>nocase</code> for domains/paths. Anchors (<code>^</code> <code>$</code>) are not supported.</div>
-        </div>
+              <div class="yref-note">YARA regex uses PCRE syntax. Always add <code>nocase</code> for domains/paths.
+                Anchors (<code>^</code> <code>$</code>) are not supported.</div>
+            </div>
 
+          </div>
+        </div>
       </div>
     </div>
-    </div>
-  </div>
 
     <!-- ── CONDITIONS ── -->
     <div class="ytab-panel" id="tab-conditions">
-    <div class="yref-carousel-wrap">
-      <div class="yref-carousel-nav">
-        <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp; <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
-        <div class="yref-nav-btns">
-          <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
-          <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+      <div class="yref-carousel-wrap">
+        <div class="yref-carousel-nav">
+          <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+          <div class="yref-nav-btns">
+            <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
+            <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+          </div>
         </div>
-      </div>
-      <div class="yref-carousel-viewport">
-        <div class="yref-grid">
+        <div class="yref-carousel-viewport">
+          <div class="yref-grid">
 
 
-        <div class="yref-card">
-          <div class="yref-card-title">Boolean Logic</div>
-          <pre class="yref-code">condition:
+            <div class="yref-card">
+              <div class="yref-card-title">Boolean Logic</div>
+              <pre class="yref-code">condition:
   $a and $b
   $a or $b
   not $a
   ($a or $b) and not $c
   $a and ($b or ($c and $d))</pre>
-          <div class="yref-note">Standard boolean operators. Parentheses control precedence.</div>
-      </div>
+              <div class="yref-note">Standard boolean operators. Parentheses control precedence.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Integer Functions</div>
-          <pre class="yref-code">// Read integers from file at offset
+            <div class="yref-card">
+              <div class="yref-card-title">Integer Functions</div>
+              <pre class="yref-code">// Read integers from file at offset
 uint8(offset)    // 1-byte unsigned
 uint16(offset)   // 2-byte unsigned LE
 uint32(offset)   // 4-byte unsigned LE
@@ -938,12 +1088,13 @@ uint32be(offset) // 4-byte unsigned BE
 condition:
   uint16(0) == 0x5A4D and           // MZ
   uint32(uint32(0x3C)) == 0x00004550 // PE</pre>
-          <div class="yref-note">These are the most-used functions in YARA. <code>uint32(0x3C)</code> reads e_lfanew; dereferencing it reaches the NT signature.</div>
-        </div>
+              <div class="yref-note">These are the most-used functions in YARA. <code>uint32(0x3C)</code> reads
+                e_lfanew; dereferencing it reaches the NT signature.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Filesize &amp; Entrypoint</div>
-          <pre class="yref-code">condition:
+            <div class="yref-card">
+              <div class="yref-card-title">Filesize &amp; Entrypoint</div>
+              <pre class="yref-code">condition:
   // Size comparisons
   filesize < 1MB
   filesize < 500KB
@@ -955,12 +1106,13 @@ condition:
 
   // PE entrypoint via module
   pe.entry_point == 0x1000</pre>
-          <div class="yref-note"><code>filesize</code> supports KB/MB suffixes. <code>entrypoint</code> is deprecated — prefer <code>pe.entry_point</code>.</div>
-        </div>
+              <div class="yref-note"><code>filesize</code> supports KB/MB suffixes. <code>entrypoint</code> is
+                deprecated — prefer <code>pe.entry_point</code>.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">For Loops &amp; Iterators</div>
-          <pre class="yref-code">// At least N strings match at offset > X
+            <div class="yref-card">
+              <div class="yref-card-title">For Loops &amp; Iterators</div>
+              <pre class="yref-code">// At least N strings match at offset > X
 for any of ($str*) : ( @ > 0x1000 )
 
 // All strings in first 512 bytes
@@ -974,12 +1126,13 @@ for any i in (0..pe.number_of_sections-1) : (
   pe.sections[i].name == ".upx0" or
   pe.sections[i].entropy > 7.0
 )</pre>
-          <div class="yref-note">For-loops unlock per-occurrence logic. Combine with PE module section iterators for powerful structural rules.</div>
-        </div>
+              <div class="yref-note">For-loops unlock per-occurrence logic. Combine with PE module section iterators for
+                powerful structural rules.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Arithmetic &amp; Bitwise</div>
-          <pre class="yref-code">condition:
+            <div class="yref-card">
+              <div class="yref-card-title">Arithmetic &amp; Bitwise</div>
+              <pre class="yref-code">condition:
   // Arithmetic
   filesize \ 512 == 2    // integer division
   filesize % 16 == 0     // modulo (aligned)
@@ -991,12 +1144,13 @@ for any i in (0..pe.number_of_sections-1) : (
   uint32(0) ^ 0xFFFFFFFF
   uint8(0) >> 4            // right shift
   uint8(0) << 2            // left shift</pre>
-          <div class="yref-note">Useful for checking alignment, flag bits in PE headers, or custom encoding patterns.</div>
-        </div>
+              <div class="yref-note">Useful for checking alignment, flag bits in PE headers, or custom encoding
+                patterns.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Hash Functions in Conditions</div>
-          <pre class="yref-code">import "hash"
+            <div class="yref-card">
+              <div class="yref-card-title">Hash Functions in Conditions</div>
+              <pre class="yref-code">import "hash"
 
 condition:
   // MD5 of entire file
@@ -1011,12 +1165,13 @@ condition:
   hash.md5(pe.sections[0].raw_data_offset,
            pe.sections[0].raw_data_size) ==
     "abc123..."</pre>
-          <div class="yref-note">Hash conditions are exact — use them for known-bad sample matching when structural rules aren't enough.</div>
-        </div>
+              <div class="yref-note">Hash conditions are exact — use them for known-bad sample matching when structural
+                rules aren't enough.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Counting &amp; Thresholds</div>
-          <pre class="yref-code">condition:
+            <div class="yref-card">
+              <div class="yref-card-title">Counting &amp; Thresholds</div>
+              <pre class="yref-code">condition:
   // Count string occurrences
   #s1 >= 3
   #s1 + #s2 > 5
@@ -1028,31 +1183,33 @@ condition:
     ($persistence ? 2 : 0) +
     ($c2 ? 3 : 0)
   ) >= 5</pre>
-          <div class="yref-note">Weighted scoring rules reduce false positives — a file must accumulate enough "points" to match.</div>
-        </div>
+              <div class="yref-note">Weighted scoring rules reduce false positives — a file must accumulate enough
+                "points" to match.</div>
+            </div>
 
+          </div>
+        </div>
       </div>
     </div>
-    </div>
-  </div>
 
     <!-- ── MODULES ── -->
     <div class="ytab-panel" id="tab-modules">
-    <div class="yref-carousel-wrap">
-      <div class="yref-carousel-nav">
-        <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp; <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
-        <div class="yref-nav-btns">
-          <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
-          <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+      <div class="yref-carousel-wrap">
+        <div class="yref-carousel-nav">
+          <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+          <div class="yref-nav-btns">
+            <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
+            <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+          </div>
         </div>
-      </div>
-      <div class="yref-carousel-viewport">
-        <div class="yref-grid">
+        <div class="yref-carousel-viewport">
+          <div class="yref-grid">
 
 
-        <div class="yref-card">
-          <div class="yref-card-title">PE Module — Headers</div>
-          <pre class="yref-code">import "pe"
+            <div class="yref-card">
+              <div class="yref-card-title">PE Module — Headers</div>
+              <pre class="yref-code">import "pe"
 
 condition:
   pe.is_pe                        // valid PE
@@ -1065,12 +1222,13 @@ condition:
   pe.entry_point                  // OEP RVA
   pe.image_base == 0x400000
   pe.overlay.offset > 0           // has overlay</pre>
-          <div class="yref-note">Always <code>import "pe"</code> at the top. Most PE-specific conditions need this module.</div>
-      </div>
+              <div class="yref-note">Always <code>import "pe"</code> at the top. Most PE-specific conditions need this
+                module.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">PE Module — Sections</div>
-          <pre class="yref-code">import "pe"
+            <div class="yref-card">
+              <div class="yref-card-title">PE Module — Sections</div>
+              <pre class="yref-code">import "pe"
 
 condition:
   pe.number_of_sections > 8
@@ -1095,12 +1253,13 @@ condition:
       (pe.SECTION_MEM_WRITE | pe.SECTION_MEM_EXECUTE))
       == (pe.SECTION_MEM_WRITE | pe.SECTION_MEM_EXECUTE)
   )</pre>
-          <div class="yref-note">W+X sections, high entropy, and packer section names are the top three PE packing indicators in YARA.</div>
-        </div>
+              <div class="yref-note">W+X sections, high entropy, and packer section names are the top three PE packing
+                indicators in YARA.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">PE Module — Imports</div>
-          <pre class="yref-code">import "pe"
+            <div class="yref-card">
+              <div class="yref-card-title">PE Module — Imports</div>
+              <pre class="yref-code">import "pe"
 
 condition:
   // Single import
@@ -1119,12 +1278,13 @@ condition:
     pe.import_details[i].library_name
       matches /crypt32/i
   )</pre>
-          <div class="yref-note">Import checks are fast and reliable. Combine 3+ suspicious imports for a high-confidence injection/crypto rule.</div>
-        </div>
+              <div class="yref-note">Import checks are fast and reliable. Combine 3+ suspicious imports for a
+                high-confidence injection/crypto rule.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">PE Module — Exports &amp; Resources</div>
-          <pre class="yref-code">import "pe"
+            <div class="yref-card">
+              <div class="yref-card-title">PE Module — Exports &amp; Resources</div>
+              <pre class="yref-code">import "pe"
 
 condition:
   // Export by name
@@ -1142,12 +1302,13 @@ condition:
 
   // Resource language
   pe.resources[0].language == 0x0412 // Korean</pre>
-          <div class="yref-note">Korean resource language (0x0412) combined with other Lazarus TTPs = strong DPRK attribution signal.</div>
-        </div>
+              <div class="yref-note">Korean resource language (0x0412) combined with other Lazarus TTPs = strong DPRK
+                attribution signal.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">PE Module — Signatures &amp; Rich Header</div>
-          <pre class="yref-code">import "pe"
+            <div class="yref-card">
+              <div class="yref-card-title">PE Module — Signatures &amp; Rich Header</div>
+              <pre class="yref-code">import "pe"
 
 condition:
   // Authenticode: not signed
@@ -1166,12 +1327,13 @@ condition:
   for any i in (0..pe.rich_signature.length-1) : (
     pe.rich_signature.toolid[i] == 0x0101
   )</pre>
-          <div class="yref-note">Rich header is compiled into MSVC binaries — its XOR key fingerprints specific build environments.</div>
-        </div>
+              <div class="yref-note">Rich header is compiled into MSVC binaries — its XOR key fingerprints specific
+                build environments.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">ELF Module</div>
-          <pre class="yref-code">import "elf"
+            <div class="yref-card">
+              <div class="yref-card-title">ELF Module</div>
+              <pre class="yref-code">import "elf"
 
 condition:
   elf.type == elf.ET_EXEC   // executable
@@ -1190,12 +1352,13 @@ condition:
   for any i in (0..elf.symtab_entries-1) : (
     elf.symtab[i].name == "system"
   )</pre>
-          <div class="yref-note">Use <code>elf</code> module for Linux malware, IoT samples, and Android native libraries.</div>
-        </div>
+              <div class="yref-note">Use <code>elf</code> module for Linux malware, IoT samples, and Android native
+                libraries.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Math Module</div>
-          <pre class="yref-code">import "math"
+            <div class="yref-card">
+              <div class="yref-card-title">Math Module</div>
+              <pre class="yref-code">import "math"
 
 condition:
   // Entropy of entire file
@@ -1215,12 +1378,13 @@ condition:
 
   // Serial correlation coefficient
   math.serial_correlation(0, filesize) < 0.1</pre>
-          <div class="yref-note">Entropy > 7.0 strongly indicates encryption or compression. Combine with PE checks for packed malware detection.</div>
-        </div>
+              <div class="yref-note">Entropy > 7.0 strongly indicates encryption or compression. Combine with PE checks
+                for packed malware detection.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Hash Module</div>
-          <pre class="yref-code">import "hash"
+            <div class="yref-card">
+              <div class="yref-card-title">Hash Module</div>
+              <pre class="yref-code">import "hash"
 
 condition:
   hash.md5(0, filesize) ==
@@ -1235,12 +1399,13 @@ condition:
   hash.crc32(0, filesize) == 0x12345678
 
   hash.checksum32(0, filesize) == 0xDEADBEEF</pre>
-          <div class="yref-note">Hash conditions are exact-match — ideal for known-bad samples. Not useful for variant detection.</div>
-        </div>
+              <div class="yref-note">Hash conditions are exact-match — ideal for known-bad samples. Not useful for
+                variant detection.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">String / Dotnet / Magic Modules</div>
-          <pre class="yref-code">import "dotnet"
+            <div class="yref-card">
+              <div class="yref-card-title">String / Dotnet / Magic Modules</div>
+              <pre class="yref-code">import "dotnet"
 import "macho"
 
 // .NET detection
@@ -1258,31 +1423,33 @@ for any i in (0..macho.number_of_cmds-1) : (
 // time module
 import "time"
 // (use in condition for time-based meta)</pre>
-          <div class="yref-note">dotnet and macho modules are essential for cross-platform malware families targeting Windows/.NET and macOS.</div>
-        </div>
+              <div class="yref-note">dotnet and macho modules are essential for cross-platform malware families
+                targeting Windows/.NET and macOS.</div>
+            </div>
 
+          </div>
+        </div>
       </div>
     </div>
-    </div>
-  </div>
 
     <!-- ── META & TAGS ── -->
     <div class="ytab-panel" id="tab-meta">
-    <div class="yref-carousel-wrap">
-      <div class="yref-carousel-nav">
-        <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp; <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
-        <div class="yref-nav-btns">
-          <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
-          <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+      <div class="yref-carousel-wrap">
+        <div class="yref-carousel-nav">
+          <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+          <div class="yref-nav-btns">
+            <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
+            <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+          </div>
         </div>
-      </div>
-      <div class="yref-carousel-viewport">
-        <div class="yref-grid">
+        <div class="yref-carousel-viewport">
+          <div class="yref-grid">
 
 
-        <div class="yref-card">
-          <div class="yref-card-title">Standard Meta Fields</div>
-          <pre class="yref-code">meta:
+            <div class="yref-card">
+              <div class="yref-card-title">Standard Meta Fields</div>
+              <pre class="yref-code">meta:
   // Identity
   author      = "SalahEldin Kamil"
   email       = "contact@secblog.com"
@@ -1305,12 +1472,13 @@ import "time"
   actor          = "Lazarus Group / ZINC"
   threat_level   = "CRITICAL"
   mitre_att      = "T1055.001,T1027,T1497.001"</pre>
-          <div class="yref-note">Meta fields are free-form strings — standardise your field names across a ruleset so they're machine-parseable.</div>
-      </div>
+              <div class="yref-note">Meta fields are free-form strings — standardise your field names across a ruleset
+                so they're machine-parseable.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Tags</div>
-          <pre class="yref-code">// Tags go after the rule name
+            <div class="yref-card">
+              <div class="yref-card-title">Tags</div>
+              <pre class="yref-code">// Tags go after the rule name
 rule LazyLoader : APT RAT injector {
   condition: true
 }
@@ -1329,12 +1497,13 @@ yara -t injector,RAT rules/ /samples/
 // backdoor    — remote access
 // miner       — crypto mining
 // worm        — self-propagating</pre>
-          <div class="yref-note">Tags are indexed — use <code>-t</code> to run only rules with a specific tag. Essential for large rulesets.</div>
-        </div>
+              <div class="yref-note">Tags are indexed — use <code>-t</code> to run only rules with a specific tag.
+                Essential for large rulesets.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Namespaces</div>
-          <pre class="yref-code">// Default namespace
+            <div class="yref-card">
+              <div class="yref-card-title">Namespaces</div>
+              <pre class="yref-code">// Default namespace
 rule MyRule { condition: true }
 
 // From CLI — each file gets its own NS:
@@ -1349,31 +1518,33 @@ rules = yara.compile(sources={
 })
 for m in rules.match('target.exe'):
     print(m.namespace, m.rule)</pre>
-          <div class="yref-note">Namespaces prevent rule name collisions when combining rulesets from multiple sources.</div>
-        </div>
+              <div class="yref-note">Namespaces prevent rule name collisions when combining rulesets from multiple
+                sources.</div>
+            </div>
 
+          </div>
+        </div>
       </div>
     </div>
-    </div>
-  </div>
 
     <!-- ── TIPS & TRICKS ── -->
     <div class="ytab-panel" id="tab-tips">
-    <div class="yref-carousel-wrap">
-      <div class="yref-carousel-nav">
-        <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp; <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
-        <div class="yref-nav-btns">
-          <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
-          <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+      <div class="yref-carousel-wrap">
+        <div class="yref-carousel-nav">
+          <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+          <div class="yref-nav-btns">
+            <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
+            <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
+          </div>
         </div>
-      </div>
-      <div class="yref-carousel-viewport">
-        <div class="yref-grid">
+        <div class="yref-carousel-viewport">
+          <div class="yref-grid">
 
 
-        <div class="yref-card">
-          <div class="yref-card-title">Anti-Analysis Detection Patterns</div>
-          <pre class="yref-code">rule AntiDebug_PEB {
+            <div class="yref-card">
+              <div class="yref-card-title">Anti-Analysis Detection Patterns</div>
+              <pre class="yref-code">rule AntiDebug_PEB {
   strings:
     $peb_x86 = { 64 A1 30 00 00 00 }  // mov eax, fs:[30h]
     $peb_x64 = { 65 48 8B ?? 60 }     // mov rax, gs:[60h]
@@ -1384,12 +1555,13 @@ for m in rules.match('target.exe'):
     uint16(0) == 0x5A4D and
     2 of them
 }</pre>
-          <div class="yref-note">PEB reads at well-known offsets are universal anti-debug indicators in shellcode and malware.</div>
-      </div>
+              <div class="yref-note">PEB reads at well-known offsets are universal anti-debug indicators in shellcode
+                and malware.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Process Injection Detection</div>
-          <pre class="yref-code">rule ProcessInjection {
+            <div class="yref-card">
+              <div class="yref-card-title">Process Injection Detection</div>
+              <pre class="yref-code">rule ProcessInjection {
   strings:
     $va  = "VirtualAllocEx"  nocase
     $wpm = "WriteProcessMemory" nocase
@@ -1402,12 +1574,13 @@ for m in rules.match('target.exe'):
     uint16(0) == 0x5A4D and
     3 of ($va, $wpm, $crt, $op, $ncte, $qat, $ntm)
 }</pre>
-          <div class="yref-note">Requiring 3+ injection APIs reduces false positives from security tools that import these legitimately.</div>
-        </div>
+              <div class="yref-note">Requiring 3+ injection APIs reduces false positives from security tools that import
+                these legitimately.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Detecting XOR-Encoded Strings</div>
-          <pre class="yref-code">rule XOR_Encoded_Strings {
+            <div class="yref-card">
+              <div class="yref-card-title">Detecting XOR-Encoded Strings</div>
+              <pre class="yref-code">rule XOR_Encoded_Strings {
   strings:
     // Match "cmd.exe" XOR'd with any single byte
     $xor_cmd = "cmd.exe" xor
@@ -1420,12 +1593,13 @@ for m in rules.match('target.exe'):
   condition:
     any of them
 }</pre>
-          <div class="yref-note">The <code>xor</code> modifier (YARA ≥ 3.11) tries all 255 single-byte keys automatically. Use key ranges to reduce FPs.</div>
-        </div>
+              <div class="yref-note">The <code>xor</code> modifier (YARA ≥ 3.11) tries all 255 single-byte keys
+                automatically. Use key ranges to reduce FPs.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Detecting Packed / High-Entropy PE</div>
-          <pre class="yref-code">import "pe"
+            <div class="yref-card">
+              <div class="yref-card-title">Detecting Packed / High-Entropy PE</div>
+              <pre class="yref-code">import "pe"
 import "math"
 
 rule Packed_PE {
@@ -1446,12 +1620,12 @@ rule Packed_PE {
         pe.sections[i].raw_data_size * 10
       )
     )</pre>
-          <div class="yref-note">Combine entropy with structural checks for a low-FP packed malware rule.</div>
-        </div>
+              <div class="yref-note">Combine entropy with structural checks for a low-FP packed malware rule.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">YARA Performance Tips</div>
-          <pre class="yref-code">// 1. Put fast conditions FIRST (short-circuit)
+            <div class="yref-card">
+              <div class="yref-card-title">YARA Performance Tips</div>
+              <pre class="yref-code">// 1. Put fast conditions FIRST (short-circuit)
 condition:
   uint16(0) == 0x5A4D and  // fast — 2 bytes
   filesize < 5MB and        // fast
@@ -1473,12 +1647,13 @@ yara compiled.yarac /large_sample_dir/
 // 5. Avoid .* in regex — very slow
 // Bad:  /ABC.*XYZ/
 // Good: /ABC.{0,100}XYZ/</pre>
-          <div class="yref-note">Order matters — YARA evaluates conditions left-to-right and short-circuits on <code>and</code>. Put cheap checks first.</div>
-        </div>
+              <div class="yref-note">Order matters — YARA evaluates conditions left-to-right and short-circuits on
+                <code>and</code>. Put cheap checks first.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Testing &amp; Debugging Rules</div>
-          <pre class="yref-code"># Test rule compiles without errors
+            <div class="yref-card">
+              <div class="yref-card-title">Testing &amp; Debugging Rules</div>
+              <pre class="yref-code"># Test rule compiles without errors
 yara --compile-only rule.yar
 
 # Verbose match output
@@ -1497,12 +1672,13 @@ m = rules.match('target.exe')
 for match in m:
     for s in match.strings:
         print(hex(s.offset), s.identifier, s.plaintext())</pre>
-          <div class="yref-note">Always test new rules against a clean sample set (System32, known-good software) before deploying.</div>
-        </div>
+              <div class="yref-note">Always test new rules against a clean sample set (System32, known-good software)
+                before deploying.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Useful One-Liners</div>
-          <pre class="yref-code"># Scan memory of all running PIDs
+            <div class="yref-card">
+              <div class="yref-card-title">Useful One-Liners</div>
+              <pre class="yref-code"># Scan memory of all running PIDs
 ps aux | awk '{print $2}' | \
   xargs -I{} yara rule.yar {} 2>/dev/null
 
@@ -1523,12 +1699,13 @@ data = idaapi.get_bytes(idc.get_inf_attr(idc.INF_MIN_EA),
                          idc.get_inf_attr(idc.INF_MAX_EA))
 rules = yara.compile(filepath='rule.yar')
 print(rules.match(data=data))</pre>
-          <div class="yref-note">The last snippet lets you run YARA rules directly against the binary loaded in IDA Pro — no file needed.</div>
-        </div>
+              <div class="yref-note">The last snippet lets you run YARA rules directly against the binary loaded in IDA
+                Pro — no file needed.</div>
+            </div>
 
-        <div class="yref-card">
-          <div class="yref-card-title">Integration: Volatility 3</div>
-          <pre class="yref-code"># Scan process memory in a dump
+            <div class="yref-card">
+              <div class="yref-card-title">Integration: Volatility 3</div>
+              <pre class="yref-code"># Scan process memory in a dump
 python vol.py -f mem.dmp \
   windows.vadyarascan \
   --yara-rules rule.yar \
@@ -1548,13 +1725,14 @@ python vol.py -f mem.dmp \
 python vol.py -f mem.dmp \
   windows.vadyarascan \
   --yara-string 'rule t{condition:true}'</pre>
-          <div class="yref-note"><code>vadyarascan</code> scans VAD regions per process — the primary tool for finding injected shellcode in memory dumps.</div>
-        </div>
+              <div class="yref-note"><code>vadyarascan</code> scans VAD regions per process — the primary tool for
+                finding injected shellcode in memory dumps.</div>
+            </div>
 
+          </div>
+        </div>
       </div>
     </div>
-    </div>
-  </div>
   </div><!-- /yara ref section -->
 
   <!-- ── YARA FEED ── -->
@@ -1567,7 +1745,8 @@ python vol.py -f mem.dmp \
     <div class="stats-row" id="yara-stats"></div>
 
     <div class="yara-search-wrap">
-      <input type="text" class="yara-search" id="yara-search" placeholder="&#9642; filter rules by name, tag, or report title...">
+      <input type="text" class="yara-search" id="yara-search"
+        placeholder="&#9642; filter rules by name, tag, or report title...">
     </div>
 
     <div id="yara-container"></div>
@@ -1725,8 +1904,8 @@ python vol.py -f mem.dmp \
 
   <script>
     // Tab switching
-    document.querySelectorAll('.ytab').forEach(function(tab) {
-      tab.addEventListener('click', function() {
+    document.querySelectorAll('.ytab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
         document.querySelectorAll('.ytab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.ytab-panel').forEach(p => p.classList.remove('active'));
         tab.classList.add('active');
@@ -1766,13 +1945,13 @@ python vol.py -f mem.dmp \
         const master = /(#[^\n]*|\/\/[^\n]*)|("(?:[^"\\]|\\.)*")|(\$[A-Za-z_][A-Za-z0-9_]*\b|\$)|(0x[0-9A-Fa-f]+)|(--?[A-Za-z][A-Za-z0-9_-]*)|\b(rule|meta|strings|condition|import|and|or|not|any|all|of|them|for|in|matches|filesize|uint8|uint16|uint32|uint64|int8|int16|int32|true|false|private|global|ascii|wide|nocase|fullword|entrypoint|do|done|then|fi|if)\b|\b(\d+)\b/g;
 
         return escaped.replace(master, function (m, comment, string, variable, hex, flag, kw, num) {
-          if (comment)  return '<span class="tok-comment">' + comment + '</span>';
-          if (string)   return '<span class="tok-string">' + string + '</span>';
+          if (comment) return '<span class="tok-comment">' + comment + '</span>';
+          if (string) return '<span class="tok-string">' + string + '</span>';
           if (variable) return '<span class="tok-var">' + variable + '</span>';
-          if (hex)      return '<span class="tok-num">' + hex + '</span>';
-          if (flag)     return '<span class="tok-flag">' + flag + '</span>';
-          if (kw)       return '<span class="tok-kw">' + kw + '</span>';
-          if (num)      return '<span class="tok-num">' + num + '</span>';
+          if (hex) return '<span class="tok-num">' + hex + '</span>';
+          if (flag) return '<span class="tok-flag">' + flag + '</span>';
+          if (kw) return '<span class="tok-kw">' + kw + '</span>';
+          if (num) return '<span class="tok-num">' + num + '</span>';
           return m;
         });
       }
@@ -1801,76 +1980,76 @@ python vol.py -f mem.dmp \
   </script>
 
   <script>
-  // ── Carousel logic: one box, two plain arrow buttons ───────────────────────
-  document.querySelectorAll('.ytab-panel').forEach(function(panel) {
-    var grid    = panel.querySelector('.yref-grid');
-    if (!grid) return;
+    // ── Carousel logic: one box, two plain arrow buttons ───────────────────────
+    document.querySelectorAll('.ytab-panel').forEach(function (panel) {
+      var grid = panel.querySelector('.yref-grid');
+      if (!grid) return;
 
-    var cards   = Array.from(grid.querySelectorAll('.yref-card'));
-    var btnPrev = panel.querySelector('.cr-prev');
-    var btnNext = panel.querySelector('.cr-next');
-    var curEl   = panel.querySelector('.cr-cur');
-    var totEl   = panel.querySelector('.cr-tot');
-    if (!cards.length) return;
+      var cards = Array.from(grid.querySelectorAll('.yref-card'));
+      var btnPrev = panel.querySelector('.cr-prev');
+      var btnNext = panel.querySelector('.cr-next');
+      var curEl = panel.querySelector('.cr-cur');
+      var totEl = panel.querySelector('.cr-tot');
+      if (!cards.length) return;
 
-    var total = cards.length;
-    var cur   = 0;
+      var total = cards.length;
+      var cur = 0;
 
-    // Style grid as a plain block container — only one card box shows at a time
-    grid.style.display   = 'block';
-    grid.style.transform = 'none';
+      // Style grid as a plain block container — only one card box shows at a time
+      grid.style.display = 'block';
+      grid.style.transform = 'none';
 
-    // Hide all cards, then reveal only the first
-    cards.forEach(function(c) {
-      c.style.display   = 'none';
-      c.style.width     = '100%';
-      c.style.flex      = 'none';
-      c.style.minWidth  = '0';
-      c.style.boxSizing = 'border-box';
+      // Hide all cards, then reveal only the first
+      cards.forEach(function (c) {
+        c.style.display = 'none';
+        c.style.width = '100%';
+        c.style.flex = 'none';
+        c.style.minWidth = '0';
+        c.style.boxSizing = 'border-box';
+      });
+      cards[0].style.display = '';
+
+      if (totEl) totEl.textContent = total;
+      if (curEl) curEl.textContent = 1;
+
+      function go(n) {
+        n = Math.max(0, Math.min(n, total - 1));
+        cards[cur].style.display = 'none';
+        cur = n;
+        cards[cur].style.display = '';
+        if (curEl) curEl.textContent = cur + 1;
+        if (btnPrev) btnPrev.disabled = cur === 0;
+        if (btnNext) btnNext.disabled = cur === total - 1;
+      }
+
+      // Wire up the arrow buttons
+      if (btnPrev) {
+        btnPrev.disabled = true;
+        btnPrev.addEventListener('click', function () { go(cur - 1); });
+      }
+      if (btnNext) {
+        btnNext.disabled = (total <= 1);
+        btnNext.addEventListener('click', function () { go(cur + 1); });
+      }
+
+      // Keyboard navigation
+      panel.setAttribute('tabindex', '0');
+      panel.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') go(cur - 1);
+        if (e.key === 'ArrowRight') go(cur + 1);
+      });
+
+      // Touch swipe
+      var tx = 0;
+      grid.addEventListener('touchstart', function (e) {
+        tx = e.touches[0].clientX;
+      }, { passive: true });
+      grid.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - tx;
+        if (dx < -40) go(cur + 1);
+        if (dx > 40) go(cur - 1);
+      }, { passive: true });
     });
-    cards[0].style.display = '';
-
-    if (totEl) totEl.textContent = total;
-    if (curEl) curEl.textContent = 1;
-
-    function go(n) {
-      n = Math.max(0, Math.min(n, total - 1));
-      cards[cur].style.display = 'none';
-      cur = n;
-      cards[cur].style.display = '';
-      if (curEl) curEl.textContent = cur + 1;
-      if (btnPrev) btnPrev.disabled = cur === 0;
-      if (btnNext) btnNext.disabled = cur === total - 1;
-    }
-
-    // Wire up the arrow buttons
-    if (btnPrev) {
-      btnPrev.disabled = true;
-      btnPrev.addEventListener('click', function() { go(cur - 1); });
-    }
-    if (btnNext) {
-      btnNext.disabled = (total <= 1);
-      btnNext.addEventListener('click', function() { go(cur + 1); });
-    }
-
-    // Keyboard navigation
-    panel.setAttribute('tabindex', '0');
-    panel.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft')  go(cur - 1);
-      if (e.key === 'ArrowRight') go(cur + 1);
-    });
-
-    // Touch swipe
-    var tx = 0;
-    grid.addEventListener('touchstart', function(e) {
-      tx = e.touches[0].clientX;
-    }, {passive: true});
-    grid.addEventListener('touchend', function(e) {
-      var dx = e.changedTouches[0].clientX - tx;
-      if (dx < -40) go(cur + 1);
-      if (dx >  40) go(cur - 1);
-    }, {passive: true});
-  });
   </script>
 </body>
 

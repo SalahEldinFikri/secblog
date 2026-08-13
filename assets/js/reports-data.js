@@ -26,7 +26,205 @@ const REPORTS = [
   // ── YOUR REPORTS ────────────────────────────────────────────────
 
 
-
+  {
+    slug: "vulcan-malware",
+    title: "Vulcan Malware: Analysis of a Multi-Persistent Go-Based Linux Implant",
+    date: "2026-08-13",
+    tag: "MALWARE",
+    severity: "CRITICAL",
+    readTime: "12 MIN READ",
+    excerpt: "A multi-architecture Go-based Linux implant distributed as UPX-packed ELF binaries. Vulcan establishes multiple persistence mechanisms, uses AES-GCM encrypted C2 communication, performs wide-scope network scanning, and targets SSH, Redis, Docker, ADB, Telnet, HTTP, HTTPS, and Huawei-related services.",
+    iocs: [
+      {
+        type: "IPv4",
+        indicator: "146.19.213.198",
+        family: "Vulcan",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "8443",
+        family: "Vulcan C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "C2",
+        indicator: "146.19.213.198:8443",
+        family: "Vulcan",
+        confidence: "HIGH"
+      },
+      {
+        type: "DOMAIN",
+        indicator: "vulcan-c2.local",
+        family: "Vulcan",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "vulcan-agent",
+        family: "Vulcan",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "~/.cache/.icons/vulcan-agent",
+        family: "Vulcan",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "~/.bashrc",
+        family: "Vulcan Persistence",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "~/.profile",
+        family: "Vulcan Persistence",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "/etc/init.d/",
+        family: "Vulcan Persistence",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "/etc/rc.local",
+        family: "Vulcan Persistence",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "/usr/sbin/ntpdbad",
+        family: "Vulcan Binary Hijacking",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "/usr/bin/sshd",
+        family: "Vulcan Binary Hijacking",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "/sbin/agetty",
+        family: "Vulcan Binary Hijacking",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "22",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "23",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "2323",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "2375",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "5555",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "6379",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "80",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "443",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "8080",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "37215",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "KEY",
+        indicator: "can-lab-pre-shared-key-32bytes!!",
+        family: "Vulcan",
+        confidence: "HIGH"
+      }
+    ],
+    yara: [
+      {
+        name: "Family_Vulcan",
+        description: "Detects the Vulcan malware family using embedded debug and behavioral strings",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Family_Vulcan\n{\n    meta:\n        description = \"Detects Family Vulcan Malware\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $m1  = \"DEBUG_HTTP2_GOROUTINES\" ascii wide\n        $m2  = \"[DEBUG] Dial error: %v\\n\" ascii wide\n        $m3  = \"[DEBUG] Read error: %v\\n\" ascii wide\n        $m4  = \"[DEBUG] readLoop started\" ascii wide\n        $m5  = \"[DEBUG] Write error: %v\\n\" ascii wide\n        $m6  = \"[DEBUG] Scanning enabled\" ascii wide\n        $m7  = \"[DEBUG] Invalid URL: %v\\n\" ascii wide\n        $m8  = \"GODEBUG sys/cpu: value \\\"\" ascii wide\n        $m9  = \"[DEBUG] Worker %d EXITED\\n\" ascii wide\n        $m10 = \"[DEBUG] Scanning disabled\" ascii wide\n        $m11 = \"GODEBUG: can not enable \\\"\" ascii wide\n        $m12 = \"[DEBUG] Implant starting...insufficient security level\" ascii wide\n        $m13 = \"[DEBUG] WebSocket connected!\" ascii wide\n        $m14 = \"[DEBUG] Worker %d PANIC: %v\\n\" ascii wide\n        $m15 = \"[DEBUG] Unknown command: %s\\n\" ascii wide\n        $m16 = \"[DEBUG] SSH spreader started\" ascii wide\n        $m17 = \"[DEBUG] Worker 0 scanning %s\\n\" ascii wide\n        $m18 = \"[DEBUG] Received task: %s %s\\n\" ascii wide\n        $m19 = \"[DEBUG] SCP to %s failed: %v\\n\" ascii wide\n        $m20 = \"[DEBUG] Unknown DDoS type: %s\\n\" ascii wide\n        $m21 = \"GODEBUG: unknown cpu feature \\\"\" ascii wide\n        $m22 = \"[DEBUG] sendMessageSync failed!\" ascii wide\n        $m23 = \"[DEBUG] Scan worker %d started\\n\" ascii wide\n        $m24 = \"[DEBUG] Usage: <type> <args...>\" ascii wide\n        $m25 = \"[DEBUG] Self-destruct initiatedbad certificate status responseencrypted client hello required\" ascii wide\n        $m26 = \"[DEBUG] SSH spread success to %s\\n\" ascii wide\n        $m27 = \"[DEBUG] SYN flood init error: %v\\n\" ascii wide\n        $m28 = \"[DEBUG] connect() goroutine started\" ascii wide\n        $m29 = \"[DEBUG] sendMessageSync: conn is nil\" ascii wide\n        $m30 = \"[DEBUG] %s exploit SUCCESS on %s:%d\\n\" ascii wide\n        $m31 = \"GODEBUG: no value specified for \\\"\" ascii wide\n        $m32 = \"GODEBUG sys/cpu: can not enable \\\"\" ascii wide\n        $m33 = \"GODEBUG sys/cpu: can not disable \\\"\" ascii wide\n    condition:\n        uint32(0) == 0x464c457f and\n        (any of them)\n}"
+      },
+      {
+        name: "Vulcan_x86",
+        description: "Detects the Vulcan x86 ELF build using the hardcoded C2 configuration pattern",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_x86\n{\n    meta:\n        description = \"Detects Vulcan Malware — x86 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            8D 05 ?? ?? ?? ??\n            89 04 24\n            C7 44 24 04 13 00 00 00\n            8B 44 24 34\n            89 44 24 08\n            E8 ?? ?? ?? ??\n        }\n    condition:\n        any of them\n}"
+      },
+      {
+        name: "Vulcan_AMD64",
+        description: "Detects the Vulcan AMD64 ELF build using the hardcoded C2 configuration pattern",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_AMD64\n{\n    meta:\n        description = \"Detects Vulcan Malware — AMD64 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            48 8D 05 ?? ?? ?? ??\n            BB 13 00 00 00\n            48 8B 4C 24 58\n            E8 ?? ?? ?? ??\n        }\n    condition:\n        any of them\n}"
+      },
+      {
+        name: "Vulcan_ARM5",
+        description: "Detects the Vulcan ARM5 ELF build",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_ARM5\n{\n    meta:\n        description = \"Detects Vulcan Malware — ARM5 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            48 02 ?? ??\n            04 00 8D E5\n            13 00 A0 E3\n            08 00 8D E5\n            38 00 9D E5\n            0C 00 8D E5\n            3D ?? ?? ??\n        }\n    condition:\n        any of them\n}"
+      },
+      {
+        name: "Vulcan_ARM7",
+        description: "Detects the Vulcan ARM7 ELF build",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_ARM7\n{\n    meta:\n        description = \"Detects Vulcan Malware — ARM7 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            44 02 ?? ??\n            04 00 8D E5\n            13 00 A0 E3\n            08 00 8D E5\n            38 00 9D E5\n            0C 00 8D E5\n            59 ?? ?? ??\n        }\n    condition:\n        any of them\n}"
+      },
+      {
+        name: "Vulcan_MIPS",
+        description: "Detects the Vulcan MIPS big-endian ELF build",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_MIPS\n{\n    meta:\n        description = \"Detects Vulcan Malware — MIPS big-endian ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            3C 01 00 51 24 21 ?? ??\n            AF A1 00 04\n            24 01 00 13\n            AF A1 00 08\n            8F A1 00 40\n            AF A1 00 0C\n            0C ?? ?? ??\n        }\n    condition:\n        any of them\n}"
+      },
+      {
+        name: "Vulcan_MIPSLE",
+        description: "Detects the Vulcan MIPS little-endian ELF build",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_MIPSLE\n{\n    meta:\n        description = \"Detects Vulcan Malware — MIPS little-endian ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            51 00 01 3C ?? ?? 21 24\n            04 00 A1 AF\n            13 00 01 24\n            08 00 A1 AF\n            3C 00 A1 8F\n            0C 00 A1 AF\n            ?? ?? ?? 0C\n        }\n    condition:\n        any of them\n}"
+      }
+    ],
+  },
 
   {
     slug: "lazarusthreatactorprofile",

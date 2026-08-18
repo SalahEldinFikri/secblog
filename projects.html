@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects &amp; Tools — SecBlog</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    /* ── Hero ── */
+    .pt-hero {
+      padding: 3.5rem 2rem 2.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .pt-hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: .5rem;
+      color: #e8f4ff;
+    }
+
+    .pt-hero p {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Stats row ── */
+    .pt-stats {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      padding: 1rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    .pt-stat-num {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .pt-stat-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    /* ── Filter / Search bar ── */
+    .pt-controls {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pt-search {
+      flex: 1;
+      min-width: 180px;
+      max-width: 300px;
+      position: relative;
+    }
+
+    .pt-search input {
+      width: 100%;
+      background: rgba(7, 20, 40, .8);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 12px 7px 30px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .pt-search input:focus {
+      border-color: var(--green);
+    }
+
+    .pt-search input::placeholder {
+      color: var(--muted);
+    }
+
+    .pt-search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .pt-filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .pt-count {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    /* ── Grid ── */
+    .pt-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 2rem 4rem;
+    }
+
+    .pt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1px;
+      background: var(--border);
+    }
+
+    /* ── Project Card ── */
+    .pt-card {
+      background: var(--surface);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      transition: background .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pt-card:hover {
+      background: var(--surface2);
+    }
+
+    /* left accent bar on hover */
+    .pt-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--green);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform .25s ease;
+    }
+
+    .pt-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    /* ── Card: top row ── */
+    .pt-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: .5rem;
+    }
+
+    .pt-card-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .pt-card-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    /* ── Status pill ── */
+    .status-pill {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 2px 8px;
+      border: 1px solid;
+    }
+
+    .status-active {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(0, 255, 157, .06);
+    }
+
+    .status-wip {
+      border-color: var(--amber);
+      color: var(--amber);
+      background: rgba(245, 158, 11, .06);
+    }
+
+    .status-planned {
+      border-color: var(--muted);
+      color: var(--muted);
+    }
+
+    .status-archived {
+      border-color: var(--muted);
+      color: var(--muted);
+      opacity: .5;
+    }
+
+    /* ── Type pill ── */
+    .type-pill {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 2px 8px;
+      border: 1px solid;
+    }
+
+    .type-tool {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .type-script {
+      border-color: #a78bfa;
+      color: #a78bfa;
+    }
+
+    .type-lib {
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    .type-research {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .type-plugin {
+      border-color: #34d399;
+      color: #34d399;
+    }
+
+    /* ── Card body ── */
+    .pt-card-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e8f4ff;
+      line-height: 1.3;
+    }
+
+    .pt-card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    /* ── Tech tags ── */
+    .pt-tech-row {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .pt-tech {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 7px;
+      background: rgba(7, 20, 40, .9);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* ── Card footer ── */
+    .pt-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: .6rem;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+
+    .pt-card-links {
+      display: flex;
+      gap: 12px;
+    }
+
+    .pt-link {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color .2s;
+      text-decoration: none;
+    }
+
+    .pt-link:hover {
+      color: var(--green);
+    }
+
+    .pt-link.disabled {
+      pointer-events: none;
+      opacity: .35;
+    }
+
+    .pt-card-date {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    /* ── Empty state ── */
+    .pt-empty {
+      display: none;
+      padding: 4rem 0;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── Section divider (categories) ── */
+    .pt-section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      padding: 1.25rem 0 .75rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pt-section-label .dot-sm {
+      width: 5px;
+      height: 5px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Hidden card ── */
+    .pt-card.hidden {
+      display: none;
+    }
+
+    @media (max-width: 700px) {
+      .pt-hero {
+        padding: 2rem 1.25rem 1.5rem;
+      }
+
+      .pt-controls {
+        padding: 1rem 1.25rem;
+      }
+
+      .pt-wrap {
+        padding: 1.5rem 1.25rem 3rem;
+      }
+
+      .pt-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pt-count {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </button>
+    <div class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+          <path d="M12 2v13M12 2L7 7M12 2l5 5M5 9c0 3 2 5 2 5s-3 0-3 4 3 6 3 6M19 9c0 3-2 5-2 5s3 0 3 4-3 6-3 6"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <div>
+        Mr_MaTriX
+
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="reports.html" class="active">Reports</a>
+      <a href="APT.html" class="active">APTs</a>
+      <a href="ioc-feed.html" class="active">IOCs</a>
+      <a href="yara-feed.html" class="active">YARA Rules</a>
+      <a href="siem-reference.html" class="active">SIEM Reference</a>
+      <a href="malware-structures.html" class="active">Structures</a>
+      <a href="achievements.html" class="active">Achievements</a>
+      <a href="about.html" class="active">About Me</a>
+
+      <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
+    </div>
+    <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <div class="pt-hero">
+    <div class="hero-tag" style="margin-bottom:.75rem;">
+      <span class="dot"></span> PROJECTS &amp; TOOLS
+    </div>
+    <h1>// Open-Source <em style="color:var(--green)">Arsenal</em></h1>
+    <p>Tools, scripts, and research projects built during malware analysis, reverse engineering, and threat intelligence
+      work. Everything here is built for defenders.</p>
+
+    <div class="pt-stats" id="pt-stats">
+      <div>
+        <div class="pt-stat-num" id="stat-total">0</div>
+        <div class="pt-stat-label">TOTAL PROJECTS</div>
+      </div>
+      <div>
+        <div class="pt-stat-num" id="stat-active">0</div>
+        <div class="pt-stat-label">ACTIVE</div>
+      </div>
+      <div>
+        <div class="pt-stat-num" id="stat-wip">0</div>
+        <div class="pt-stat-label">IN PROGRESS</div>
+      </div>
+      <div>
+        <div class="pt-stat-num" id="stat-tools">0</div>
+        <div class="pt-stat-label">TOOLS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Controls ── -->
+  <div class="pt-controls">
+    <div class="pt-search">
+      <span class="pt-search-icon">⌕</span>
+      <input type="text" id="pt-search" placeholder="search projects..." />
+    </div>
+    <div class="pt-filters" id="pt-filters">
+      <button class="filter-btn active" data-filter="ALL">ALL</button>
+      <button class="filter-btn" data-filter="tool">TOOL</button>
+      <button class="filter-btn" data-filter="script">SCRIPT</button>
+      <button class="filter-btn" data-filter="plugin">PLUGIN</button>
+      <button class="filter-btn" data-filter="lib">LIBRARY</button>
+      <button class="filter-btn" data-filter="research">RESEARCH</button>
+    </div>
+    <span class="pt-count" id="pt-count"></span>
+  </div>
+
+  <!-- ── Grid ── -->
+  <div class="pt-wrap">
+    <div class="pt-grid" id="pt-grid">
+      <!-- Cards are injected here by JS -->
+    </div>
+    <div class="pt-empty" id="pt-empty">&gt;_ no projects found.</div>
+  </div>
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script>
+    /* ══════════════════════════════════════════════════════
+       PROJECTS DATA
+       Add your projects here. Each object supports:
+         name      — project name
+         icon      — emoji icon shown top-left
+         type      — "tool" | "script" | "plugin" | "lib" | "research"
+         status    — "active" | "wip" | "planned" | "archived"
+         desc      — short description (1-3 sentences)
+         tech      — array of tech/language strings
+         github    — GitHub URL or null
+         demo      — live demo / docs URL or null
+         date      — "YYYY-MM" string
+    ══════════════════════════════════════════════════════ */
+    const PROJECTS = [
+      // ── EXAMPLE PLACEHOLDER — replace with your real projects ──
+      {
+        name: "SecBlog",
+        icon: "🦇",
+        type: "tool",
+        status: "active",
+        desc: "Personal security research blog covering malware analysis, threat intelligence, CTF writeups, IOC feeds, and YARA rules.",
+        tech: ["HTML", "CSS", "JavaScript"],
+        github: "https://github.com/Mr-MaTriX/secblog",
+        demo: null,
+        date: "2025-01",
+      },
+      // ── Add more projects below ──
+    ];
+
+    /* ══════════════════════════════════════════════════════
+       RENDERER
+    ══════════════════════════════════════════════════════ */
+    const TYPE_CLASS = { tool: "type-tool", script: "type-script", lib: "type-lib", research: "type-research", plugin: "type-plugin" };
+    const TYPE_LABEL = { tool: "TOOL", script: "SCRIPT", lib: "LIBRARY", research: "RESEARCH", plugin: "PLUGIN" };
+    const STATUS_CLASS = { active: "status-active", wip: "status-wip", planned: "status-planned", archived: "status-archived" };
+    const STATUS_LABEL = { active: "ACTIVE", wip: "WIP", planned: "PLANNED", archived: "ARCHIVED" };
+
+    function buildCard(p) {
+      const techHtml = p.tech.map(t => `<span class="pt-tech">${t}</span>`).join('');
+      const ghLink = p.github
+        ? `<a class="pt-link" href="${p.github}" target="_blank">⌥ GitHub</a>`
+        : `<span class="pt-link disabled">⌥ GitHub</span>`;
+      const demoLink = p.demo
+        ? `<a class="pt-link" href="${p.demo}" target="_blank">↗ Demo</a>`
+        : `<span class="pt-link disabled">↗ Demo</span>`;
+
+      return `
+      <div class="pt-card" data-type="${p.type}" data-name="${p.name.toLowerCase()}" data-desc="${p.desc.toLowerCase()}">
+        <div class="pt-card-top">
+          <span class="pt-card-icon">${p.icon}</span>
+          <div class="pt-card-badges">
+            <span class="type-pill ${TYPE_CLASS[p.type] || 'type-tool'}">${TYPE_LABEL[p.type] || p.type.toUpperCase()}</span>
+            <span class="status-pill ${STATUS_CLASS[p.status] || 'status-planned'}">${STATUS_LABEL[p.status] || p.status.toUpperCase()}</span>
+          </div>
+        </div>
+        <div class="pt-card-name">${p.name}</div>
+        <div class="pt-card-desc">${p.desc}</div>
+        <div class="pt-tech-row">${techHtml}</div>
+        <div class="pt-card-footer">
+          <div class="pt-card-links">${ghLink}${demoLink}</div>
+          <span class="pt-card-date">${p.date}</span>
+        </div>
+      </div>`;
+    }
+
+    function render() {
+      const grid = document.getElementById('pt-grid');
+      grid.innerHTML = PROJECTS.map(buildCard).join('');
+      updateStats();
+      applyFilters();
+    }
+
+    function updateStats() {
+      document.getElementById('stat-total').textContent = PROJECTS.length;
+      document.getElementById('stat-active').textContent = PROJECTS.filter(p => p.status === 'active').length;
+      document.getElementById('stat-wip').textContent = PROJECTS.filter(p => p.status === 'wip').length;
+      document.getElementById('stat-tools').textContent = PROJECTS.filter(p => p.type === 'tool').length;
+    }
+
+    /* ══ Filter + Search ══ */
+    let activeFilter = 'ALL';
+    let searchQuery = '';
+
+    function applyFilters() {
+      const cards = document.querySelectorAll('.pt-card');
+      let visible = 0;
+
+      cards.forEach(card => {
+        const matchType = activeFilter === 'ALL' || card.dataset.type === activeFilter;
+        const matchSearch = !searchQuery
+          || card.dataset.name.includes(searchQuery)
+          || card.dataset.desc.includes(searchQuery)
+          || card.querySelectorAll('.pt-tech')
+          [Symbol.iterator] && [...card.querySelectorAll('.pt-tech')]
+            .some(t => t.textContent.toLowerCase().includes(searchQuery));
+
+        const show = matchType && matchSearch;
+        card.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+
+      document.getElementById('pt-count').textContent = `${visible} project${visible !== 1 ? 's' : ''}`;
+      document.getElementById('pt-empty').style.display = visible === 0 ? 'block' : 'none';
+      document.getElementById('pt-grid').style.background = visible === 0 ? 'transparent' : 'var(--border)';
+    }
+
+    document.getElementById('pt-filters').addEventListener('click', e => {
+      if (!e.target.matches('.filter-btn')) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      activeFilter = e.target.dataset.filter;
+      applyFilters();
+    });
+
+    document.getElementById('pt-search').addEventListener('input', e => {
+      searchQuery = e.target.value.toLowerCase().trim();
+      applyFilters();
+    });
+
+    /* ══ Footer links ══ */
+    (function () {
+      const fl = document.getElementById('footer-links');
+      const l = SITE_CONFIG.links;
+      if (l.github) fl.innerHTML += `<a href="${l.github}"   target="_blank">GitHub</a>`;
+      if (l.linkedin) fl.innerHTML += `<a href="${l.linkedin}" target="_blank">LinkedIn</a>`;
+      if (l.email) fl.innerHTML += `<a href="${l.email}">Email</a>`;
+    })();
+
+    render();
+  </script>
+
+</body>
+
+</html>

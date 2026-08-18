@@ -274,36 +274,49 @@
         description = "Detects Evelyn Stealer payload"
         author      = "SalahEldin Fikri (Mr_MaTriX)"
     strings:
-        $m1 = "[-] All upload attempts failed - data saved locally in Evelyn folder" 
-        $m2 = "[*] Copying wallets to Evelyn\\Wallets..." 
-        $m3 = "[*] Starting Evelyn Browser Extractor..."
-        $m4 = "[-] ERROR: Failed to create Evelyn folder"
-        $m5 = "[+] Evelyn folder: %s"
-        $m6 = "[*] Copying wallets to Evelyn\\Wallets..."
-        $m7 = "Evelyn" wide
+        $m1 = "[-] All upload attempts failed - data saved locally in Evelyn folder" ascii wide
+        $m2 = "[*] Copying wallets to Evelyn\\Wallets..."  ascii wide
+        $m3 = "[*] Starting Evelyn Browser Extractor..." ascii wide
+        $m4 = "[-] ERROR: Failed to create Evelyn folder" ascii wide
+        $m5 = "[+] Evelyn folder: %s" ascii wide
+        $m6 = "[*] Copying wallets to Evelyn\\Wallets..." ascii wide
+        $m7 = "Evelyn"  ascii wide
+        $m8 = "evelyn_status_2024" ascii wide
 
-        $s1  = "[*] Downloading abe_decrypt.dll from FTP server..."  
-        $s2  = "[-] ERROR: abe_decrypt.dll not found!"  
-        $s3  = "abe_decrypt.dll"  wide
-        $s4  = "/public_html/abe_decrypt.dll"  wide
-        $s5  = "  [*] Found Exodus wallet"
-        $s6  = "  [*] Found Atomic wallet"
-        $s7  = "[*] Stealing Telegram session..."
-        $s8  = "[*] Stealing Steam session..."
-        $s9  = "[*] Stealing Epic Games session..."
-        $s10 = "[*] Stealing Ubisoft Connect session..."
-        $s11 = "[*] Stealing FileZilla credentials..."
-        $s12 = "[*] Stealing VPN configurations..."
-        $s13 = "[*] Stealing clipboard data..."
-        $s14 = "[*] Searching for sensitive files..."
-        $s15 = "[*] Capturing running processes..."
-        $s16 = "[*] Capturing screenshot..."
-        $s17 = "[*] Killing existing browser processes..."
-        $s18 = "[+] WiFi profiles stolen successfully"
-        $s19 = "[+] Chrome injection successful"
-        $s20 = "[+] Edge injection successful"
+        $s1  = "[*] Downloading abe_decrypt.dll from FTP server..."   ascii wide
+        $s2  = "[-] ERROR: abe_decrypt.dll not found!"   ascii wide
+        $s3  = "abe_decrypt.dll"   ascii wide
+        $s4  = "/public_html/abe_decrypt.dll"   ascii wide
+        $s5  = "  [*] Found Exodus wallet" ascii wide
+        $s6  = "  [*] Found Atomic wallet" ascii wide
+        $s7  = "[*] Stealing Telegram session..." ascii wide
+        $s8  = "[*] Stealing Steam session..." ascii wide
+        $s9  = "[*] Stealing Epic Games session..." ascii wide
+        $s10 = "[*] Stealing Ubisoft Connect session..." ascii wide
+        $s11 = "[*] Stealing FileZilla credentials..." ascii wide
+        $s12 = "[*] Stealing VPN configurations..." ascii wide
+        $s13 = "[*] Stealing clipboard data..." ascii wide
+        $s14 = "[*] Searching for sensitive files..." ascii wide
+        $s15 = "[*] Capturing running processes..." ascii wide
+        $s16 = "[*] Capturing screenshot..." ascii wide
+        $s17 = "[*] Killing existing browser processes..." ascii wide
+        $s18 = "[+] WiFi profiles stolen successfully" ascii wide
+        $s19 = "[+] Chrome injection successful" ascii wide
+        $s20 = "[+] Edge injection successful" ascii wide
+        $s21 = "[*] Found %ls wallet\n" ascii wide
+        $s22 = "[*] Found other wallet extension via manifest scan\n" ascii wide
+        $s23 = "[ROBLOX] Cookie: %.*s\n" ascii wide
+        $s24 = "[*] Searching for sensitive files...\n" ascii wide
+        $s25 = "[*] Capturing screenshot...\n" ascii wide
+        $s26 = "[*] Creating system info file...\n" ascii wide
+        $s27 = "[*] Crypto websites check: passwords.json not found at %ls\n" ascii wide
+        $s28 = "[*] Verifying all Edge processes are terminated...\n" ascii wide
+        $s29 = "[+] C2: Successfully registered client %s\n" ascii wide
+        $s30 = "[+] C2: Entering polling loop...\n" ascii wide
+        $s31 = "[+] Brave injection successful\n" ascii wide
+
     condition:
-        uint16(0) == 0x5A4D and filesize &lt; 300KB and (any of ($m*)) and (10 of ($s*))
+        uint16(0) == 0x5A4D and filesize < 300KB and (any of ($m*)) and (15 of ($s*))
 }</pre>
     </div>
 

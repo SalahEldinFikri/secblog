@@ -815,7 +815,7 @@ def raw_guid_to_uuid(raw_hex: str) -> str:
     if len(data) != 16:
         raise ValueError("GUID must be exactly 16 bytes")
 
-    data1, data2, data3, data4 = struct.unpack("<IHH8s", data)
+    data1, data2, data3, data4 = struct.unpack("<""IHH8s", data)
 
     return (
         f"{{{data1:08X}-"

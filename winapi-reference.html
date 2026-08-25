@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Windows API Reference — SecBlog</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <style>
+    :root {
+      --purple: #a78bfa;
+      --pink:   #f472b6;
+      --teal:   #2dd4bf;
+    }
+
+    /* ── Layout ── */
+    .wa-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 56px);
+    }
+
+    /* ── Sidebar ── */
+    .wa-sidebar {
+      background: #0d1526;
+      border-right: 1px solid var(--border);
+      position: sticky;
+      top: 56px;
+      height: calc(100vh - 56px);
+      overflow-y: auto;
+      padding: 1rem 0 2rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .wa-sidebar::-webkit-scrollbar { width: 4px; }
+    .wa-sidebar::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .wa-search-wrap { padding: .75rem 1rem 1rem; }
+
+    .wa-search {
+      width: 100%;
+      background: rgba(7,20,40,.9);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 10px 7px 28px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .wa-search:focus { border-color: var(--green); }
+    .wa-search::placeholder { color: var(--muted); }
+
+    .wa-search-icon {
+      position: absolute;
+      left: 22px; top: 23px;
+      font-size: 12px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .wa-cat-group { margin-bottom: .25rem; }
+
+    .wa-cat-header {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      padding: 8px 1rem 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: color .2s;
+    }
+    .wa-cat-header:hover { color: var(--green); }
+
+    .wa-cat-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .wa-cat-chevron {
+      margin-left: auto;
+      font-size: 9px;
+      transition: transform .2s;
+    }
+    .wa-cat-group.open .wa-cat-chevron { transform: rotate(90deg); }
+
+    .wa-cat-links {
+      display: none;
+      padding-bottom: .25rem;
+    }
+    .wa-cat-group.open .wa-cat-links { display: block; }
+
+    .wa-fn-link {
+      display: block;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      padding: 4px 1rem 4px 2rem;
+      border-left: 2px solid transparent;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .wa-fn-link:hover,
+    .wa-fn-link.active {
+      color: var(--green);
+      border-left-color: var(--green);
+      background: rgba(0,255,157,.04);
+    }
+
+    /* ── Main ── */
+    .wa-main {
+      padding: 2rem 2.5rem 5rem;
+      max-width: 960px;
+    }
+
+    .wa-page-title {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 700;
+      color: #e8f4ff;
+      letter-spacing: -.5px;
+      margin-bottom: .4rem;
+    }
+
+    .wa-page-sub {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 640px;
+      margin-bottom: 2rem;
+    }
+
+    /* ── Category section ── */
+    .wa-section { margin-bottom: 3.5rem; }
+
+    .wa-section-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .wa-section-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .wa-section-count {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    /* ── API Card ── */
+    .wa-card {
+      background: rgba(7,20,40,.7);
+      border: 1px solid var(--border);
+      margin-bottom: .85rem;
+      transition: border-color .2s;
+    }
+    .wa-card:hover { border-color: rgba(0,255,157,.25); }
+
+    .wa-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: .8rem 1.2rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .wa-card-fn {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--green);
+      flex: 1;
+    }
+
+    .wa-card-module {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 1px 7px;
+    }
+
+    .wa-card-chevron {
+      font-size: 11px;
+      color: var(--muted);
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+    .wa-card.open .wa-card-chevron { transform: rotate(90deg); }
+    .wa-card.open .wa-card-header { border-bottom: 1px solid var(--border); }
+
+    .wa-card-body { display: none; padding: 1.2rem; }
+    .wa-card.open .wa-card-body { display: block; }
+
+    /* Signature */
+    .wa-sig {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      background: rgba(0,0,0,.5);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      padding: .75rem 1rem;
+      color: #e8f4ff;
+      overflow-x: auto;
+      white-space: pre;
+      margin-bottom: 1rem;
+      line-height: 1.55;
+    }
+    .wa-sig .kw  { color: #89b4fa; }
+    .wa-sig .tp  { color: var(--purple); }
+    .wa-sig .fn  { color: var(--green); }
+    .wa-sig .arg { color: var(--amber); }
+    .wa-sig .com { color: var(--muted); }
+
+    /* What it does */
+    .wa-what {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.75;
+      margin-bottom: 1rem;
+    }
+
+    /* Three-lens grid */
+    .wa-lenses {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .wa-lens {
+      padding: .9rem 1rem;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .wa-lens-malware { background: rgba(255,77,109,.05); }
+    .wa-lens-red     { background: rgba(245,158,11,.05); }
+    .wa-lens-blue    { background: rgba(56,189,248,.05); }
+
+    .wa-lens-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      margin-bottom: .5rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .lens-m { color: var(--red); }
+    .lens-r { color: var(--amber); }
+    .lens-b { color: var(--blue); }
+
+    .wa-lens p { color: var(--muted); }
+
+    /* Params table */
+    .wa-params {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-bottom: 1rem;
+    }
+    .wa-params th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .wa-params td {
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(31,45,69,.4);
+      vertical-align: top;
+    }
+    .wa-params td:first-child  { font-family: var(--mono); font-size: 11px; color: var(--amber); white-space: nowrap; }
+    .wa-params td:nth-child(2) { font-family: var(--mono); font-size: 11px; color: var(--purple); white-space: nowrap; }
+    .wa-params td:nth-child(3) { color: var(--muted); }
+    .wa-params tr:last-child td { border-bottom: none; }
+
+    /* Return + flags */
+    .wa-return {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: .75rem;
+    }
+    .wa-return span { color: var(--teal); }
+
+    /* Detection note */
+    .wa-detect {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: .6rem .9rem;
+      border-left: 3px solid var(--blue);
+      background: rgba(56,189,248,.05);
+      color: var(--blue);
+      line-height: 1.55;
+    }
+    .wa-warn {
+      border-left-color: var(--amber);
+      background: rgba(245,158,11,.05);
+      color: var(--amber);
+      margin-top: .5rem;
+    }
+
+    /* Search-hidden */
+    .wa-hidden { display: none !important; }
+
+    @media (max-width: 860px) {
+      .wa-layout { grid-template-columns: 1fr; }
+      .wa-sidebar { position: static; height: auto; }
+      .wa-main { padding: 1.5rem; }
+      .wa-lenses { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🦇 <span>//</span> Mr_MaTriX</div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="reports.html">Reports</a>
+    <a href="ioc-feed.html">IOC Feed</a>
+    <a href="yara-feed.html">YARA Feed</a>
+    <a href="siem-reference.html">SIEM Ref</a>
+    <a href="malware-structures.html">Structures</a>
+    <a href="ida-scripting.html">IDA Scripting</a>
+    <a href="projects.html">Projects</a>
+    <a href="winapi-reference.html" class="active">Win API</a>
+    <a href="achievements.html">Achievements</a>
+    <a href="about.html">About</a>
+  </div>
+  <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+</nav>
+
+<div class="wa-layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="wa-sidebar">
+    <div class="wa-search-wrap" style="position:relative;">
+      <span class="wa-search-icon">⌕</span>
+      <input class="wa-search" id="wa-search" type="text" placeholder="search APIs..."/>
+    </div>
+    <div id="wa-nav"></div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="wa-main">
+    <div class="hero-tag" style="margin-bottom:.6rem;"><span class="dot"></span> WINDOWS API REFERENCE</div>
+    <div class="wa-page-title">// Windows API <em style="color:var(--green)">Field Manual</em></div>
+    <p class="wa-page-sub">Every entry covers what the function does, how malware abuses it, red-team use cases, and blue-team detection hooks — all in one place, no MSDN rabbit holes.</p>
+
+    <div id="wa-content"></div>
+  </main>
+
+</div>
+
+<footer>
+  <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+  <div class="footer-links" id="footer-links"></div>
+</footer>
+
+<script src="assets/js/config.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════
+   DATA — Categories + APIs
+══════════════════════════════════════════════════════════════ */
+const CATEGORIES = [
+  {
+    id: "memory", label: "MEMORY", color: "#ff4d6d",
+    apis: [
+      {
+        fn: "VirtualAlloc",
+        module: "kernel32.dll",
+        sig: `LPVOID VirtualAlloc(\n  LPVOID lpAddress,       // preferred base address (NULL = let OS choose)\n  SIZE_T dwSize,          // bytes to allocate\n  DWORD  flAllocationType,// MEM_COMMIT | MEM_RESERVE | MEM_COMMIT|MEM_RESERVE\n  DWORD  flProtect        // PAGE_READWRITE, PAGE_EXECUTE_READWRITE, ...\n);`,
+        what: "Reserves and/or commits a region of pages in the virtual address space of the calling process. Pages start in a MEM_RESERVE state (address space is staked out) and become usable only after MEM_COMMIT. The protection flags control whether the region can be read, written, or executed.",
+        malware: "The most-abused allocation API. Shellcode loaders call VirtualAlloc with PAGE_EXECUTE_READWRITE to get an RWX region, copy shellcode in, then cast the pointer to a function and call it. Process injection variants allocate inside a remote process using VirtualAllocEx.",
+        red: "Classic shellcode staging: allocate RW, write payload, then VirtualProtect to RX — splits the suspicious RWX into two separate calls to reduce static detections. Also used for manual PE mapping (no LoadLibrary) and BOF (Beacon Object File) execution.",
+        blue: "Hook or monitor NtAllocateVirtualMemory (the syscall underneath). Alert on: (1) PAGE_EXECUTE_READWRITE allocations, (2) immediately followed by a WriteProcessMemory + CreateRemoteThread in the same process, (3) allocations inside a process that normally makes none (e.g. Word, Outlook). ETW provider: Microsoft-Windows-Kernel-Memory.",
+        params: [
+          ["lpAddress","LPVOID","Desired starting address. Pass NULL to let the system choose."],
+          ["dwSize","SIZE_T","Size in bytes. Rounded up to the next page boundary (4 KB on x86/x64)."],
+          ["flAllocationType","DWORD","MEM_COMMIT (0x1000), MEM_RESERVE (0x2000), MEM_LARGE_PAGES (0x20000000)."],
+          ["flProtect","DWORD","PAGE_NOACCESS, PAGE_READONLY, PAGE_READWRITE, PAGE_EXECUTE_READWRITE, etc."],
+        ],
+        ret: "LPVOID — base address of allocated region; NULL on failure (call GetLastError).",
+        detect: "EDR hook: NtAllocateVirtualMemory. YARA: sequence of VirtualAlloc → memcpy/WriteFile → CreateThread on same address.",
+      },
+      {
+        fn: "VirtualAllocEx",
+        module: "kernel32.dll",
+        sig: `LPVOID VirtualAllocEx(\n  HANDLE hProcess,        // target process handle\n  LPVOID lpAddress,\n  SIZE_T dwSize,\n  DWORD  flAllocationType,\n  DWORD  flProtect\n);`,
+        what: "Same as VirtualAlloc but operates inside another process identified by hProcess. Requires PROCESS_VM_OPERATION access right on the target handle. The allocated memory belongs to the remote process's address space.",
+        malware: "Step 1 of the classic remote-injection triad: VirtualAllocEx → WriteProcessMemory → CreateRemoteThread. Used by almost every injecting trojan and RAT (e.g. PlugX, Emotet, CobaltStrike). Allocates space in a target like explorer.exe or svchost.exe.",
+        red: "Used in process injection. Combine with NtCreateThreadEx instead of CreateRemoteThread for stealth. Early-bird injection uses VirtualAllocEx before the process's main thread starts.",
+        blue: "High-fidelity alert: any non-system process calling VirtualAllocEx on another process is extremely suspicious. Monitor OpenProcess + VirtualAllocEx + WriteProcessMemory chain. Sysmon Event ID 8 (CreateRemoteThread) often follows.",
+        params: [
+          ["hProcess","HANDLE","Handle to the target process with PROCESS_VM_OPERATION rights."],
+          ["lpAddress","LPVOID","Preferred base; NULL lets the OS decide."],
+          ["dwSize","SIZE_T","Allocation size; rounded up to page boundary."],
+          ["flAllocationType","DWORD","Same flags as VirtualAlloc."],
+          ["flProtect","DWORD","Same protection constants as VirtualAlloc."],
+        ],
+        ret: "LPVOID — base address inside the remote process; NULL on failure.",
+        detect: "Sysmon EID 10 (ProcessAccess) + EID 8. ETW: NtAllocateVirtualMemory with a cross-process handle.",
+      },
+      {
+        fn: "VirtualProtect",
+        module: "kernel32.dll",
+        sig: `BOOL VirtualProtect(\n  LPVOID lpAddress,    // region start\n  SIZE_T dwSize,       // region size\n  DWORD  flNewProtect, // new protection flags\n  PDWORD lpflOldProtect// receives old protection\n);`,
+        what: "Changes the protection on a committed region of pages in the calling process. The most common pattern is allocate RW → write data → flip to RX, avoiding the detectable RWX allocation.",
+        malware: "Used in the RW→RX swap to stage shellcode without an RWX allocation. Also used to remove the write protection from .text sections before patching in-memory (e.g. unhooking EDR hooks by restoring clean ntdll bytes).",
+        red: "Key step in unhooking: mark ntdll's .text as PAGE_EXECUTE_READWRITE, overwrite hooked prologues with clean bytes from a fresh ntdll mapping on disk, then restore protection. Also used in reflective DLL loading.",
+        blue: "Monitor NtProtectVirtualMemory. Alert on transitions TO PAGE_EXECUTE or PAGE_EXECUTE_READ from PAGE_READWRITE on regions that were recently written to. Memory scanner can flag executable regions with high entropy.",
+        params: [
+          ["lpAddress","LPVOID","Base address of the region. Must be within a committed page."],
+          ["dwSize","SIZE_T","Size of the region to change."],
+          ["flNewProtect","DWORD","New protection: PAGE_EXECUTE_READ (0x20), PAGE_READWRITE (0x04), etc."],
+          ["lpflOldProtect","PDWORD","Receives the old protection value — always provide a valid pointer."],
+        ],
+        ret: "BOOL — TRUE on success; FALSE on failure.",
+        detect: "Hook NtProtectVirtualMemory. Correlate with preceding VirtualAlloc + WriteProcessMemory on the same VA range.",
+      },
+      {
+        fn: "VirtualFree",
+        module: "kernel32.dll",
+        sig: `BOOL VirtualFree(\n  LPVOID lpAddress,\n  SIZE_T dwSize,\n  DWORD  dwFreeType   // MEM_DECOMMIT or MEM_RELEASE\n);`,
+        what: "Releases or decommits a region previously allocated by VirtualAlloc. MEM_RELEASE returns the address space to the OS; MEM_DECOMMIT keeps the reserved range but removes physical backing.",
+        malware: "Called after shellcode finishes executing to erase evidence. Some loaders zero the shellcode memory before freeing it.",
+        red: "Clean-up step after in-process shellcode finishes. Zero + free to reduce forensic footprint.",
+        blue: "Less actionable alone. Correlate with preceding suspicious VirtualAlloc if the region was executable.",
+        params: [
+          ["lpAddress","LPVOID","Base address of the region."],
+          ["dwSize","SIZE_T","Must be 0 when dwFreeType is MEM_RELEASE."],
+          ["dwFreeType","DWORD","MEM_DECOMMIT (0x4000) or MEM_RELEASE (0x8000)."],
+        ],
+        ret: "BOOL — TRUE on success.",
+        detect: "Low signal alone. Interesting only as the final step in an inject-execute-free sequence.",
+      },
+      {
+        fn: "HeapAlloc",
+        module: "kernel32.dll",
+        sig: `LPVOID HeapAlloc(\n  HANDLE hHeap,   // heap handle (GetProcessHeap() for default)\n  DWORD  dwFlags, // HEAP_ZERO_MEMORY, HEAP_NO_SERIALIZE\n  SIZE_T dwBytes  // bytes to allocate\n);`,
+        what: "Allocates a block from a heap. Unlike VirtualAlloc, the block is always committed and not page-aligned, making it efficient for small, frequent allocations. Memory is not executable by default.",
+        malware: "Used for data structure allocations in C-written malware. Less commonly used for shellcode staging (VirtualAlloc preferred). Some malware uses HeapAlloc + memcpy for string decryption buffers.",
+        red: "Occasionally used as an alternative staging area before VirtualProtect makes it executable, but rarely preferred over VirtualAlloc.",
+        blue: "Low suspicion alone. Monitor heap spray patterns (thousands of same-sized HeapAlloc calls) used in exploit chains.",
+        params: [
+          ["hHeap","HANDLE","Heap handle. Use GetProcessHeap() for the default process heap."],
+          ["dwFlags","DWORD","HEAP_ZERO_MEMORY (0x8) zeroes the block; HEAP_NO_SERIALIZE (0x1) skips thread safety."],
+          ["dwBytes","SIZE_T","Number of bytes to allocate."],
+        ],
+        ret: "LPVOID — pointer to allocated block; NULL on failure.",
+        detect: "Low priority. Flag heap sprays: rapid repeated allocations of uniform size followed by PAGE_EXECUTE changes.",
+      },
+      {
+        fn: "ReadProcessMemory",
+        module: "kernel32.dll",
+        sig: `BOOL ReadProcessMemory(\n  HANDLE  hProcess,\n  LPCVOID lpBaseAddress,\n  LPVOID  lpBuffer,\n  SIZE_T  nSize,\n  SIZE_T *lpNumberOfBytesRead\n);`,
+        what: "Reads memory from another process into a local buffer. Requires PROCESS_VM_READ access on the target handle. Used legitimately by debuggers and AV scanners.",
+        malware: "Used by credential stealers (e.g. Mimikatz pattern: OpenProcess lsass.exe → ReadProcessMemory) to dump credentials from LSASS. Also used by keyloggers reading other processes' memory.",
+        red: "Core of LSASS dumping: open lsass with PROCESS_VM_READ, iterate its VADs, ReadProcessMemory each region, reconstruct the minidump offline.",
+        blue: "Alert on ReadProcessMemory targeting lsass.exe from any non-system process. Sysmon EID 10. Enable LSA protection (RunAsPPL) to block unprivileged handles to lsass.",
+        params: [
+          ["hProcess","HANDLE","Handle to source process with PROCESS_VM_READ rights."],
+          ["lpBaseAddress","LPCVOID","Address in the source process to read from."],
+          ["lpBuffer","LPVOID","Local buffer to receive the data."],
+          ["nSize","SIZE_T","Number of bytes to read."],
+          ["lpNumberOfBytesRead","SIZE_T*","Optionally receives actual bytes read; can be NULL."],
+        ],
+        ret: "BOOL — TRUE on success.",
+        detect: "Sysmon EID 10 (lsass target). Windows Defender Credential Guard blocks most LSASS reads.",
+      },
+      {
+        fn: "WriteProcessMemory",
+        module: "kernel32.dll",
+        sig: `BOOL WriteProcessMemory(\n  HANDLE  hProcess,\n  LPVOID  lpBaseAddress,\n  LPCVOID lpBuffer,\n  SIZE_T  nSize,\n  SIZE_T *lpNumberOfBytesWritten\n);`,
+        what: "Writes data from a local buffer into the address space of another process. Requires PROCESS_VM_WRITE and PROCESS_VM_OPERATION. Automatically suspends/resumes affected threads if writing to executable pages.",
+        malware: "Second step of the classic injection triad (VirtualAllocEx → WriteProcessMemory → CreateRemoteThread). Writes shellcode or a full PE into the previously allocated region.",
+        red: "Used in process hollowing to overwrite the mapped image after ZwUnmapViewOfSection hollows the target. Also used in DLL injection to write the DLL path.",
+        blue: "High-fidelity when chained with VirtualAllocEx in the same source process. Sysmon does not log WPM directly; use ETW NtWriteVirtualMemory or kernel callbacks.",
+        params: [
+          ["hProcess","HANDLE","Handle to target process with PROCESS_VM_WRITE + PROCESS_VM_OPERATION."],
+          ["lpBaseAddress","LPVOID","Address in target process to write to."],
+          ["lpBuffer","LPCVOID","Local buffer containing data to write."],
+          ["nSize","SIZE_T","Number of bytes to write."],
+          ["lpNumberOfBytesWritten","SIZE_T*","Optional; receives bytes actually written."],
+        ],
+        ret: "BOOL — TRUE on success.",
+        detect: "Correlate with VirtualAllocEx from same source PID. Flag cross-process writes to executable regions.",
+      },
+    ]
+  },
+
+  {
+    id: "process", label: "PROCESS & THREAD", color: "#f59e0b",
+    apis: [
+      {
+        fn: "CreateProcess",
+        module: "kernel32.dll",
+        sig: `BOOL CreateProcessW(\n  LPCWSTR               lpApplicationName,\n  LPWSTR                lpCommandLine,\n  LPSECURITY_ATTRIBUTES lpProcessAttributes,\n  LPSECURITY_ATTRIBUTES lpThreadAttributes,\n  BOOL                  bInheritHandles,\n  DWORD                 dwCreationFlags,\n  LPVOID                lpEnvironment,\n  LPCWSTR               lpCurrentDirectory,\n  LPSTARTUPINFOW        lpStartupInfo,\n  LPPROCESS_INFORMATION lpProcessInformation\n);`,
+        what: "Creates a new process and its primary thread. The new process runs in the security context of the calling process unless an explicit token is supplied via CreateProcessAsUser. dwCreationFlags controls whether the process starts suspended, has a new console, etc.",
+        malware: "Used to spawn child processes for execution (cmd.exe, powershell.exe). Process hollowing calls CreateProcess with CREATE_SUSPENDED, hollows the image, then ResumeThread. Also used for defense evasion by spawning legitimate host processes.",
+        red: "Spawn with CREATE_SUSPENDED for process hollowing or early-bird injection. Use STARTF_USESTDHANDLES to redirect I/O for a hidden reverse shell. Parent-process spoofing: set lpProcessInformation's parent via PROC_THREAD_ATTRIBUTE_PARENT_PROCESS.",
+        blue: "Sysmon EID 1 (ProcessCreate). Watch command-line arguments — encoded PowerShell, double-base64, long hex strings. Flag processes with spoofed parents (PPIDSpoofing). Office → cmd.exe or wscript.exe chains are high-fidelity malware indicators.",
+        params: [
+          ["lpApplicationName","LPCWSTR","Full path to the executable; can be NULL if the path is in lpCommandLine."],
+          ["lpCommandLine","LPWSTR","Command line to execute. Mutable — pass a writable buffer."],
+          ["dwCreationFlags","DWORD","CREATE_SUSPENDED(0x4), CREATE_NO_WINDOW(0x8000000), DETACHED_PROCESS(0x8), etc."],
+          ["lpStartupInfo","LPSTARTUPINFOW","Controls window appearance, stdio handles, desktop."],
+          ["lpProcessInformation","LPPROCESS_INFORMATION","Receives new process and thread handles + PID/TID."],
+        ],
+        ret: "BOOL — TRUE on success. Handles in PROCESS_INFORMATION must be closed.",
+        detect: "Sysmon EID 1. EDR command-line scanning. AMSI for PowerShell children.",
+      },
+      {
+        fn: "OpenProcess",
+        module: "kernel32.dll",
+        sig: `HANDLE OpenProcess(\n  DWORD dwDesiredAccess, // PROCESS_ALL_ACCESS, PROCESS_VM_READ, ...\n  BOOL  bInheritHandle,\n  DWORD dwProcessId      // target PID\n);`,
+        what: "Opens a handle to an existing process with specified access rights. The handle is the prerequisite for nearly all cross-process operations. The OS enforces mandatory integrity checks — a low-IL process cannot open a high-IL process with write access.",
+        malware: "First call in most injection and credential-theft chains. Malware queries running processes, finds a suitable target (svchost, explorer, lsass), then calls OpenProcess with PROCESS_ALL_ACCESS.",
+        red: "Enumerate processes with CreateToolhelp32Snapshot, pick a host, OpenProcess with minimum required rights (PROCESS_VM_WRITE | PROCESS_VM_OPERATION | PROCESS_CREATE_THREAD) to stay lower profile than PROCESS_ALL_ACCESS.",
+        blue: "Sysmon EID 10 (ProcessAccess). Alert on PROCESS_ALL_ACCESS or VM_READ targeting lsass.exe. SeDebugPrivilege acquisition followed by OpenProcess is a strong injection precursor signal.",
+        params: [
+          ["dwDesiredAccess","DWORD","Access mask: PROCESS_ALL_ACCESS(0x1F0FFF), PROCESS_VM_READ(0x10), etc."],
+          ["bInheritHandle","BOOL","If TRUE, the handle is inherited by child processes."],
+          ["dwProcessId","DWORD","PID of the target process."],
+        ],
+        ret: "HANDLE — valid handle on success; NULL on failure. Must be closed with CloseHandle.",
+        detect: "Sysmon EID 10. High-value targets: lsass (PID lookup then open), csrss, winlogon.",
+      },
+      {
+        fn: "CreateThread",
+        module: "kernel32.dll",
+        sig: `HANDLE CreateThread(\n  LPSECURITY_ATTRIBUTES  lpThreadAttributes,\n  SIZE_T                 dwStackSize,\n  LPTHREAD_START_ROUTINE lpStartAddress, // function pointer\n  LPVOID                 lpParameter,\n  DWORD                  dwCreationFlags,\n  LPDWORD                lpThreadId\n);`,
+        what: "Creates a new thread in the calling process. The thread starts executing at lpStartAddress with lpParameter as its single argument. Threads share the process's address space, handles, and security context.",
+        malware: "Used to execute shellcode allocated with VirtualAlloc — cast the shellcode buffer to LPTHREAD_START_ROUTINE and pass it as lpStartAddress. Also used to run persistence routines concurrently.",
+        red: "Direct shellcode execution: VirtualAlloc(RWX) → memcpy shellcode → CreateThread(shellcodeAddr). More stealthy: use QueueUserAPC or NtCreateThreadEx instead.",
+        blue: "Flag CreateThread with a start address pointing into a non-image (dynamically allocated) region. Correlate start address with VirtualAlloc output. Sysmon EID 1 (thread events require additional providers).",
+        params: [
+          ["lpStartAddress","LPTHREAD_START_ROUTINE","Function pointer — DWORD WINAPI ThreadProc(LPVOID lpParam)."],
+          ["lpParameter","LPVOID","Argument passed to the thread function."],
+          ["dwCreationFlags","DWORD","0 = start immediately; CREATE_SUSPENDED(0x4) = start paused."],
+          ["lpThreadId","LPDWORD","Optional; receives the new thread's ID."],
+        ],
+        ret: "HANDLE — thread handle; NULL on failure.",
+        detect: "Check start address: is it inside a known module or in a heap/VirtualAlloc region? The latter is high suspicion.",
+      },
+      {
+        fn: "CreateRemoteThread",
+        module: "kernel32.dll",
+        sig: `HANDLE CreateRemoteThread(\n  HANDLE                 hProcess,\n  LPSECURITY_ATTRIBUTES  lpThreadAttributes,\n  SIZE_T                 dwStackSize,\n  LPTHREAD_START_ROUTINE lpStartAddress,\n  LPVOID                 lpParameter,\n  DWORD                  dwCreationFlags,\n  LPDWORD                lpThreadId\n);`,
+        what: "Same as CreateThread but creates the thread inside a remote process. Requires PROCESS_CREATE_THREAD, PROCESS_VM_OPERATION, and PROCESS_VM_WRITE on the target handle. This is the classic injection finisher.",
+        malware: "Third step of the injection triad. Start address points to the shellcode or LoadLibraryA address (for DLL injection). Practically every commodity RAT uses this.",
+        red: "For DLL injection: pass address of LoadLibraryA (from GetProcAddress) as lpStartAddress and the path in remote memory as lpParameter. For shellcode: point directly at the allocated buffer.",
+        blue: "Sysmon EID 8 (CreateRemoteThread) is one of the highest-fidelity injection signals. Almost no legitimate software creates remote threads. Alert immediately and investigate the source and target PIDs.",
+        params: [
+          ["hProcess","HANDLE","Target process handle with CREATE_THREAD + VM_WRITE + VM_OPERATION."],
+          ["lpStartAddress","LPTHREAD_START_ROUTINE","Entry point inside the REMOTE process's address space."],
+          ["lpParameter","LPVOID","Argument to the thread — also a remote address."],
+          ["dwCreationFlags","DWORD","Same as CreateThread."],
+          ["lpThreadId","LPDWORD","Optional; receives the remote thread's TID."],
+        ],
+        ret: "HANDLE — handle to the new remote thread.",
+        detect: "Sysmon EID 8. Near-zero false-positive rate in enterprise environments. Automate: alert + snapshot memory of target process.",
+      },
+      {
+        fn: "TerminateProcess",
+        module: "kernel32.dll",
+        sig: `BOOL TerminateProcess(\n  HANDLE hProcess,   // target\n  UINT   uExitCode   // exit code to report\n);`,
+        what: "Forcibly terminates a process and all its threads without running any cleanup code, DLL_PROCESS_DETACH handlers, or destructors. Immediate and brutal.",
+        malware: "Used to kill AV/EDR processes (requires SeDebugPrivilege and a handle). Also used in kill-switch logic: if analysis environment detected, terminate self.",
+        red: "Kill AV processes if running as admin: enumerate processes by name, open with PROCESS_TERMINATE, call TerminateProcess.",
+        blue: "Alert on TerminateProcess targeting security software (MsMpEng.exe, avp.exe, etc.). Tamper protection in Defender blocks this but third-party AV may not.",
+        params: [
+          ["hProcess","HANDLE","Handle to target with PROCESS_TERMINATE rights."],
+          ["uExitCode","UINT","Exit code the process will appear to return."],
+        ],
+        ret: "BOOL — TRUE on success.",
+        detect: "Alert when target process is a security product. Monitor for self-termination after sandbox checks.",
+      },
+      {
+        fn: "NtQueryInformationProcess",
+        module: "ntdll.dll",
+        sig: `NTSTATUS NtQueryInformationProcess(\n  HANDLE           ProcessHandle,\n  PROCESSINFOCLASS ProcessInformationClass,\n  PVOID            ProcessInformation,\n  ULONG            ProcessInformationLength,\n  PULONG           ReturnLength\n);`,
+        what: "Native API that returns detailed information about a process. ProcessBasicInformation (class 0) gives the PEB address, parent PID, and exit status. Many higher-level Win32 functions call this internally.",
+        malware: "Sandbox/analysis detection: query ProcessDebugPort (class 7) — non-zero means a debugger is attached. Query ProcessDebugFlags (class 31), ProcessDebugObjectHandle (class 30). Also used to find the PEB for manual map operations.",
+        red: "Anti-debug: NtQueryInformationProcess(ProcessDebugPort) is harder to patch than IsDebuggerPresent because it's a kernel query. Also used for parent-PID spoofing validation.",
+        blue: "Hook NtQueryInformationProcess. Flag calls to ProcessDebugPort/Flags/ObjectHandle from suspicious processes — strong sandbox-evasion indicator.",
+        params: [
+          ["ProcessHandle","HANDLE","GetCurrentProcess() for self-query."],
+          ["ProcessInformationClass","PROCESSINFOCLASS","0=BasicInfo, 7=DebugPort, 30=DebugObjectHandle, 31=DebugFlags."],
+          ["ProcessInformation","PVOID","Buffer receiving the queried data."],
+          ["ProcessInformationLength","ULONG","Size of the buffer."],
+          ["ReturnLength","PULONG","Optional; receives required size."],
+        ],
+        ret: "NTSTATUS — STATUS_SUCCESS (0) on success.",
+        detect: "Hook in ntdll or at syscall level. Calls querying debug info are reliable anti-analysis indicators.",
+      },
+    ]
+  },
+
+  {
+    id: "fileio", label: "FILE & I/O", color: "#38bdf8",
+    apis: [
+      {
+        fn: "CreateFile",
+        module: "kernel32.dll",
+        sig: `HANDLE CreateFileW(\n  LPCWSTR               lpFileName,\n  DWORD                 dwDesiredAccess,   // GENERIC_READ | GENERIC_WRITE\n  DWORD                 dwShareMode,\n  LPSECURITY_ATTRIBUTES lpSecurityAttributes,\n  DWORD                 dwCreationDisposition, // CREATE_ALWAYS, OPEN_EXISTING, ...\n  DWORD                 dwFlagsAndAttributes,\n  HANDLE                hTemplateFile\n);`,
+        what: "Opens or creates a file, directory, physical disk, pipe, console, or device. Returns a handle used for all subsequent I/O on the object. The same function handles everything from local files to named pipes and device objects.",
+        malware: "Used for every file operation — dropping payloads, reading config files, creating named pipes for C2 communication. Ransomware calls CreateFile in an enumeration loop to open every victim file before encrypting it.",
+        red: "Named pipe C2: CreateFile(\"\\\\\\\\.\\\\pipe\\\\pipename\") for client-side pipe connection. Create and write dropper payloads to disk. Access \\\\.\\PhysicalDrive0 for raw disk forensic evasion.",
+        blue: "Sysmon EID 11 (FileCreate), EID 23 (FileDelete). Watch for mass file opens (ransomware), pipe creation, and writes to startup/persistence locations.",
+        params: [
+          ["lpFileName","LPCWSTR","Path or device name. UNC paths, pipe paths (\\\\.\\pipe\\), and device paths (\\\\.\\) all work."],
+          ["dwDesiredAccess","DWORD","GENERIC_READ(0x80000000), GENERIC_WRITE(0x40000000), or both."],
+          ["dwCreationDisposition","DWORD","CREATE_NEW, CREATE_ALWAYS, OPEN_EXISTING, OPEN_ALWAYS, TRUNCATE_EXISTING."],
+          ["dwFlagsAndAttributes","DWORD","FILE_ATTRIBUTE_HIDDEN, FILE_FLAG_DELETE_ON_CLOSE, FILE_FLAG_OVERLAPPED, etc."],
+        ],
+        ret: "HANDLE — valid handle or INVALID_HANDLE_VALUE on failure.",
+        detect: "Sysmon EID 11. Mass CreateFile calls at high rate = ransomware pattern. Pipe creation to unusual names = C2.",
+      },
+      {
+        fn: "ReadFile",
+        module: "kernel32.dll",
+        sig: `BOOL ReadFile(\n  HANDLE       hFile,\n  LPVOID       lpBuffer,\n  DWORD        nNumberOfBytesToRead,\n  LPDWORD      lpNumberOfBytesRead,\n  LPOVERLAPPED lpOverlapped\n);`,
+        what: "Reads data from a file or I/O device synchronously or asynchronously (if the handle was opened with FILE_FLAG_OVERLAPPED). Reading advances the file pointer.",
+        malware: "Used to read configuration files, read a dropped payload before executing it, or read data from a named pipe (C2 channel). Some loaders read themselves off disk for reflective injection.",
+        red: "Read a DLL from disk before manual mapping to avoid LoadLibrary hooks. Read C2 commands from a named pipe.",
+        blue: "Low signal alone. Interesting when combined with a subsequent VirtualAlloc + CreateThread pattern on the read buffer.",
+        params: [
+          ["hFile","HANDLE","Handle opened with GENERIC_READ."],
+          ["lpBuffer","LPVOID","Buffer to receive data."],
+          ["nNumberOfBytesToRead","DWORD","Maximum bytes to read."],
+          ["lpNumberOfBytesRead","LPDWORD","Receives actual bytes read; NULL only if lpOverlapped is set."],
+          ["lpOverlapped","LPOVERLAPPED","For async I/O; NULL for synchronous."],
+        ],
+        ret: "BOOL — TRUE on success (or pending async).",
+        detect: "Correlate large reads from unusual paths followed by VirtualAlloc + execution.",
+      },
+      {
+        fn: "WriteFile",
+        module: "kernel32.dll",
+        sig: `BOOL WriteFile(\n  HANDLE       hFile,\n  LPCVOID      lpBuffer,\n  DWORD        nNumberOfBytesToWrite,\n  LPDWORD      lpNumberOfBytesWritten,\n  LPOVERLAPPED lpOverlapped\n);`,
+        what: "Writes data from a buffer to a file or device. Works with pipes, consoles, mailslots, and sockets as well as regular files. For pipes this is how C2 data is sent from a named-pipe server to a client.",
+        malware: "Dropper writes the embedded payload to disk. Ransomware writes the encrypted ciphertext back. Named-pipe C2 servers write commands to the pipe.",
+        red: "Drop a DLL into a world-writable path, then use regsvr32 or rundll32 to load it. Write shellcode to a temp file then use COM scriptlets to load.",
+        blue: "Sysmon EID 11 for new files. Watch writes to %TEMP%, %APPDATA%, Startup folders. Writes of PE headers (MZ/PE magic) to non-executable paths.",
+        params: [
+          ["hFile","HANDLE","Handle opened with GENERIC_WRITE."],
+          ["lpBuffer","LPCVOID","Data to write."],
+          ["nNumberOfBytesToWrite","DWORD","Bytes to write."],
+          ["lpNumberOfBytesWritten","LPDWORD","Receives actual bytes written; NULL only if using OVERLAPPED."],
+          ["lpOverlapped","LPOVERLAPPED","For async I/O; NULL for sync."],
+        ],
+        ret: "BOOL — TRUE on success.",
+        detect: "Flag PE-header writes outside system directories. High-rate writes to many files = ransomware.",
+      },
+      {
+        fn: "MoveFileEx",
+        module: "kernel32.dll",
+        sig: `BOOL MoveFileExW(\n  LPCWSTR lpExistingFileName,\n  LPCWSTR lpNewFileName,     // NULL = delete on reboot\n  DWORD   dwFlags            // MOVEFILE_DELAY_UNTIL_REBOOT, MOVEFILE_REPLACE_EXISTING\n);`,
+        what: "Moves or renames a file. With MOVEFILE_DELAY_UNTIL_REBOOT, the move is registered in PendingFileRenameOperations registry value and executed by smss.exe on the next boot — before most security software loads.",
+        malware: "Persistence and defence evasion: write a payload to a temp location, register a rename operation to overwrite a system binary on reboot. Also used to remove evidence of dropper activity after execution.",
+        red: "Register a file replace on reboot: MoveFileEx(payload, target, MOVEFILE_DELAY_UNTIL_REBOOT | MOVEFILE_REPLACE_EXISTING). Target wakes up replaced.",
+        blue: "Monitor HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\PendingFileRenameOperations. Any non-update-related entries are suspicious.",
+        params: [
+          ["lpExistingFileName","LPCWSTR","Source file path."],
+          ["lpNewFileName","LPCWSTR","Destination path; NULL schedules deletion on reboot."],
+          ["dwFlags","DWORD","MOVEFILE_REPLACE_EXISTING(0x1), MOVEFILE_DELAY_UNTIL_REBOOT(0x4)."],
+        ],
+        ret: "BOOL — TRUE on success.",
+        detect: "Registry: PendingFileRenameOperations. Sysmon EID 23 (FileDelete) for deletion variant.",
+      },
+    ]
+  },
+
+  {
+    id: "registry", label: "REGISTRY", color: "#a78bfa",
+    apis: [
+      {
+        fn: "RegOpenKeyEx",
+        module: "advapi32.dll",
+        sig: `LSTATUS RegOpenKeyExW(\n  HKEY    hKey,         // HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER, ...\n  LPCWSTR lpSubKey,\n  DWORD   ulOptions,    // 0 or REG_OPTION_OPEN_LINK\n  REGSAM  samDesired,   // KEY_READ, KEY_WRITE, KEY_ALL_ACCESS\n  PHKEY   phkResult\n);`,
+        what: "Opens an existing registry key and returns a handle for subsequent read or write operations. The returned handle must be closed with RegCloseKey. Predefined roots (HKLM, HKCU, etc.) never need to be opened.",
+        malware: "Used to read C2 configuration stored in the registry, check for analysis environments (VM-related keys), or verify persistence keys exist. Nearly every piece of malware touches the registry.",
+        red: "Read stored payloads or keys from HKCU\\Software\\ paths. Access run keys to verify persistence. Query HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion for OS version fingerprinting.",
+        blue: "Sysmon EID 12/13/14 (Registry events). Monitor opens of Run/RunOnce, Winlogon, AppInit_DLLs, and service keys from unusual processes.",
+        params: [
+          ["hKey","HKEY","Root key: HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER, HKEY_CLASSES_ROOT, etc."],
+          ["lpSubKey","LPCWSTR","Subkey path relative to hKey."],
+          ["samDesired","REGSAM","Access mask: KEY_READ(0x20019), KEY_WRITE(0x20006), KEY_ALL_ACCESS(0xF003F)."],
+          ["phkResult","PHKEY","Receives the opened key handle."],
+        ],
+        ret: "LSTATUS — ERROR_SUCCESS (0) on success.",
+        detect: "Sysmon EID 12 (RegistryObjectCreate/Delete). High-value key paths: Run, RunOnce, Services, AppInit.",
+      },
+      {
+        fn: "RegSetValueEx",
+        module: "advapi32.dll",
+        sig: `LSTATUS RegSetValueExW(\n  HKEY        hKey,\n  LPCWSTR     lpValueName,\n  DWORD       Reserved,    // must be 0\n  DWORD       dwType,      // REG_SZ, REG_DWORD, REG_BINARY, ...\n  const BYTE *lpData,\n  DWORD       cbData\n);`,
+        what: "Sets the data and type of a named value in an open registry key. If the value doesn't exist it is created; if it does, the data is overwritten.",
+        malware: "Primary persistence mechanism: write malware path to HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run. Store encrypted C2 config as REG_BINARY. Disable Windows Defender via policy keys.",
+        red: "Write a persistence entry: RegSetValueEx(run_key, L\"Updater\", 0, REG_SZ, payload_path, ...). Store shellcode encoded as REG_BINARY for fileless execution (read back at runtime, decode, execute).",
+        blue: "Sysmon EID 13 (RegistryValueSet). Immediately alert on writes to Run/RunOnce from non-installer processes. Monitor AppInit_DLLs changes (loads into every user-mode process).",
+        params: [
+          ["hKey","HKEY","Open key handle with KEY_SET_VALUE access."],
+          ["lpValueName","LPCWSTR","Value name; NULL or empty string sets the default value."],
+          ["dwType","DWORD","REG_SZ(1), REG_BINARY(3), REG_DWORD(4), REG_EXPAND_SZ(2), REG_MULTI_SZ(7)."],
+          ["lpData","const BYTE*","Pointer to value data."],
+          ["cbData","DWORD","Size of lpData in bytes; include the null terminator for REG_SZ."],
+        ],
+        ret: "LSTATUS — ERROR_SUCCESS (0) on success.",
+        detect: "Sysmon EID 13. Prioritise persistence key paths. AppInit_DLLs write = near-certain malware.",
+      },
+      {
+        fn: "RegQueryValueEx",
+        module: "advapi32.dll",
+        sig: `LSTATUS RegQueryValueExW(\n  HKEY    hKey,\n  LPCWSTR lpValueName,\n  LPDWORD lpReserved,\n  LPDWORD lpType,\n  LPBYTE  lpData,\n  LPDWORD lpcbData\n);`,
+        what: "Retrieves the type and data for a named value under an open registry key. Call once with lpData=NULL to get the required buffer size, then again with an allocated buffer.",
+        malware: "Read C2 address stored in registry. Read installed AV product keys to choose evasion path. Check for sandbox indicators (HKLM\\SOFTWARE\\VMware, Inc.\\VMware Tools).",
+        red: "Read stored stage-2 shellcode from a REG_BINARY value, decode, and execute in-memory — classic fileless execution.",
+        blue: "Monitor queries to uncommon or sensitive keys from new/unsigned processes. VM-detection queries (VMware, VirtualBox, QEMU keys) are sandbox-evasion signals.",
+        params: [
+          ["hKey","HKEY","Open key handle with KEY_QUERY_VALUE."],
+          ["lpValueName","LPCWSTR","Name of the value to query."],
+          ["lpType","LPDWORD","Receives the value's type (REG_SZ, REG_DWORD, etc.)."],
+          ["lpData","LPBYTE","Buffer for data; NULL to query required size."],
+          ["lpcbData","LPDWORD","In: buffer size. Out: actual data size."],
+        ],
+        ret: "LSTATUS — ERROR_SUCCESS (0) or ERROR_MORE_DATA if buffer too small.",
+        detect: "Flag queries to VM-indicator keys and security software presence keys.",
+      },
+      {
+        fn: "RegDeleteValue",
+        module: "advapi32.dll",
+        sig: `LSTATUS RegDeleteValueW(\n  HKEY    hKey,\n  LPCWSTR lpValueName\n);`,
+        what: "Removes a named value from an open registry key. Commonly used to clean up after persistence is established or to remove evidence.",
+        malware: "Anti-forensic cleanup: delete run keys or config values after they are no longer needed. Some malware deletes its own persistence entry as part of an uninstall routine.",
+        red: "Remove artefacts after a session ends. Delete run key to reduce dwell-time detections on next scan.",
+        blue: "Sysmon EID 12/14 (RegistryObjectCreate/Delete). A delete of a recently-created run key is suspicious — may indicate self-cleanup.",
+        params: [
+          ["hKey","HKEY","Open key handle with KEY_SET_VALUE access."],
+          ["lpValueName","LPCWSTR","Name of the value to delete."],
+        ],
+        ret: "LSTATUS — ERROR_SUCCESS (0) on success.",
+        detect: "Correlate with prior RegSetValueEx on the same key in the same session.",
+      },
+    ]
+  },
+
+  {
+    id: "network", label: "NETWORK", color: "#2dd4bf",
+    apis: [
+      {
+        fn: "WSAStartup",
+        module: "ws2_32.dll",
+        sig: `int WSAStartup(\n  WORD      wVersionRequired, // MAKEWORD(2, 2)\n  LPWSADATA lpWSAData\n);`,
+        what: "Initialises the Windows Sockets library for the calling process. Must be called before any other Winsock function. Typically the very first network call in any networked application.",
+        malware: "Mandatory first call before any socket operation. Its presence in an import table is a reliable indicator of network capability. Loaders, RATs, and C2 agents all call this.",
+        red: "Standard socket boilerplate. No evasion value by itself but its absence means the malware is using a different networking method (WinHTTP, COM, etc.).",
+        blue: "Presence in the import table = network-capable binary. Baseline expected from browsers, etc. Unexpected in documents or macro payloads.",
+        params: [
+          ["wVersionRequired","WORD","Requested Winsock version; use MAKEWORD(2,2) for modern code."],
+          ["lpWSAData","LPWSADATA","Receives library version and capability info."],
+        ],
+        ret: "int — 0 on success; Winsock error code on failure.",
+        detect: "Import table presence. Low signal alone; context matters.",
+      },
+      {
+        fn: "connect",
+        module: "ws2_32.dll",
+        sig: `int connect(\n  SOCKET         s,\n  const sockaddr *name,  // target address + port\n  int            namelen\n);`,
+        what: "Establishes a connection to a remote endpoint on a stream socket (TCP). For UDP sockets, connect() sets the default destination without a handshake. Blocks until connected or timed out (unless the socket is non-blocking).",
+        malware: "Core of any reverse-shell or direct C2 connection. After connect() succeeds, the malware sends a beacon or receives commands via send/recv. The target IP and port are the primary C2 indicators.",
+        red: "Pair with socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) → connect() → send()/recv() loop for a simple raw TCP C2. Encrypt the stream with a custom XOR or ChaCha20 for evasion.",
+        blue: "Network flow logs (Zeek, NetFlow). Newly spawned process making an outbound connection on an unusual port is the classic beacon pattern. Alert on connections from Office apps, script hosts, or LOLBins.",
+        params: [
+          ["s","SOCKET","The socket returned by socket()."],
+          ["name","const sockaddr*","Pointer to sockaddr_in with target AF_INET, port (htons), and IP (inet_addr)."],
+          ["namelen","int","sizeof(sockaddr_in) = 16."],
+        ],
+        ret: "int — 0 on success; SOCKET_ERROR on failure.",
+        detect: "Network monitoring. Sysmon EID 3 (NetworkConnect). Unusual source processes or non-standard ports.",
+      },
+      {
+        fn: "InternetOpen / InternetOpenUrl",
+        module: "wininet.dll",
+        sig: `HINTERNET InternetOpenW(\n  LPCWSTR lpszAgent,       // User-Agent string\n  DWORD   dwAccessType,\n  LPCWSTR lpszProxy,\n  LPCWSTR lpszProxyBypass,\n  DWORD   dwFlags\n);\nHINTERNET InternetOpenUrlW(\n  HINTERNET hInternet,\n  LPCWSTR   lpszUrl,\n  LPCWSTR   lpszHeaders,\n  DWORD     dwHeadersLength,\n  DWORD     dwFlags,\n  DWORD_PTR dwContext\n);`,
+        what: "InternetOpen initialises the WinINet library handle; InternetOpenUrl opens a URL directly over HTTP/HTTPS/FTP. Much simpler than raw sockets — handles proxy, redirects, and TLS automatically.",
+        malware: "Used by many loaders to download stage-2 payloads from a URL. The User-Agent string is often hardcoded and acts as a C2 indicator. Also used for HTTP beacon check-ins.",
+        red: "Simple payload download: InternetOpen → InternetOpenUrl → InternetReadFile → write to temp → execute. The User-Agent can be set to mimic a legitimate browser to bypass proxy filters.",
+        blue: "Proxy logs, DNS logs. Monitor User-Agent strings from non-browser processes. Flag downloads of PE files (MZ header) via WinINet from script hosts or Office.",
+        params: [
+          ["lpszAgent","LPCWSTR","User-Agent string sent in HTTP requests."],
+          ["dwAccessType","DWORD","INTERNET_OPEN_TYPE_DIRECT(1), INTERNET_OPEN_TYPE_PRECONFIG(0)."],
+          ["lpszUrl","LPCWSTR","Full URL including scheme (http:// or https://)."],
+          ["dwFlags","DWORD","INTERNET_FLAG_NO_CACHE_WRITE, INTERNET_FLAG_SECURE, etc."],
+        ],
+        ret: "HINTERNET — handle or NULL on failure.",
+        detect: "Proxy logs. WinINet ETW. User-Agent anomaly detection for non-browser processes.",
+      },
+      {
+        fn: "WinHttpOpen / WinHttpSendRequest",
+        module: "winhttp.dll",
+        sig: `HINTERNET WinHttpOpen(\n  LPCWSTR pszAgentW,\n  DWORD   dwAccessType,\n  LPCWSTR pszProxyW,\n  LPCWSTR pszProxyBypassW,\n  DWORD   dwFlags\n);\nBOOL WinHttpSendRequest(\n  HINTERNET hRequest,\n  LPCWSTR   lpszHeaders,\n  DWORD     dwHeadersLength,\n  LPVOID    lpOptional,\n  DWORD     dwOptionalLength,\n  DWORD     dwTotalLength,\n  DWORD_PTR dwContext\n);`,
+        what: "WinHTTP is a lower-level HTTP client library used by services and system components. It doesn't share state with WinINet (no IE proxy settings by default) and supports full HTTPS certificate validation.",
+        malware: "Preferred by sophisticated malware and C2 frameworks because it works in system service context (no user profile needed) and supports proxies configured via netsh winhttp set proxy.",
+        red: "CobaltStrike malleable profiles can use WinHTTP. Custom loaders use it for stealthy HTTPS C2 that blends with Windows Update traffic.",
+        blue: "WinHTTP used from unexpected processes (powershell, wscript, non-system binaries) is suspicious. Monitor via network flow + process correlation.",
+        params: [
+          ["pszAgentW","LPCWSTR","User-Agent string."],
+          ["dwAccessType","DWORD","WINHTTP_ACCESS_TYPE_DEFAULT_PROXY(0) or WINHTTP_ACCESS_TYPE_NO_PROXY(1)."],
+          ["lpszHeaders","LPCWSTR","Additional HTTP headers (e.g. custom C2 headers)."],
+          ["lpOptional","LPVOID","POST body data for request methods that have a body."],
+        ],
+        ret: "HINTERNET / BOOL respectively.",
+        detect: "Network flows. WinHTTP ETW provider. Unusual processes using WinHTTP for outbound HTTPS.",
+      },
+      {
+        fn: "DnsQuery",
+        module: "dnsapi.dll",
+        sig: `DNS_STATUS DnsQuery_W(\n  LPCWSTR     pszName,   // hostname or query\n  WORD        wType,     // DNS_TYPE_A, DNS_TYPE_TXT, ...\n  DWORD       Options,\n  PVOID       pExtra,\n  PDNS_RECORD *ppQueryResults,\n  PVOID       *pReserved\n);`,
+        what: "Performs a DNS query for a given hostname and record type. Returns a linked list of DNS_RECORD structures. Supports all standard record types (A, AAAA, TXT, MX, etc.).",
+        malware: "DNS C2 and DNS tunnelling: encode commands/data in TXT or CNAME record queries. The domain is the C2 indicator. Also used for initial C2 resolution before connecting.",
+        red: "DNS tunnelling: encode stolen data in subdomains (base32(data).c2.com) and resolve them. Server logs the subdomains and decodes the exfiltrated data. Tools: dnscat2, iodine.",
+        blue: "DNS logs (Zeek dns.log, Windows DNS debug log). High-volume queries to a single domain, especially with long random-looking subdomains, or TXT record queries from non-resolver processes. Sysmon EID 22 (DnsQuery).",
+        params: [
+          ["pszName","LPCWSTR","The hostname or encoded data string to query."],
+          ["wType","WORD","DNS_TYPE_A(1), DNS_TYPE_TXT(16), DNS_TYPE_AAAA(28)."],
+          ["Options","DWORD","DNS_QUERY_STANDARD(0), DNS_QUERY_BYPASS_CACHE(0x8), etc."],
+          ["ppQueryResults","PDNS_RECORD*","Receives linked list of results; free with DnsRecordListFree."],
+        ],
+        ret: "DNS_STATUS — 0 on success; Win32 error code on failure.",
+        detect: "Sysmon EID 22. High-entropy subdomain queries. TXT queries from non-mail processes.",
+      },
+    ]
+  },
+
+  {
+    id: "crypto", label: "CRYPTO", color: "#f472b6",
+    apis: [
+      {
+        fn: "CryptAcquireContext",
+        module: "advapi32.dll",
+        sig: `BOOL CryptAcquireContextW(\n  HCRYPTPROV *phProv,\n  LPCWSTR     pszContainer,\n  LPCWSTR     pszProvider,\n  DWORD       dwProvType,   // PROV_RSA_AES, PROV_RSA_FULL\n  DWORD       dwFlags       // CRYPT_VERIFYCONTEXT for ephemeral\n);`,
+        what: "Acquires a handle to a Cryptographic Service Provider (CSP). This is the entry point to the legacy CryptoAPI. Required before calling CryptGenKey, CryptEncrypt, or CryptGenRandom in the CAPI model.",
+        malware: "Legacy ransomware and malware use CAPI for RSA key generation and AES encryption. The provider type reveals the crypto scheme in use.",
+        red: "Generate an ephemeral RSA key pair for key wrapping: CryptAcquireContext(CRYPT_VERIFYCONTEXT) → CryptGenKey → encrypt the session key with attacker's public key.",
+        blue: "CAPI usage from scripting hosts or macro engines is suspicious. Correlate with file rename activity for ransomware detection.",
+        params: [
+          ["phProv","HCRYPTPROV*","Receives the provider handle."],
+          ["pszContainer","LPCWSTR","Key container name; NULL for default or with CRYPT_VERIFYCONTEXT."],
+          ["dwProvType","DWORD","PROV_RSA_FULL(1), PROV_RSA_AES(24)."],
+          ["dwFlags","DWORD","CRYPT_VERIFYCONTEXT(0xF0000000) for no private key storage."],
+        ],
+        ret: "BOOL — TRUE on success.",
+        detect: "Combined with file enumeration + write pattern = ransomware signal.",
+      },
+      {
+        fn: "BCryptGenRandom",
+        module: "bcrypt.dll",
+        sig: `NTSTATUS BCryptGenRandom(\n  BCRYPT_ALG_HANDLE hAlgorithm, // NULL for default RNG\n  PUCHAR            pbBuffer,\n  ULONG             cbBuffer,\n  ULONG             dwFlags     // BCRYPT_USE_SYSTEM_PREFERRED_RNG if hAlgorithm=NULL\n);`,
+        what: "Generates cryptographically secure random bytes using the CNG (Cryptography Next Generation) API. The system-preferred PRNG is seeded from hardware entropy sources. This is the preferred modern API over CryptGenRandom.",
+        malware: "Used by modern ransomware to generate strong per-file or per-victim encryption keys. The randomness quality matters — weak keys allow decryption without paying.",
+        red: "Generate a random 32-byte session key for AES-256 encryption. Wrap it with the attacker's RSA public key and embed in the ransom note or upload to C2.",
+        blue: "BCryptGenRandom alone is not suspicious. Ransomware detection relies on the combination: random key gen + mass file read/write + file rename.",
+        params: [
+          ["hAlgorithm","BCRYPT_ALG_HANDLE","Algorithm handle or NULL with BCRYPT_USE_SYSTEM_PREFERRED_RNG flag."],
+          ["pbBuffer","PUCHAR","Buffer to receive random bytes."],
+          ["cbBuffer","ULONG","Number of random bytes to generate."],
+          ["dwFlags","ULONG","BCRYPT_USE_SYSTEM_PREFERRED_RNG(0x2) when hAlgorithm is NULL."],
+        ],
+        ret: "NTSTATUS — STATUS_SUCCESS (0) on success.",
+        detect: "Low signal alone. Part of ransomware behavioural chain.",
+      },
+      {
+        fn: "BCryptEncrypt",
+        module: "bcrypt.dll",
+        sig: `NTSTATUS BCryptEncrypt(\n  BCRYPT_KEY_HANDLE hKey,\n  PUCHAR            pbInput,\n  ULONG             cbInput,\n  VOID             *pPaddingInfo,\n  PUCHAR            pbIV,\n  ULONG             cbIV,\n  PUCHAR            pbOutput,\n  ULONG             cbOutput,\n  ULONG            *pcbResult,\n  ULONG             dwFlags    // BCRYPT_BLOCK_PADDING\n);`,
+        what: "Encrypts data using a key previously imported or generated with BCryptGenerateSymmetricKey or BCryptImportKeyPair. Supports AES (CBC, GCM, ECB), DES, 3DES, and other algorithms depending on provider.",
+        malware: "Used by modern ransomware (LockBit, BlackCat, Conti) to encrypt file contents in-memory before writing back. Often in a multi-threaded loop for speed.",
+        red: "AES-256-CBC or ChaCha20 for payload encryption. RSA for wrapping symmetric keys. CNG APIs are harder to hook than CryptoAPI in some configurations.",
+        blue: "Correlate BCryptEncrypt calls with file I/O patterns. Ransomware-specific: encrypt in memory, write ciphertext, rename file with .encrypted / random extension.",
+        params: [
+          ["hKey","BCRYPT_KEY_HANDLE","Symmetric key handle."],
+          ["pbInput","PUCHAR","Plaintext input buffer."],
+          ["cbInput","ULONG","Length of plaintext."],
+          ["pbIV","PUCHAR","Initialization vector buffer; should be unique per encryption."],
+          ["pbOutput","PUCHAR","Ciphertext output buffer; NULL to query required size."],
+          ["dwFlags","ULONG","BCRYPT_BLOCK_PADDING(0x1) for automatic PKCS7 padding."],
+        ],
+        ret: "NTSTATUS — STATUS_SUCCESS (0) on success.",
+        detect: "Part of ransomware chain. Combine with file-rename and shadow copy deletion signals.",
+      },
+      {
+        fn: "CryptStringToBinary",
+        module: "crypt32.dll",
+        sig: `BOOL CryptStringToBinaryW(\n  LPCWSTR pszString,\n  DWORD   cchString,\n  DWORD   dwFlags,    // CRYPT_STRING_BASE64, CRYPT_STRING_HEX\n  BYTE   *pbBinary,\n  DWORD  *pcbBinary,\n  DWORD  *pdwSkip,\n  DWORD  *pdwFlags\n);`,
+        what: "Converts a formatted string (Base64, hex, PEM, etc.) to raw binary data. The reverse function is CryptBinaryToString. Frequently used in malware loaders to decode embedded payloads without rolling a custom decoder.",
+        malware: "Decode Base64-encoded shellcode or PE stored in a string resource, config, or C2 response. Avoids obvious decode loops that heuristics flag.",
+        red: "Decode a Base64 PE, load into VirtualAlloc'd memory, parse the PE manually (manual map) to avoid detection by LoadLibrary hooks.",
+        blue: "CRYPT_STRING_BASE64 calls followed by VirtualAlloc and execution are a strong loader indicator. Strings with Base64 entropy in memory are also flaggable.",
+        params: [
+          ["pszString","LPCWSTR","The encoded string to convert."],
+          ["cchString","DWORD","Length of pszString; 0 if null-terminated."],
+          ["dwFlags","DWORD","CRYPT_STRING_BASE64(1), CRYPT_STRING_BASE64HEADER(0), CRYPT_STRING_HEX(4)."],
+          ["pbBinary","BYTE*","Output buffer; NULL to query required size."],
+          ["pcbBinary","DWORD*","In: buffer size. Out: bytes written."],
+        ],
+        ret: "BOOL — TRUE on success.",
+        detect: "Correlate with VirtualAlloc + CreateThread on decoded output.",
+      },
+    ]
+  },
+
+  {
+    id: "pemodule", label: "PE & MODULE", color: "#00ff9d",
+    apis: [
+      {
+        fn: "LoadLibrary",
+        module: "kernel32.dll",
+        sig: `HMODULE LoadLibraryW(\n  LPCWSTR lpLibFileName  // DLL path or name\n);`,
+        what: "Loads a DLL into the calling process's address space, maps it, resolves imports, and calls DllMain with DLL_PROCESS_ATTACH. If the DLL is already loaded, increments its reference count and returns the existing handle.",
+        malware: "Used to load additional modules needed for functionality (e.g. load ws2_32.dll dynamically to hide the import). Also the target function for DLL injection — CreateRemoteThread passing LoadLibraryA address + DLL path.",
+        red: "DLL injection: write DLL path to remote process, CreateRemoteThread(LoadLibraryA, dll_path_remote). The most classic injection technique. Also used in manual mappers to resolve dependencies.",
+        blue: "Monitor for LoadLibrary calls from injected threads (thread start address = LoadLibraryA/W). Sysmon EID 7 (ImageLoad) records every DLL load. Unexpected DLLs loading into system processes are high signal.",
+        params: [
+          ["lpLibFileName","LPCWSTR","DLL path (absolute, relative, or just filename for search-path lookup)."],
+        ],
+        ret: "HMODULE — module handle; NULL on failure. Free with FreeLibrary.",
+        detect: "Sysmon EID 7. Module loads from temp/user-writable directories into system processes.",
+      },
+      {
+        fn: "GetProcAddress",
+        module: "kernel32.dll",
+        sig: `FARPROC GetProcAddress(\n  HMODULE hModule,     // module from LoadLibrary or GetModuleHandle\n  LPCSTR  lpProcName   // function name or ordinal (MAKEINTRESOURCE(N))\n);`,
+        what: "Resolves the address of an exported function or variable in a loaded DLL. The foundation of dynamic import resolution — used to avoid having suspicious function names in the Import Address Table.",
+        malware: "The primary technique for hiding API usage: don't import VirtualAlloc statically; load kernel32.dll with GetModuleHandle and resolve VirtualAlloc with GetProcAddress at runtime. Static analysis won't see it in the IAT.",
+        red: "Custom GetProcAddress replacement that walks the PEB's InLoadOrderModuleList and parses the export directory manually — avoids the GetProcAddress hook itself. Used in shellcode stagers.",
+        blue: "Dynamic API resolution is nearly universal in malware. Detect by: (1) scanning strings for API names in non-PE memory regions, (2) hooking GetProcAddress and logging resolved names, (3) detecting PEB walking shellcode patterns.",
+        params: [
+          ["hModule","HMODULE","Handle to the module containing the export."],
+          ["lpProcName","LPCSTR","Export name as ANSI string, or ordinal via MAKEINTRESOURCE()."],
+        ],
+        ret: "FARPROC — function pointer; NULL on failure.",
+        detect: "Hook GetProcAddress. Strings scan for API name literals in dynamic memory.",
+      },
+      {
+        fn: "GetModuleHandle",
+        module: "kernel32.dll",
+        sig: `HMODULE GetModuleHandleW(\n  LPCWSTR lpModuleName  // NULL = calling module\n);`,
+        what: "Returns the handle (base address) of an already-loaded module without incrementing its reference count. Does not load the module if not already present — use LoadLibrary for that.",
+        malware: "Used with GetProcAddress to resolve APIs from already-loaded modules (kernel32, ntdll) without triggering a new load event.",
+        red: "GetModuleHandle(NULL) returns the base of the calling EXE — useful for finding the process's own PE headers for self-reflective operations.",
+        blue: "Low signal alone. GetModuleHandle(\"ntdll.dll\") → GetProcAddress(\"Nt*\") chains indicate syscall or hook-bypass preparation.",
+        params: [
+          ["lpModuleName","LPCWSTR","Module name (without path); NULL for the calling process's executable."],
+        ],
+        ret: "HMODULE — module base address; NULL if not loaded.",
+        detect: "Combined with GetProcAddress for Nt-prefixed functions = likely syscall/hook bypass.",
+      },
+      {
+        fn: "CreateToolhelp32Snapshot",
+        module: "kernel32.dll",
+        sig: `HANDLE CreateToolhelp32Snapshot(\n  DWORD dwFlags,     // TH32CS_SNAPPROCESS, TH32CS_SNAPMODULE, TH32CS_SNAPTHREAD\n  DWORD th32ProcessID // 0 = current process\n);`,
+        what: "Takes a snapshot of running processes, modules loaded in a process, or threads. The snapshot is a point-in-time copy; iterate it with Process32First/Next, Module32First/Next, Thread32First/Next.",
+        malware: "Process enumeration for injection target selection: snapshot → iterate processes → find explorer.exe or svchost.exe PID → OpenProcess → inject. Also used to detect analysis tools (x64dbg.exe, IDA, Procmon).",
+        red: "Enumerate processes to find a suitable injection host. Check for security tool names and bail if found (anti-analysis).",
+        blue: "Snapshot calls followed by process name comparisons against security tool names is a reliable sandbox/analyst-detection pattern. Log process enumeration from unexpected parents.",
+        params: [
+          ["dwFlags","DWORD","TH32CS_SNAPPROCESS(0x2), TH32CS_SNAPTHREAD(0x4), TH32CS_SNAPMODULE(0x8), TH32CS_SNAPALL(0xF)."],
+          ["th32ProcessID","DWORD","PID to snapshot; 0 for all processes (with SNAPPROCESS)."],
+        ],
+        ret: "HANDLE — snapshot handle; INVALID_HANDLE_VALUE on failure. Close with CloseHandle.",
+        detect: "Enumerate + compare against tool names list = anti-analysis check. Flag from script hosts.",
+      },
+      {
+        fn: "ZwUnmapViewOfSection",
+        module: "ntdll.dll",
+        sig: `NTSTATUS ZwUnmapViewOfSection(\n  HANDLE ProcessHandle,\n  PVOID  BaseAddress\n);`,
+        what: "Unmaps a view of a section (file mapping or image) from a process's address space. This is the 'hollowing' step in process hollowing — it removes the legitimate executable's image from the suspended process before writing the malicious one in.",
+        malware: "Core of process hollowing (RunPE): CreateProcess(suspended) → ZwUnmapViewOfSection(base) → VirtualAllocEx(new image base) → WriteProcessMemory(malicious PE) → SetThreadContext + ResumeThread.",
+        red: "Process hollowing for defense evasion: spawn a legitimate host (svchost, calc), hollow it, inject a PE, resume. The process listing shows a legitimate name but runs malicious code.",
+        blue: "Sysmon does not log ZwUnmapViewOfSection directly. Detect process hollowing by: (1) monitoring CreateProcess(SUSPENDED) followed by WriteProcessMemory on the main image region, (2) PEB ImageBaseAddress mismatch with on-disk PE, (3) memory scanner finding PE headers at unexpected addresses.",
+        params: [
+          ["ProcessHandle","HANDLE","Target process handle with PROCESS_VM_OPERATION."],
+          ["BaseAddress","PVOID","Base address of the section view to unmap (typically the image base)."],
+        ],
+        ret: "NTSTATUS — STATUS_SUCCESS (0) on success.",
+        detect: "Behavioural: SUSPENDED process + WriteProcessMemory to image region. PEB ImageBase mismatch detection.",
+      },
+    ]
+  },
+
+  {
+    id: "sync", label: "SYNCHRONIZATION", color: "#38bdf8",
+    apis: [
+      {
+        fn: "CreateMutex",
+        module: "kernel32.dll",
+        sig: `HANDLE CreateMutexW(\n  LPSECURITY_ATTRIBUTES lpMutexAttributes,\n  BOOL                  bInitialOwner,\n  LPCWSTR               lpName             // NULL = unnamed\n);`,
+        what: "Creates or opens a named or unnamed mutex. If the named mutex already exists, the function returns a handle to the existing object and GetLastError returns ERROR_ALREADY_EXISTS.",
+        malware: "Single-instance enforcement: malware creates a named mutex on startup and checks if ERROR_ALREADY_EXISTS — if so, another copy is running and it exits. The mutex name is a reliable IOC (e.g. \"{A1B2C3...}\", \"MyMutex\", \"GlobalSync\").",
+        red: "Mutex names are hard IOCs — document and hunt them. Some frameworks randomise the mutex per infection to avoid signature matching.",
+        blue: "Collect mutex names from malware samples and hunt them across the environment. Sysmon does not log mutex creation; use ETW or kernel callbacks. Named mutexes in the Global\\ namespace are visible system-wide.",
+        params: [
+          ["bInitialOwner","BOOL","TRUE = calling thread immediately owns the mutex on creation."],
+          ["lpName","LPCWSTR","Name in the form 'Global\\Name' or 'Local\\Name'; NULL for unnamed."],
+        ],
+        ret: "HANDLE — mutex handle; NULL on failure. ERROR_ALREADY_EXISTS if name was taken.",
+        detect: "Known mutex name hunting via ETW or memory scanning. IOC: specific mutex names from known malware families.",
+      },
+      {
+        fn: "WaitForSingleObject",
+        module: "kernel32.dll",
+        sig: `DWORD WaitForSingleObject(\n  HANDLE hHandle,   // mutex, event, semaphore, thread, process\n  DWORD  dwMilliseconds // INFINITE = 0xFFFFFFFF\n);`,
+        what: "Waits until the specified object is signalled or a timeout occurs. Returns WAIT_OBJECT_0 when signalled, WAIT_TIMEOUT on timeout, or WAIT_ABANDONED if a mutex owner died without releasing it.",
+        malware: "Synchronise threads in multi-threaded malware. Wait for injected thread to complete before continuing. Also used as a simple sleep substitute (WaitForSingleObject on a dummy handle or self) to delay execution and evade time-based sandbox detection.",
+        red: "Use WaitForSingleObject on a remote thread handle after CreateRemoteThread to block until injection completes before the injector process exits.",
+        blue: "WaitForSingleObject(self_handle, INFINITE) is a technique to keep a process alive or stall in a sandbox. Large timeout values from unexpected processes can indicate stalling.",
+        params: [
+          ["hHandle","HANDLE","Handle to a waitable object (mutex, event, semaphore, thread, process, timer)."],
+          ["dwMilliseconds","DWORD","Timeout in ms; 0 = non-blocking; INFINITE(0xFFFFFFFF) = wait forever."],
+        ],
+        ret: "DWORD — WAIT_OBJECT_0(0), WAIT_TIMEOUT(0x102), WAIT_ABANDONED(0x80), WAIT_FAILED(0xFFFFFFFF).",
+        detect: "Very common — low signal alone. INFINITE waits on newly created threads post-injection are interesting.",
+      },
+      {
+        fn: "CreateEvent",
+        module: "kernel32.dll",
+        sig: `HANDLE CreateEventW(\n  LPSECURITY_ATTRIBUTES lpEventAttributes,\n  BOOL                  bManualReset,\n  BOOL                  bInitialState,\n  LPCWSTR               lpName\n);`,
+        what: "Creates or opens a named or unnamed event object used for thread/process synchronisation. Manual-reset events stay signalled until explicitly reset; auto-reset events reset after a single waiting thread is released.",
+        malware: "Coordinate multi-stage execution: Stage 1 signals an event when it has completed setup, Stage 2 waits on it before proceeding. Named events in Global\\ namespace allow cross-process signalling.",
+        red: "Signal a parked payload thread: create event, pass handle to dormant thread, trigger execution remotely by calling SetEvent.",
+        blue: "Named events in Global\\ from suspicious processes can be coordination signals. Enumerate kernel objects in a suspicious process tree.",
+        params: [
+          ["bManualReset","BOOL","TRUE = manual-reset; FALSE = auto-reset."],
+          ["bInitialState","BOOL","TRUE = initially signalled."],
+          ["lpName","LPCWSTR","Optional name; NULL for unnamed."],
+        ],
+        ret: "HANDLE — event handle; NULL on failure.",
+        detect: "Named global events as coordination points. Low signal alone.",
+      },
+      {
+        fn: "QueueUserAPC",
+        module: "kernel32.dll",
+        sig: `DWORD QueueUserAPC(\n  PAPCFUNC  pfnAPC,       // function to execute\n  HANDLE    hThread,      // target thread\n  ULONG_PTR dwData        // argument to pfnAPC\n);`,
+        what: "Queues an Asynchronous Procedure Call (APC) to a thread. The APC function executes when the thread enters an alertable wait state (SleepEx, WaitForSingleObjectEx with bAlertable=TRUE, etc.).",
+        malware: "APC injection: queue shellcode as an APC to a thread in a remote process. The shellcode runs in the context of that thread when it next enters an alertable wait. More stealthy than CreateRemoteThread because no new thread is created.",
+        red: "Early-bird APC injection: CreateProcess(SUSPENDED) → VirtualAllocEx → WriteProcessMemory(shellcode) → QueueUserAPC(shellcode, primary_thread) → ResumeThread. Shellcode runs before the main entry point.",
+        blue: "No dedicated Sysmon event for APC queuing. Detect by: monitoring NtQueueApcThread syscall, or scanning for executable memory regions with no corresponding module that match queued APC function pointers.",
+        params: [
+          ["pfnAPC","PAPCFUNC","Function pointer (in the target thread's address space) to execute."],
+          ["hThread","HANDLE","Thread handle with THREAD_SET_CONTEXT access."],
+          ["dwData","ULONG_PTR","Single argument passed to pfnAPC."],
+        ],
+        ret: "DWORD — non-zero on success; 0 on failure.",
+        detect: "NtQueueApcThread syscall monitoring. Early-bird pattern: SUSPENDED process + APC queue before resume.",
+      },
+    ]
+  },
+];
+
+/* ══════════════════════════════════════════════════════════════
+   BUILD UI
+══════════════════════════════════════════════════════════════ */
+function buildNav() {
+  const nav = document.getElementById('wa-nav');
+  CATEGORIES.forEach(cat => {
+    const links = cat.apis.map(a =>
+      `<span class="wa-fn-link" data-target="${cat.id}-${a.fn}">${a.fn}</span>`
+    ).join('');
+    nav.innerHTML += `
+      <div class="wa-cat-group open" data-cat="${cat.id}">
+        <div class="wa-cat-header" onclick="toggleCat(this)">
+          <span class="wa-cat-dot" style="background:${cat.color}"></span>
+          ${cat.label}
+          <span class="wa-cat-chevron">▶</span>
+        </div>
+        <div class="wa-cat-links">${links}</div>
+      </div>`;
+  });
+
+  // nav link clicks
+  nav.querySelectorAll('.wa-fn-link').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.wa-fn-link').forEach(l => l.classList.remove('active'));
+      el.classList.add('active');
+      const card = document.getElementById(el.dataset.target);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+}
+
+function buildContent() {
+  const container = document.getElementById('wa-content');
+  CATEGORIES.forEach(cat => {
+    const cards = cat.apis.map(a => `
+      <div class="wa-card" id="${cat.id}-${a.fn}">
+        <div class="wa-card-header" onclick="toggleCard(this)">
+          <span class="wa-card-fn" style="color:${cat.color}">${a.fn}</span>
+          <span class="wa-card-module">${a.module}</span>
+          <span class="wa-card-chevron">▶</span>
+        </div>
+        <div class="wa-card-body">
+          <div class="wa-sig"><span class="fn">${a.fn}</span>(
+${a.sig.replace(/\n/g,'&#10;')}
+);</div>
+          <div class="wa-what">${a.what}</div>
+
+          <div class="wa-lenses">
+            <div class="wa-lens wa-lens-malware">
+              <div class="wa-lens-label lens-m">🦠 MALWARE ABUSE</div>
+              <p>${a.malware}</p>
+            </div>
+            <div class="wa-lens wa-lens-red">
+              <div class="wa-lens-label lens-r">🗡 RED TEAM</div>
+              <p>${a.red}</p>
+            </div>
+            <div class="wa-lens wa-lens-blue">
+              <div class="wa-lens-label lens-b">🛡 BLUE TEAM</div>
+              <p>${a.blue}</p>
+            </div>
+          </div>
+
+          <table class="wa-params">
+            <thead><tr><th>PARAM</th><th>TYPE</th><th>DESCRIPTION</th></tr></thead>
+            <tbody>${a.params.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td><td>${p[2]}</td></tr>`).join('')}</tbody>
+          </table>
+
+          <div class="wa-return">Returns: <span>${a.ret}</span></div>
+          <div class="wa-detect">🔍 DETECTION: ${a.detect}</div>
+        </div>
+      </div>`).join('');
+
+    container.innerHTML += `
+      <div class="wa-section" id="sec-${cat.id}">
+        <div class="wa-section-title" style="color:${cat.color}">
+          <span class="wa-section-dot" style="background:${cat.color}"></span>
+          ${cat.label}
+          <span class="wa-section-count">${cat.apis.length} APIs</span>
+        </div>
+        ${cards}
+      </div>`;
+  });
+}
+
+function toggleCat(header) {
+  header.closest('.wa-cat-group').classList.toggle('open');
+}
+
+function toggleCard(header) {
+  header.closest('.wa-card').classList.toggle('open');
+}
+
+/* ── Search ── */
+document.getElementById('wa-search').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll('.wa-card').forEach(card => {
+    card.classList.toggle('wa-hidden', q && !card.textContent.toLowerCase().includes(q));
+  });
+  document.querySelectorAll('.wa-section').forEach(sec => {
+    const visible = [...sec.querySelectorAll('.wa-card')].some(c => !c.classList.contains('wa-hidden'));
+    sec.classList.toggle('wa-hidden', !visible);
+  });
+  // open matched cards
+  if (q) document.querySelectorAll('.wa-card:not(.wa-hidden)').forEach(c => c.classList.add('open'));
+});
+
+/* ── Active nav on scroll ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      document.querySelectorAll('.wa-fn-link').forEach(l => {
+        l.classList.toggle('active', l.dataset.target === id);
+      });
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+
+/* ── Footer ── */
+(function() {
+  const fl = document.getElementById('footer-links');
+  const l = SITE_CONFIG.links;
+  if (l.github)   fl.innerHTML += `<a href="${l.github}" target="_blank">GitHub</a>`;
+  if (l.linkedin) fl.innerHTML += `<a href="${l.linkedin}" target="_blank">LinkedIn</a>`;
+  if (l.email)    fl.innerHTML += `<a href="${l.email}">Email</a>`;
+})();
+
+buildNav();
+buildContent();
+
+// observe all cards after building
+document.querySelectorAll('.wa-card').forEach(c => observer.observe(c));
+</script>
+</body>
+</html>

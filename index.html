@@ -456,6 +456,7 @@
         <button class="home-code-tab active" data-code-tab="tab1" onclick="homeCodeSwitch('tab1')">Malware
           Collector</button>
         <button class="home-code-tab" data-code-tab="tab2" onclick="homeCodeSwitch('tab2')">Extension Remover</button>
+        <button class="home-code-tab" data-code-tab="tab3" onclick="homeCodeSwitch('tab3')">CLSID & IID Decoder</button>
       </div>
       <div class="home-code-body">
         <button class="home-code-copy" onclick="homeCodeCopy(this)">COPY</button>
@@ -802,6 +803,36 @@ if __name__ == "__main__":
     directory = input("Enter the directory path: ").strip().strip('"')
 
     remove_extensions(directory)</code></pre>
+        </div>
+        <div class="home-code-view" data-code-view="tab3">
+          <pre><code class="language-python">
+            import struct
+
+
+def raw_guid_to_uuid(raw_hex: str) -> str:
+    data = bytes.fromhex(raw_hex)
+
+    if len(data) != 16:
+        raise ValueError("GUID must be exactly 16 bytes")
+
+    data1, data2, data3, data4 = struct.unpack("<IHH8s", data)
+
+    return (
+        f"{{{data1:08X}-"
+        f"{data2:04X}-"
+        f"{data3:04X}-"
+        f"{data4[:2].hex().upper()}-"
+        f"{data4[2:].hex().upper()}}}"
+    )
+
+
+
+rclsid = input("Enter rclsid: ") 
+riid   = input("Enter riid: ") 
+
+print("rclsid:", raw_guid_to_uuid(rclsid))
+print("riid:  ", raw_guid_to_uuid(riid))
+          </code></pre>
         </div>
       </div>
     </div>

@@ -25,6 +25,217 @@ const REPORTS = [
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
 
+  // {
+  //  slug: "VoidStealer",
+  //  title: "VoidStealer: A New Generation of Browser Information Stealer",
+  //  date: "2026-09-05",
+  //  tag: "MALWARE",
+  //  severity: "CRITICAL",
+  //  readTime: "15 MIN READ",
+  //  excerpt: "VoidStealer is a Malware-as-a-Service (MaaS) Windows infostealer targeting browser credentials, cookies, autofill data, credit cards, browsing history, bookmarks, and downloads. The analyzed sample performs WMI-based system fingerprinting, exception-based anti-debugging, Steam Community-based C2 resolution, and an Application-Bound Encryption (ABE) bypass using hardware breakpoints to extract the v20_master_key. Operational strings are protected using per-key Base64 + RC4 decryption.",
+  //  iocs: [
+  //    {
+  //      type: "MUTEX",
+  //      indicator: "Global\\composerctx",
+  //      family: "VoidStealer",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "STEAM_ID",
+  //      indicator: "76561199691513242",
+  //      family: "VoidStealer C2",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "DOMAIN",
+  //      indicator: "steamcommunity.com",
+  //      family: "VoidStealer C2 Resolution",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "DOMAIN",
+  //      indicator: "callpit.icu",
+  //      family: "VoidStealer C2",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "IP",
+  //      indicator: "82.25.63.156",
+  //      family: "VoidStealer C2",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "C2",
+  //      indicator: "82.25.63.156:9000",
+  //      family: "VoidStealer C2",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "URI",
+  //      indicator: "/api/config",
+  //      family: "VoidStealer C2",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "URI",
+  //      indicator: "/api/upload",
+  //      family: "VoidStealer C2",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "URI",
+  //      indicator: "/api/ping",
+  //      family: "VoidStealer C2",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "URI",
+  //      indicator: "/api/client",
+  //      family: "VoidStealer C2",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "URI",
+  //      indicator: "/api/downloads/direct/",
+  //      family: "VoidStealer C2",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "USER_AGENT",
+  //      indicator: "SystemInfo Client/1.0",
+  //      family: "VoidStealer C2",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "USER_AGENT",
+  //      indicator: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+  //      family: "VoidStealer HTTP",
+  //      confidence: "MEDIUM"
+  //    },
+  //    {
+  //      type: "FILE_PATTERN",
+  //      indicator: "D877F783D5D3EF8C*",
+  //      family: "VoidStealer Telegram Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "REGISTRY",
+  //      indicator: "SOFTWARE\\Microsoft\\Cryptography\\MachineGuid",
+  //      family: "VoidStealer Fingerprinting",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "REGISTRY",
+  //      indicator: "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+  //      family: "VoidStealer Fingerprinting",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "REGISTRY",
+  //      indicator: "Control Panel\\Desktop\\Wallpaper",
+  //      family: "VoidStealer Fingerprinting",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "STRING",
+  //      indicator: "OSCrypt.AppBoundProvider.Decrypt.ResultCode",
+  //      family: "VoidStealer ABE Bypass",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "Login Data",
+  //      family: "VoidStealer Browser Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "Web Data",
+  //      family: "VoidStealer Browser Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "History",
+  //      family: "VoidStealer Browser Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "Cookies",
+  //      family: "VoidStealer Browser Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "Local State",
+  //      family: "VoidStealer Browser Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "Bookmarks",
+  //      family: "VoidStealer Browser Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "Preferences",
+  //      family: "VoidStealer Browser Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "places.sqlite",
+  //      family: "VoidStealer Firefox Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "key4.db",
+  //      family: "VoidStealer Firefox Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "key3.db",
+  //      family: "VoidStealer Firefox Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "cookies.sqlite",
+  //      family: "VoidStealer Firefox Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "config.vdf",
+  //      family: "VoidStealer Steam Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "loginusers.vdf",
+  //      family: "VoidStealer Steam Collection",
+  //      confidence: "HIGH"
+  //    },
+  //    {
+  //      type: "FILE",
+  //      indicator: "ssfn*",
+  //      family: "VoidStealer Steam Collection",
+  //      confidence: "HIGH"
+  //    }
+  //  ],
+  //  yara: [
+  //    {
+  //      name: "VoidStealer",
+  //      description: "Detects the VoidStealer malware family using its mutex and Steam-based C2 identifier",
+  //      author: "SalahEldin Kamil (Mr_MaTriX)",
+  //      rule: "rule VoidStealer\n{\n    meta:\n        description = \"Detects VoidStealer\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $mutex   = \"Global\\\\composerctx\" ascii wide\n        $steamid = /765611[0-9]{11}/ ascii\n    condition:\n        uint16(0) == 0x5A4D and\n        filesize < 2MB and\n        $mutex and\n        $steamid\n}"
+  //    }
+  //  ]
+  // }
 
   //{
   //  slug: "vulcan-malware",

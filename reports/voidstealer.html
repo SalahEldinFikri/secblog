@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoidStealer Analysis — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+  <style>
+    /* ── Tag pills ── */
+    .tag-pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      padding: 3px 10px;
+      border: 1px solid;
+      display: inline-block;
+      margin-right: 6px;
+      margin-bottom: 10px
+    }
+
+    .tag-red {
+      border-color: var(--red);
+      color: var(--red)
+    }
+
+    .tag-amber {
+      border-color: var(--amber);
+      color: var(--amber)
+    }
+
+    .tag-blue {
+      border-color: var(--blue);
+      color: var(--blue)
+    }
+
+    .tag-green {
+      border-color: var(--green);
+      color: var(--green)
+    }
+
+    .tag-purple {
+      border-color: #a78bfa;
+      color: #a78bfa
+    }
+
+    /* ── Severity ── */
+    .sev {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 10px;
+      letter-spacing: 1px;
+      font-weight: 700
+    }
+
+    .sev-crit {
+      background: var(--red);
+      color: #0a0e17
+    }
+
+    .sev-high {
+      background: var(--amber);
+      color: #0a0e17
+    }
+
+    /* ── Section callout boxes ── */
+    .callout {
+      font-size: 13px;
+      padding: .85rem 1.1rem;
+      border-left: 3px solid;
+      line-height: 1.7;
+      margin: 1rem 0
+    }
+
+    .callout-red {
+      border-color: var(--red);
+      background: rgba(255, 77, 109, .06);
+      color: var(--text)
+    }
+
+    .callout-amber {
+      border-color: var(--amber);
+      background: rgba(245, 158, 11, .06);
+      color: var(--text)
+    }
+
+    .callout-blue {
+      border-color: var(--blue);
+      background: rgba(56, 189, 248, .06);
+      color: var(--text)
+    }
+
+    .callout-green {
+      border-color: var(--green);
+      background: rgba(0, 255, 157, .05);
+      color: var(--text)
+    }
+
+    .callout strong {
+      color: #e8f4ff
+    }
+
+    /* ── IOC table ── */
+    .ioc-block {
+      background: var(--surface);
+      border: 1px solid var(--border)
+    }
+
+    .ioc-header {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--green);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .ioc-header .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%
+    }
+
+    .ioc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px
+    }
+
+    .ioc-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 7px 14px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .ioc-table td {
+      font-family: var(--mono);
+      padding: 6px 14px;
+      border-bottom: 1px solid rgba(31, 45, 69, .5);
+      vertical-align: top;
+      word-break: break-all
+    }
+
+    .ioc-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .ioc-table tr:hover td {
+      background: rgba(0, 255, 157, .03)
+    }
+
+    .ioc-type-named {
+      color: #a78bfa
+    }
+
+    .ioc-type-reg {
+      color: var(--amber)
+    }
+
+    .ioc-type-uri {
+      color: var(--blue)
+    }
+
+    .ioc-type-ua {
+      color: var(--green)
+    }
+
+    .ioc-type-url {
+      color: var(--red)
+    }
+
+    .ioc-type-domain {
+      color: var(--red)
+    }
+
+    .ioc-type-ip {
+      color: var(--red)
+    }
+
+    .ioc-type-steam {
+      color: #2dd4bf
+    }
+
+    /* ── MITRE table ── */
+    .mitre-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 1rem
+    }
+
+    .mitre-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface)
+    }
+
+    .mitre-table td {
+      padding: 7px 12px;
+      border-bottom: 1px solid rgba(31, 45, 69, .5);
+      vertical-align: top;
+      line-height: 1.5;
+      color: var(--text)
+    }
+
+    .mitre-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .mitre-table tr:hover td {
+      background: rgba(0, 255, 157, .03)
+    }
+
+    .mitre-id {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--blue);
+      white-space: nowrap
+    }
+
+    .mitre-tactic {
+      font-size: 12px;
+      color: var(--amber);
+      white-space: nowrap
+    }
+
+    /* ── Decryption table (collapsible) ── */
+    .dec-wrap {
+      margin-top: 1rem
+    }
+
+    .dec-toggle {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--green);
+      padding: 8px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      transition: background .2s;
+      width: 100%
+    }
+
+    .dec-toggle:hover {
+      background: rgba(0, 255, 157, .05)
+    }
+
+    .dec-chevron {
+      transition: transform .2s;
+      font-size: 10px
+    }
+
+    .dec-wrap.open .dec-chevron {
+      transform: rotate(90deg)
+    }
+
+    .dec-table-wrap {
+      display: none;
+      max-height: 480px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-top: none;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent
+    }
+
+    .dec-wrap.open .dec-table-wrap {
+      display: block
+    }
+
+    .dec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      font-family: var(--mono)
+    }
+
+    .dec-table th {
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 1
+    }
+
+    .dec-table td {
+      padding: 5px 10px;
+      border-bottom: 1px solid rgba(31, 45, 69, .35);
+      vertical-align: top;
+      word-break: break-all;
+      color: var(--muted)
+    }
+
+    .dec-table td:first-child {
+      color: var(--muted);
+      opacity: .7;
+      font-size: 10px;
+      white-space: nowrap;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .dec-table td:nth-child(2) {
+      color: #a78bfa;
+      font-size: 9px;
+      opacity: .6;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .dec-table td:nth-child(3) {
+      color: var(--green)
+    }
+
+    .dec-table tr:hover td {
+      background: rgba(0, 255, 157, .03)
+    }
+
+    /* ── Flow diagram ── */
+    .flow-chain {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      margin: 1.25rem 0;
+      font-family: var(--mono);
+      font-size: 11px
+    }
+
+    .flow-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: .5rem .9rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative
+    }
+
+    .flow-step::after {
+      content: '▶';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--green);
+      z-index: 1;
+      font-size: 9px
+    }
+
+    .flow-step:last-child::after {
+      display: none
+    }
+
+    .flow-step .fs-num {
+      color: var(--green);
+      font-size: 9px;
+      opacity: .7
+    }
+
+    .flow-step.alert {
+      border-color: var(--red);
+      background: rgba(255, 77, 109, .06)
+    }
+
+    .flow-step.note {
+      border-color: var(--amber)
+    }
+
+    /* ── ABE flow ── */
+    .abe-steps {
+      counter-reset: abe
+    }
+
+    .abe-step {
+      display: flex;
+      gap: 1rem;
+      padding: .75rem 0;
+      border-bottom: 1px solid rgba(31, 45, 69, .4)
+    }
+
+    .abe-step:last-child {
+      border-bottom: none
+    }
+
+    .abe-num {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--green);
+      width: 24px;
+      flex-shrink: 0;
+      padding-top: 1px
+    }
+
+    .abe-body {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.7
+    }
+
+    .abe-body code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--amber);
+      background: rgba(0, 0, 0, .3);
+      padding: 1px 5px
+    }
+
+    /* ── Image placeholder ── */
+    .fig-wrap {
+      margin: 1.25rem 0
+    }
+
+    .fig-img {
+      width: 100%;
+      border: 1px solid var(--border);
+      display: block
+    }
+
+    .fig-cap {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      padding: .4rem .5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      letter-spacing: .5px
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">🦇 <span>//</span> Mr_MaTriX</div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../reports.html">Reports</a>
+      <a href="../ioc-feed.html">IOC Feed</a>
+      <a href="../yara-feed.html">YARA Feed</a>
+      <a href="../siem-reference.html">SIEM Ref</a>
+      <a href="../malware-structures.html">Structures</a>
+      <a href="../ida-scripting.html">IDA Scripting</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../winapi-reference.html">Win API</a>
+      <a href="../achievements.html">Achievements</a>
+      <a href="../about.html">About</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+    <div class="report-breadcrumb"><a href="../reports.html">&lt; All Reports</a></div>
+
+    <!-- ══ HEADER ══ -->
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-red">MALWARE ANALYSIS</span>
+        <span class="tag-pill tag-amber">INFOSTEALER</span>
+        <span class="tag-pill tag-blue">WINDOWS</span>
+        <span class="tag-pill tag-purple">MaaS</span>
+        <span class="tag-pill tag-green">ACTIVE</span>
+      </div>
+      <h1 class="report-title">VoidStealer: Analysis of a MaaS Infostealer with Steam-Based C2 and ABE Bypass</h1>
+      <div class="report-meta">
+        <span>📅 2025 — Present</span>
+        <span>⏱ 15 MIN READ</span>
+        <span>✍ SalahEldin Kamil</span>
+        <span class="sev sev-crit">CRITICAL</span>
+      </div>
+      <div class="report-summary">
+        VoidStealer is a Malware-as-a-Service (MaaS) infostealer first marketed on darkweb forums in mid-December 2025
+        and actively developed since. The sample is a Windows binary performing host fingerprinting, WMI-based
+        reconnaissance, exception-driven anti-debugging, Steam Community-based C2 resolution, and Application-Bound
+        Encryption (ABE) bypass for Chrome and Edge credential extraction. Strings are obfuscated using per-key Base64 +
+        RC4 decryption.
+      </div>
+    </div>
+
+    <!-- ══ 1. OVERVIEW ══ -->
+    <div class="report-section">
+      <h2>1. Overview</h2>
+      <p>VoidStealer is a Windows-based infostealer sold as a MaaS offering. The analyzed sample performs a wide range
+        of malicious activities organised into several distinct functional stages:</p>
+
+      <div
+        style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1px;background:var(--border);margin:1.25rem 0">
+        <div style="background:var(--surface);padding:.9rem 1rem">
+          <div
+            style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:var(--green);margin-bottom:.4rem">
+            STAGE 1</div>
+          <div style="font-size:13px;color:#e8f4ff;font-weight:600">Initialisation</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:.3rem">Mutex creation, single-instance enforcement
+          </div>
+        </div>
+        <div style="background:var(--surface);padding:.9rem 1rem">
+          <div
+            style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:var(--amber);margin-bottom:.4rem">
+            STAGE 2</div>
+          <div style="font-size:13px;color:#e8f4ff;font-weight:600">Fingerprinting</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:.3rem">WMI queries for CPU, GPU, OS, memory, locale,
+            wallpaper MD5</div>
+        </div>
+        <div style="background:var(--surface);padding:.9rem 1rem">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:var(--red);margin-bottom:.4rem">
+            STAGE 3</div>
+          <div style="font-size:13px;color:#e8f4ff;font-weight:600">Anti-Debug</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:.3rem">Exception-based context manipulation,
+            IsDebuggerPresent</div>
+        </div>
+        <div style="background:var(--surface);padding:.9rem 1rem">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:var(--blue);margin-bottom:.4rem">
+            STAGE 4</div>
+          <div style="font-size:13px;color:#e8f4ff;font-weight:600">C2 Resolution</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:.3rem">Steam Community profile used as a C2 pointer
+          </div>
+        </div>
+        <div style="background:var(--surface);padding:.9rem 1rem">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:#f472b6;margin-bottom:.4rem">
+            STAGE 5</div>
+          <div style="font-size:13px;color:#e8f4ff;font-weight:600">Data Theft</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:.3rem">Browser ABE bypass, cookies, credentials,
+            Steam, Discord, Telegram</div>
+        </div>
+        <div style="background:var(--surface);padding:.9rem 1rem">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:#2dd4bf;margin-bottom:.4rem">
+            STAGE 6</div>
+          <div style="font-size:13px;color:#e8f4ff;font-weight:600">Exfiltration</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:.3rem">Multipart HTTP upload to resolved C2 endpoint
+          </div>
+        </div>
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/voidstealer/main.png" alt="VoidStealer main function flow in IDA Pro" />
+        <div class="fig-cap">Figure 1 — Main function overview showing the sequential execution stages</div>
+      </div>
+    </div>
+
+    <!-- ══ 2. INITIALISATION ══ -->
+    <div class="report-section">
+      <h2>2. Stage 1 — Initialisation &amp; Mutex</h2>
+      <p>The malware begins execution by creating a named mutex to ensure only a single instance runs at any time. If
+        the mutex already exists, the process terminates immediately.</p>
+
+      <div class="callout callout-green">
+        <strong>Mutex Name (decrypted):</strong> <code
+          style="font-family:var(--mono);color:var(--green)">Global\composerctx</code><br />
+        This is a hard IOC — presence of this mutex name on a host confirms an active VoidStealer infection. Hunt for it
+        using ETW or Sysmon kernel object enumeration.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/voidstealer/mutex.png" alt="Mutex creation in IDA Pro" />
+        <div class="fig-cap">Figure 2 — Mutex creation: Global\composerctx used for single-instance enforcement</div>
+      </div>
+    </div>
+
+    <!-- ══ 3. FINGERPRINTING ══ -->
+    <div class="report-section">
+      <h2>3. Stage 2 — Host Fingerprinting via WMI</h2>
+      <p>After initialisation, VoidStealer gathers detailed information about the victim's system. It abuses COM objects
+        to interface directly with WMI rather than using higher-level Win32 APIs, making detection by API-level hooking
+        harder.</p>
+
+      <p>The COM instantiation chain is:</p>
+      <div class="flow-chain">
+        <div class="flow-step"><span class="fs-num">①</span> CoCreateInstance</div>
+        <div class="flow-step"><span class="fs-num">②</span> CLSID: IWbemLocator<br /><span
+            style="color:var(--muted);font-size:9px">{4590F811-1D3A-11D0-891F-00AA004B2E24}</span></div>
+        <div class="flow-step"><span class="fs-num">③</span> IID: IWbemLocator<br /><span
+            style="color:var(--muted);font-size:9px">{DC12A687-737F-11CF-884D-00AA004B2E24}</span></div>
+        <div class="flow-step"><span class="fs-num">④</span> ConnectServer<br /><span
+            style="color:var(--muted);font-size:9px">ROOT\CIMV2</span></div>
+        <div class="flow-step"><span class="fs-num">⑤</span> ExecQuery<br /><span
+            style="color:var(--muted);font-size:9px">Win32_* classes</span></div>
+      </div>
+
+      <p>The following WMI queries and their targets were recovered from the decrypted string table:</p>
+      <div style="background:var(--surface);border:1px solid var(--border);margin:1rem 0">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;font-family:var(--mono)">
+          <thead>
+            <tr>
+              <th
+                style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:10px;letter-spacing:1px;text-align:left">
+                WQL QUERY</th>
+              <th
+                style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:10px;letter-spacing:1px;text-align:left">
+                PROPERTY</th>
+              <th
+                style="padding:7px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:10px;letter-spacing:1px;text-align:left">
+                DATA COLLECTED</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(31,45,69,.4)">
+              <td style="padding:6px 12px;color:var(--blue)">SELECT Name FROM Win32_Processor</td>
+              <td style="padding:6px 12px;color:var(--amber)">Name</td>
+              <td style="padding:6px 12px;color:var(--muted)">CPU model string</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(31,45,69,.4)">
+              <td style="padding:6px 12px;color:var(--blue)">SELECT Caption, Version FROM Win32_OperatingSystem</td>
+              <td style="padding:6px 12px;color:var(--amber)">Caption / Version</td>
+              <td style="padding:6px 12px;color:var(--muted)">OS name and version</td>
+            </tr>
+            <tr>
+              <td style="padding:6px 12px;color:var(--blue)">SELECT Name FROM Win32_VideoController</td>
+              <td style="padding:6px 12px;color:var(--amber)">Name</td>
+              <td style="padding:6px 12px;color:var(--muted)">GPU model string</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Additional fingerprinting data collected includes system memory, screen resolution, locale, keyboard layout,
+        current username, computer name, domain, HWID (from <code
+          style="font-family:var(--mono);color:var(--amber)">SOFTWARE\Microsoft\Cryptography\MachineGuid</code>), CPU
+        info from <code
+          style="font-family:var(--mono);color:var(--amber)">HARDWARE\DESCRIPTION\System\CentralProcessor\0</code>,
+        wallpaper path from <code
+          style="font-family:var(--mono);color:var(--amber)">Control Panel\Desktop\Wallpaper</code>, and an MD5 hash of
+        the wallpaper file.</p>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/voidstealer/comobject.png" alt="COM object abuse for WMI access" />
+        <div class="fig-cap">Figure 3 — COM object instantiation: IWbemLocator CLSID/IID and subsequent ConnectServer
+          call</div>
+      </div>
+    </div>
+
+    <!-- ══ 4. ANTI-DEBUG ══ -->
+    <div class="report-section">
+      <h2>4. Stage 3 — Anti-Debugging</h2>
+      <p>VoidStealer implements a layered anti-debugging mechanism combining exception-based control-flow manipulation
+        with a standard debugger presence check.</p>
+
+      <div class="abe-steps">
+        <div class="abe-step">
+          <div class="abe-num">①</div>
+          <div class="abe-body"><strong style="color:#e8f4ff">RtlCaptureContext</strong> — captures the full CPU
+            register state (CONTEXT structure) of the current execution point.</div>
+        </div>
+        <div class="abe-step">
+          <div class="abe-num">②</div>
+          <div class="abe-body"><strong style="color:#e8f4ff">RtlLookupFunctionEntry</strong> — walks the runtime
+            function table to find the RUNTIME_FUNCTION entry for the current instruction pointer, used to reconstruct
+            the call stack.</div>
+        </div>
+        <div class="abe-step">
+          <div class="abe-num">③</div>
+          <div class="abe-body"><strong style="color:#e8f4ff">RtlVirtualUnwind</strong> — performs virtual stack
+            unwinding to reconstruct the call chain frame by frame.</div>
+        </div>
+        <div class="abe-step">
+          <div class="abe-num">④</div>
+          <div class="abe-body"><strong style="color:#e8f4ff">Exception context modification</strong> — the captured
+            CONTEXT is altered before being dispatched, redirecting execution to a different code path than a debugger
+            would see.</div>
+        </div>
+        <div class="abe-step">
+          <div class="abe-num">⑤</div>
+          <div class="abe-body"><strong style="color:#e8f4ff">IsDebuggerPresent</strong> — checks the PEB's
+            BeingDebugged flag. The result alters subsequent execution: if a debugger is detected, the malware takes a
+            decoy or silent path.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-amber">
+        <strong>Analysis note:</strong> The exception-based technique is significantly harder to bypass than a simple
+        PEB check. Standard debugger plugins that patch <code style="font-family:var(--mono)">BeingDebugged=0</code>
+        will not neutralise the RtlVirtualUnwind-based path. Patch the conditional branch following the context
+        manipulation or use a kernel debugger.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/voidstealer/antidebugging.png" alt="Anti-debugging routine in IDA Pro" />
+        <div class="fig-cap">Figure 4 — Exception-based anti-debugging: RtlCaptureContext / RtlVirtualUnwind flow with
+          IsDebuggerPresent check</div>
+      </div>
+    </div>
+
+    <!-- ══ 5. C2 ══ -->
+    <div class="report-section">
+      <h2>5. Stage 4 — Steam-Based C2 Resolution</h2>
+      <p>VoidStealer uses an unconventional C2 resolution mechanism that leverages the Steam Community platform as an
+        indirection layer. The actual C2 server address is never hardcoded directly — instead, the malware resolves it
+        dynamically from a Steam profile at runtime.</p>
+
+      <div class="flow-chain">
+        <div class="flow-step"><span class="fs-num">①</span> Decrypt strings<br /><span
+            style="font-size:9px;color:var(--muted)">Base64+RC4</span></div>
+        <div class="flow-step"><span class="fs-num">②</span> Build Steam URL<br /><span
+            style="font-size:9px;color:var(--muted)">steamcommunity.com</span></div>
+        <div class="flow-step"><span class="fs-num">③</span> WinHttpConnect<br /><span
+            style="font-size:9px;color:var(--muted)">60s timeouts</span></div>
+        <div class="flow-step"><span class="fs-num">④</span> GET profile page<br /><span
+            style="font-size:9px;color:var(--muted)">/profiles/&lt;steamid&gt;</span></div>
+        <div class="flow-step"><span class="fs-num">⑤</span> Parse persona name<br /><span
+            style="font-size:9px;color:var(--muted)">actual_persona_name</span></div>
+        <div class="flow-step alert"><span class="fs-num">⑥</span> C2 = username<br /><span
+            style="font-size:9px;color:var(--red)">callpit.icu</span></div>
+      </div>
+
+      <p>The hardcoded Steam ID <strong style="color:var(--amber);font-family:var(--mono)">76561199691513242</strong> is
+        decrypted at runtime and used to construct the profile URL. The malware then parses the HTML response,
+        extracting the value from the <code
+          style="font-family:var(--mono);color:var(--amber)">&lt;span class="actual_persona_name"&gt;</code> tag. This
+        extracted string is the actual C2 domain, which was observed as <strong
+          style="color:var(--red);font-family:var(--mono)">callpit.icu</strong>.</p>
+
+      <div class="callout callout-red">
+        <strong>C2 resilience:</strong> This technique allows the operator to update the C2 address without recompiling
+        the malware — simply by changing the Steam account's display name. Blocking <code
+          style="font-family:var(--mono)">steamcommunity.com</code> at the perimeter prevents initial C2 resolution. The
+        final C2 observed was <strong style="font-family:var(--mono)">82.25.63.156:9000</strong>.
+      </div>
+
+      <p>WinHTTP session parameters:</p>
+      <ul class="report-list">
+        <li>User-Agent: <code style="font-family:var(--mono);color:var(--green)">SystemInfo Client/1.0</code></li>
+        <li>All timeouts set to <strong>60 seconds</strong> (DNS resolve, connect, send, receive)</li>
+        <li>Scheme: HTTPS to steamcommunity.com, then HTTP/HTTPS to resolved C2</li>
+      </ul>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/voidstealer/connection.png" alt="WinHTTP session setup" />
+        <div class="fig-cap">Figure 5 — WinHTTP session initialisation with SystemInfo Client/1.0 User-Agent and
+          60-second timeouts</div>
+      </div>
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/voidstealer/steamid.png" alt="Steam ID C2 resolution" />
+        <div class="fig-cap">Figure 6 — Steam profile fetch: hardcoded Steam ID used to resolve the actual C2 domain
+          from the persona name field</div>
+      </div>
+    </div>
+
+    <!-- ══ 6. BROWSER ABE ══ -->
+    <div class="report-section">
+      <h2>6. Stage 5 — Browser Credential Theft &amp; ABE Bypass</h2>
+      <p>VoidStealer targets Chrome and Edge-based browsers to extract cookies, saved credentials, autofill data, credit
+        cards, browsing history, bookmarks, and downloads. To bypass the Application-Bound Encryption (ABE) protection
+        introduced in modern Chromium builds, it uses a hardware breakpoint-based technique to extract the <code
+          style="font-family:var(--mono);color:var(--amber)">v20_master_key</code> directly from browser memory.</p>
+
+      <h3 style="font-family:var(--mono);font-size:12px;color:var(--green);letter-spacing:1px;margin:1.25rem 0 .75rem">
+        ABE Bypass Technique</h3>
+
+      <div class="abe-steps">
+        <div class="abe-step">
+          <div class="abe-num">①</div>
+          <div class="abe-body">Create a new Chrome or Edge process in a <strong style="color:#e8f4ff">suspended
+              state</strong> using <code>CreateProcess(CREATE_SUSPENDED)</code>.</div>
+        </div>
+        <div class="abe-step">
+          <div class="abe-num">②</div>
+          <div class="abe-body">Search the browser process memory for the string
+            <code>OSCrypt.AppBoundProvider.Decrypt.ResultCode</code> to locate the target address within the <strong
+              style="color:#e8f4ff">.text section</strong>.
+          </div>
+        </div>
+        <div class="abe-step">
+          <div class="abe-num">③</div>
+          <div class="abe-body">Obtain the target thread handle and <strong style="color:#e8f4ff">set a hardware
+              breakpoint</strong> (via <code>SetThreadContext</code> / debug register Dr0) on the identified address.
+          </div>
+        </div>
+        <div class="abe-step">
+          <div class="abe-num">④</div>
+          <div class="abe-body">Resume the browser process. When it reaches the breakpointed address, <strong
+              style="color:#e8f4ff">execution is intercepted</strong> via the debug exception handler.</div>
+        </div>
+        <div class="abe-step">
+          <div class="abe-num">⑤</div>
+          <div class="abe-body">The malware reads the <code>v20_master_key</code> directly from the browser's register
+            state / memory at the point of interception. This key is then used to decrypt all ABE-protected browser
+            data.</div>
+        </div>
+      </div>
+
+      <p>Browsers targeted (recovered from decrypted strings):</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin:1rem 0">
+        <span class="tag-pill tag-blue">Google Chrome</span>
+        <span class="tag-pill tag-blue">Microsoft Edge</span>
+        <span class="tag-pill tag-amber">Brave Browser</span>
+        <span class="tag-pill tag-amber">Opera</span>
+        <span class="tag-pill tag-amber">Opera GX</span>
+        <span class="tag-pill tag-purple">Mozilla Firefox</span>
+        <span class="tag-pill tag-red">Discord</span>
+        <span class="tag-pill tag-green">Telegram</span>
+        <span class="tag-pill tag-green">Steam</span>
+        <span class="tag-pill tag-purple">FileZilla</span>
+      </div>
+
+      <p>SQL queries used for browser data extraction (recovered from RC4-decrypted strings):</p>
+      <div
+        style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-left:3px solid var(--blue);padding:.75rem 1rem;margin:.75rem 0;font-family:var(--mono);font-size:11px;color:#cdd6f4;white-space:pre;overflow-x:auto;line-height:1.6">
+        SELECT host_key, name, encrypted_value, path, expires_utc, is_secure, is_httponly FROM cookies
+        SELECT origin_url, username_value, password_value, date_created FROM logins
+        SELECT name, value FROM autofill
+        SELECT name_on_card, expiration_month, expiration_year, card_number_encrypted FROM credit_cards
+        SELECT url, title, visit_count, last_visit_time FROM urls ORDER BY last_visit_time DESC LIMIT 1000
+        SELECT target_path, tab_url, total_bytes FROM downloads
+        SELECT short_name, keyword, url FROM keywords</div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/voidstealer/browserabuse.png" alt="Browser ABE bypass routine" />
+        <div class="fig-cap">Figure 7 — ABE bypass: suspended browser process creation, memory scan for target string,
+          hardware breakpoint placement, and v20_master_key extraction</div>
+      </div>
+    </div>
+
+    <!-- ══ 7. STRING OBFUSCATION ══ -->
+    <div class="report-section">
+      <h2>7. String Obfuscation — Base64 + RC4</h2>
+      <p>VoidStealer hides all operational strings from static analysis using a two-stage decryption routine. Each
+        string has its own unique hardcoded 32-byte RC4 key, making bulk decryption require per-entry key extraction.
+      </p>
+
+      <div class="callout callout-blue">
+        <strong>Decryption algorithm:</strong> <code
+          style="font-family:var(--mono)">plaintext = RC4(key, Base64Decode(ciphertext))</code><br />
+        The malware first decodes the Base64-encoded ciphertext, then uses the corresponding 32-byte key to initialise
+        the RC4 KSA and decrypt the result. Decrypted strings include browser artifact names, file paths, API endpoints,
+        HTTP headers, JSON field names, and Native API names used for injection primitives.
+      </div>
+
+      <!-- Collapsible decryption table -->
+      <div class="dec-wrap" id="dec-wrap">
+        <button class="dec-toggle" onclick="toggleDec()">
+          <span>▶ DECRYPTED STRING TABLE <span style="color:var(--muted);font-weight:400">(click to expand — 180
+              entries)</span></span>
+          <span class="dec-chevron">▶</span>
+        </button>
+        <div class="dec-table-wrap" id="dec-table-wrap">
+          <table class="dec-table">
+            <thead>
+              <tr>
+                <th>BASE64 CIPHERTEXT</th>
+                <th>RC4 KEY (hex)</th>
+                <th>DECRYPTED</th>
+              </tr>
+            </thead>
+            <tbody id="dec-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 8. YARA Rules ══ -->
+    <div class="report-section">
+      <h2>8. YARA Rules</h2>
+      <p>VoidStealer Yara Rule</p>
+      <pre class="code-block">rule VoidStealer
+      {
+      meta:
+      description = "Detects VoidStealer"
+      author = "SalahEldin Kamil (Mr_MaTriX)"
+      strings:
+      $mutex = "Global\\\\composerctx" ascii wide
+      $steamid = /765611[0-9]{11}/ ascii
+      condition:
+      uint16(0) == 0x5A4D and
+      filesize < 2MB and
+      $mutex and
+      $steamid 
+    } </pre>
+    </div>
+    <!-- ══ 9. IOCs ══ -->
+    <div class="report-section">
+      <h2>9. Indicators of Compromise</h2>
+      <div class="ioc-block" style="margin-top:1rem">
+        <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>INDICATOR</th>
+              <th>TYPE</th>
+              <th>DESCRIPTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Global\composerctx</td>
+              <td class="ioc-type-named">Named Object</td>
+              <td style="color:var(--muted)">Mutex — single-instance enforcement. Presence = active infection.</td>
+            </tr>
+            <tr>
+              <td>76561199691513242</td>
+              <td class="ioc-type-steam">Steam ID</td>
+              <td style="color:var(--muted)">Hardcoded Steam account ID used for C2 domain resolution.</td>
+            </tr>
+            <tr>
+              <td>steamcommunity.com</td>
+              <td class="ioc-type-domain">Domain</td>
+              <td style="color:var(--muted)">Steam Community — used to resolve the actual C2 from the profile's
+                persona
+                name.</td>
+            </tr>
+            <tr>
+              <td>callpit.icu</td>
+              <td class="ioc-type-domain">Domain</td>
+              <td style="color:var(--muted)">Resolved C2 domain (extracted from Steam persona name at runtime).</td>
+            </tr>
+            <tr>
+              <td>82.25.63.156:9000</td>
+              <td class="ioc-type-ip">IP:Port</td>
+              <td style="color:var(--muted)">Active C2 server address and port.</td>
+            </tr>
+            <tr>
+              <td>D877F783D5D3EF8C*</td>
+              <td class="ioc-type-named">File Pattern</td>
+              <td style="color:var(--muted)">Telegram tdata artifact pattern targeted during data collection.</td>
+            </tr>
+            <tr>
+              <td>SOFTWARE\Microsoft\Cryptography</td>
+              <td class="ioc-type-reg">Registry</td>
+              <td style="color:var(--muted)">MachineGuid key — queried for victim HWID generation.</td>
+            </tr>
+            <tr>
+              <td>HARDWARE\DESCRIPTION\System\CentralProcessor\0</td>
+              <td class="ioc-type-reg">Registry</td>
+              <td style="color:var(--muted)">CPU fingerprinting registry path.</td>
+            </tr>
+            <tr>
+              <td>Control Panel\Desktop</td>
+              <td class="ioc-type-reg">Registry</td>
+              <td style="color:var(--muted)">Wallpaper path registry key — reads and MD5-hashes the wallpaper.</td>
+            </tr>
+            <tr>
+              <td>/api/config</td>
+              <td class="ioc-type-uri">URI</td>
+              <td style="color:var(--muted)">C2 configuration endpoint.</td>
+            </tr>
+            <tr>
+              <td>/api/upload</td>
+              <td class="ioc-type-uri">URI</td>
+              <td style="color:var(--muted)">Stolen data upload endpoint (multipart form-data).</td>
+            </tr>
+            <tr>
+              <td>/api/ping</td>
+              <td class="ioc-type-uri">URI</td>
+              <td style="color:var(--muted)">C2 heartbeat / beacon endpoint.</td>
+            </tr>
+            <tr>
+              <td>/api/client</td>
+              <td class="ioc-type-uri">URI</td>
+              <td style="color:var(--muted)">Client registration endpoint.</td>
+            </tr>
+            <tr>
+              <td>/api/downloads/direct/</td>
+              <td class="ioc-type-uri">URI</td>
+              <td style="color:var(--muted)">Payload download endpoint for additional modules.</td>
+            </tr>
+            <tr>
+              <td>SystemInfo Client/1.0</td>
+              <td class="ioc-type-ua">User-Agent</td>
+              <td style="color:var(--muted)">WinHTTP User-Agent string used in all C2 communications.</td>
+            </tr>
+            <tr>
+              <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36</td>
+              <td class="ioc-type-ua">User-Agent</td>
+              <td style="color:var(--muted)">Browser-mimicking User-Agent used in some HTTP requests.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ 10. MITRE ══ -->
+    <div class="report-section">
+      <h2>10. MITRE ATT&amp;CK Mapping</h2>
+      <table class="mitre-table">
+        <thead>
+          <tr>
+            <th>TACTIC</th>
+            <th>ID</th>
+            <th>TECHNIQUE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1027</td>
+            <td>Obfuscated Files and Information — Base64+RC4 per-key string encryption hides all operational
+              strings
+              from static analysis.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1140</td>
+            <td>Deobfuscate/Decode Files or Information — runtime Base64 decode + RC4 decrypt of all string
+              constants.
+            </td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1622</td>
+            <td>Debugger Evasion — exception-based context manipulation (RtlCaptureContext / RtlVirtualUnwind) and
+              IsDebuggerPresent check.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Credential Access</td>
+            <td class="mitre-id">T1555.003</td>
+            <td>Credentials from Web Browsers — ABE bypass via hardware breakpoint to extract v20_master_key; SQLite
+              queries for passwords, cookies, credit cards.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Credential Access</td>
+            <td class="mitre-id">T1539</td>
+            <td>Steal Web Session Cookie — extracts browser cookies using decrypted master key.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1217</td>
+            <td>Browser Bookmark Discovery — SELECT query on Bookmarks database.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1083</td>
+            <td>File and Directory Discovery — enumerates browser profile directories, Steam tdata, Telegram data.
+            </td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1012</td>
+            <td>Query Registry — reads MachineGuid, CPU info, wallpaper path from registry.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1082</td>
+            <td>System Information Discovery — WMI queries for CPU, GPU, OS, RAM, screen resolution, locale.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1124</td>
+            <td>System Time Discovery — collects current date/time and timezone for the victim log.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1057</td>
+            <td>Process Discovery — interacts with and creates browser processes for ABE bypass.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Execution</td>
+            <td class="mitre-id">T1047</td>
+            <td>Windows Management Instrumentation — COM-based WMI access via IWbemLocator for all system
+              fingerprinting.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Execution</td>
+            <td class="mitre-id">T1106</td>
+            <td>Native API — direct use of NT native APIs (NtOpenProcess, NtAllocateVirtualMemory, NtCreateThreadEx,
+              etc.) recovered from decrypted strings.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Command &amp; Control</td>
+            <td class="mitre-id">T1102</td>
+            <td>Web Service — Steam Community profile used as a dead-drop resolver for the actual C2 address.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Command &amp; Control</td>
+            <td class="mitre-id">T1071.001</td>
+            <td>Web Protocols — HTTPS/HTTP WinHTTP communication with the resolved C2 server.</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Command &amp; Control</td>
+            <td class="mitre-id">T1105</td>
+            <td>Ingress Tool Transfer — /api/downloads/direct/ endpoint used to download additional modules
+              (inject.dll).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /report-container -->
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="../assets/js/config.js"></script>
+  <script>
+    // Footer links
+    (function () {
+      const fl = document.getElementById('footer-links');
+      const l = SITE_CONFIG.links;
+      if (l.github) fl.innerHTML += `<a href="${l.github}"   target="_blank">GitHub</a>`;
+      if (l.linkedin) fl.innerHTML += `<a href="${l.linkedin}" target="_blank">LinkedIn</a>`;
+      if (l.email) fl.innerHTML += `<a href="${l.email}">Email</a>`;
+    })();
+
+    // Dec table toggle
+    function toggleDec() {
+      const w = document.getElementById('dec-wrap');
+      w.classList.toggle('open');
+    }
+
+    // Build decryption table
+    const DEC_DATA = [
+      ["oitAijL2asC5E4CG+FRH5yISGjEC4j3dvWTk", "01 cb 5a 36 81 e3 70 0d 5a 25 5b 85 d9 b4 5f 93 05 54 d4 59 7c bb af c7 52 9c b1 ef 76 ce 71 6d", '{\"type\":\"success_delivery\"}'],
+      ["4VIa8e+PiiI5H0B2h+t/USKM", "27 27 ca 3c 52 98 f1 99 f3 02 44 54 6b 51 b3 36 c7 9d a2 10 13 34 2d 13 81 cb fa 81 58 90 a5 69", "Global\\composerctx"],
+      ["xa+sqjPupQ==", "a9 60 76 60 af 59 ab 59 aa 56 dc 65 b4 80 c1 75 78 0a 90 18 79 15 25 26 b3 56 94 8c 19 6e 7a 7a", "Cookies"],
+      ["uSA0beF1lyEM6A==", "5e 9a ed a9 48 26 e0 63 5d 1f 0f 96 97 9a 31 56 aa a0 ad 33 e9 e0 6b fb 0e 82 9a 18 db 3c 99 c6", "Login Data"],
+      ["ua4bwOe2QR8=", "4d 68 3f 3f 30 5b b5 33 01 ef c4 0c 44 91 09 58 2a 2a 07 48 70 a1 3b 82 19 a8 88 02 5a 06 2c 08", "Web Data"],
+      ["2kMPcmQ1lA==", "e9 3b a2 83 71 49 62 cc dd 7f 5a 0e 91 ce 23 6e 56 42 11 fc ef 49 88 1d 34 1c d5 d9 2e 91 00 59", "History"],
+      ["mFac6ecYpDkZo2kk2g==", "99 61 de bc d0 dc 6c d4 cc 47 2e a0 c2 e8 cf c2 71 1d 2c b5 94 cc 70 25 63 25 21 b2 d9 b6 d3 d2", "places.sqlite"],
+      ["4y6jMSsXPw==", "9e e8 d3 56 5c a6 a4 d1 d5 4b 94 4a d7 4f 9d 06 40 23 e5 02 31 c7 1c 21 a1 52 e4 70 95 dc 5e 0a", "key4.db"],
+      ["5GMHLM8DyQ==", "8a a5 42 5a 74 da d0 9c 15 5f 53 88 e7 5d 50 ff e2 9b 19 11 95 c5 50 6d 15 c6 f1 25 ad 19 70 a5", "key3.db"],
+      ["dbCqIhoiyVYsFs//IXA=", "84 d0 a9 a6 2e d7 36 66 26 ce 5b 10 a0 d6 99 41 71 1f f2 b0 23 b8 9e 2e da 05 c7 c0 ca 09 57 57", "cookies.sqlite"],
+      ["k0n3fIQErj/u9nY=", "17 e5 95 80 3d f0 f2 83 60 9b 91 27 ca e6 bf 25 96 6d 52 e1 96 6d e5 30 20 78 68 47 97 21 e3 43", "Local State"],
+      ["H7TwUizbXCAe", "62 37 7e 7d 24 69 d5 b7 52 a8 12 c5 30 b3 e3 43 56 68 b8 00 8a a3 ba b2 5b 77 fe 67 eb d4 77 0f", "Bookmarks"],
+      ["8t0U70aoE7GY31Q=", "4b 56 ef 49 ea 60 98 13 54 3b eb 59 5f 35 3f 4b 44 6d ac c4 70 58 fe 42 5f ef 1e 32 9b 46 b1 e7", "logins.json"],
+      ["hc+bPdXZqIj5GfU=", "25 36 52 1c 42 7b 87 bb a0 a4 bb 29 94 11 08 37 16 e3 34 fe a3 4e bd ba 5e 95 6b 9c aa ac 1b c8", "Preferences"],
+      ["UVV6o46O1Q7SCA==", "ac 8e f9 67 ae ee 6c e7 17 ef 5d 9e b3 1c c3 34 78 b5 84 35 f9 5c 0a ce 82 71 1b 7b 5f c8 fd 79", "chrome.exe"],
+      ["Q9FUNaOXWigLgA==", "73 f7 83 dd 84 f5 f0 98 8f e0 67 a7 3d 73 2e ab c7 49 59 72 e2 11 83 a0 10 45 99 39 70 8d 67 64", "msedge.exe"],
+      ["ryu9Zu0dDK+K", "66 70 44 00 4a de 36 66 b8 ec fa 07 98 59 89 9d a3 fc dd 4c f4 d2 ad 3f a6 60 2a 31 7a b0 c4 b7", "brave.exe"],
+      ["xudtO2G7UurT", "9c d7 3d d5 1d 25 53 84 8e 8c cd 5d b0 fd 06 92 37 42 58 c2 09 48 39 3d 9c d9 8d 4f 89 b1 12 55", "opera.exe"],
+      ["5AFayG0E5IoAhho=", "5f 3e 76 01 e0 af 17 f1 64 84 f0 48 09 55 d7 a0 f1 0b 52 f1 3b f9 7a 7e 2a 38 67 9b 1e 8f 31 b7", "firefox.exe"],
+      ["PtL0iAlNDc/l", "a9 0f a4 0d 68 77 49 be c4 86 bc 1a a9 e9 ed 29 2e 9a 4f 92 0a a1 37 8f fb 91 be ef a9 da 02 37", "steam.exe"],
+      ["TTnEdGNIW9jLYualQkoEeRk3TObTfusXdYYexprVEA==", "48 5f de ae 77 69 4f 38 c9 68 a4 4f a2 61 82 72 29 d2 10 9f 1e 7e 03 b3 a0 df ae 49 bc a2 ea 76", "SOFTWARE\\Microsoft\\Cryptography"],
+      ["kkZdWraFbppVO4o=", "64 07 74 6f 03 66 e9 19 a9 86 e6 3e f8 7a 03 58 df 24 f7 40 28 79 ca 1a 81 2a c8 c9 a4 ec b8 06", "MachineGuid"],
+      ["hc0+YCAs0FmB6MOrVREB7TTVtw==", "b6 fa 22 0d 20 94 57 ae 98 58 5d f1 76 de d3 72 43 87 f6 70 b8 91 cd 4f 08 8d f5 ff fd 68 b2 f0", "ProcessorNameString"],
+      ["SkVYX70cWgBj", "22 77 0e 0e e9 7a c4 f1 ef 8d af 34 06 0b b4 50 9e bb 3f a6 fa 81 8a 02 1b f7 65 e9 92 62 35 0d", "Wallpaper"],
+      ["pZWFTwS0AH57Y/nFaA==", "f3 65 e6 31 13 f6 40 52 9f 72 2a bf c3 45 4c d1 52 8b ee 67 fe 53 6c 5e ed 68 e3 5e ed 56 c3 5b", "encrypted_key"],
+      ["wnghhedVHxs=", "3c c0 4c 85 ef ce 92 5f c6 eb a3 bf b1 c2 55 29 a3 39 46 73 f1 69 f6 f7 58 2f 21 46 8b 47 1f 76", "os_crypt"],
+      ["/api/config (LbP4hLSRdnzx7Sg=)", "aa 27 6f 34 3f d1 5a 16 4a 1e f7 e6 12 99 65 fe ed b3 dd 23 45 11 0d 38 02 d3 7e 79 5e ed 8f 25", "/api/config"],
+      ["/api/upload (td5uUoqSUOqjjPU=)", "3c 17 8b 9d b3 45 4c e1 4c 0c 3e 95 ac ca 05 69 7b 6c 1d b8 f0 f6 c9 1e c1 a6 2b 5f b6 8d f7 c2", "/api/upload"],
+      ["/api/ping (HVcHTUuT5u+P)", "2b ed 32 44 8d f5 0b 63 10 71 ef 14 b5 cc 73 fb 79 e0 f9 b0 63 62 0e 4f 32 a1 53 ca c5 c1 c1 47", "/api/ping"],
+      ["/api/client (yt+rsM5ZUbvZ8fc=)", "93 1e a8 fc 6f 8f 5b 17 08 6c 1b a8 61 6b d4 c9 25 59 4f fe 2f 84 ab f6 15 06 2a 27 ad 7d 5a f7", "/api/client"],
+      ["SI2pRiEcEknKYA==", "da a0 14 bb 87 f2 0d d6 d0 9a 74 9b b9 a5 d9 57 e6 bf 3c be 31 30 ce 4f e6 b2 4e 4b 67 bb 27 de", "User-Agent"],
+      ["dkxxbC8IAnwvD5XfSx7m26OivgAc", "ab 1d 4b c8 36 8f 99 51 fc f4 51 ad 86 75 03 e7 a4 b3 fa 05 24 51 5c 43 a5 d5 c7 72 bb 9f 37 72", "SystemInfo Client/1.0"],
+      ["NKByF1YXBELc/M0/JA==", "4e 9c e4 8a c9 b6 da 41 36 45 03 b2 62 b9 a5 a6 96 ee a8 ff 68 36 f4 75 34 e1 d1 08 43 6a a3 06", "NtOpenProcess"],
+      ["qxHwQEpb2wX8zZ55iuZFpcN+pJtXR4s=", "61 85 8d c6 40 2e 39 f0 3b ea b3 b4 7e f1 81 ea b4 b0 89 26 bb 59 51 97 6e 37 ba 14 6e 84 93 bf", "NtAllocateVirtualMemory"],
+      ["auhr/lFVN0NXXCSlc5RYf/VfgKw=", "00 a6 83 a3 6b 7e 04 9b 47 23 55 10 1b bc 44 8f 9d 2b eb 19 52 37 11 b0 c8 a2 96 45 9b 36 d8 21", "NtWriteVirtualMemory"],
+      ["+qZLxxn45wLafdIwDl5Q4Q==", "ca ed 83 42 a9 a2 e3 8c 0e 0b 55 4f 4d c4 cc 78 c2 ed 6f e8 f7 0b 97 68 c7 de 48 78 c7 88 d9 0a", "NtCreateThreadEx"],
+      ["njW3MM2HOEtIJsfDoRs=", "c0 65 ff e3 64 b1 c5 82 7e dd a3 2e 49 b3 85 f8 c9 95 40 1d 86 c2 40 f7 00 e7 c7 3f 85 04 c6 61", "NtCreateThread"],
+      ["7lGUHaGiLgbn5rt/aMClXtUzwmpE+Q==", "7c 55 13 83 f0 15 0c cd d7 e9 d5 3b c3 6c d0 e2 08 d1 15 7a 98 e3 b5 16 a3 fc c2 de 74 19 94 7a", "NtProtectVirtualMemory"],
+      ["AJhLMVpe7pTBzVnNQJd/RSKSvh5AXFFy++E=", "b2 e9 24 7c 11 bc bc 79 10 09 0c e0 74 f6 3c 7d ee e7 0b 3a 51 c1 01 9e 7d a5 95 c8 82 de 5c 8b", "https://steamcommunity.com"],
+      ["yFnECE6tAFs2tw==", "b9 1f 79 6d c0 37 b8 25 76 bf 69 51 80 20 44 a4 96 fd 86 20 49 af d1 67 5e 6e 1f 42 5b a3 91 ad", "inject.dll"],
+      ["RBQvbrSVZ8yz", "61 eb 2b c5 a1 e9 3b 40 67 f5 14 1d a4 79 57 06 84 b7 ed 61 6e 92 9f 02 57 e1 ba dc f4 56 bb e1", "Token.txt"],
+      ["mrL4WgAFgnRtaYipwQV7", "08 6f 11 08 a6 e5 e6 9c f4 c4 72 40 57 95 22 c5 67 19 44 ea 6d 24 06 0b d8 d3 37 7a 03 ac 1c 05", "steam_token.txt"],
+      ["eiQZeOj4eV4ZwTh2LRvgbr6vSptB", "e1 7e 9b 8c 9e 5d 97 25 6e 6c 19 9b 76 12 db c8 51 eb 90 f9 a2 f4 ed 4a 4b 80 c5 a8 57 44 4f 6b", "browsers_profiles.txt"],
+      ["BPafVjkKaectfFXHr48=", "a4 fe b8 a4 a0 a0 c4 be 73 f5 7f 42 3c 9a 48 c1 79 74 29 22 0a 30 4a 58 2d ee 41 25 ef e4 ec fe", "screenshot.png"],
+      ["nilUXCI5M11fU6Y=", "57 b7 75 c7 11 02 55 7f 7c 34 8b b7 be 78 00 1a aa e2 17 ee b0 e1 13 e9 2a 54 20 55 4f 91 5a 12", "cookies.txt"],
+      ["ks1hKscwXqO+ipIDng==", "25 86 5f 34 3e a3 86 8e c7 83 aa d8 95 6d c0 17 c0 17 86 97 cc 55 5c e3 e4 bd fe 2a b7 df e4 28", "passwords.txt"],
+      ["X8YdfKUOJAZgBkYL", "8e 7d 63 1d 6b bf bb ae 3d 46 10 fd 86 2e d9 d1 fe 09 7b 9b a1 4a 57 04 da bd 04 42 33 61 be c8", "autofill.txt"],
+      ["Lc+oFzATYY5uUKGVVYL6jg==", "1f 73 20 f4 53 94 40 77 da 53 31 10 05 12 5b 9a f3 be 74 ec 1d 20 58 24 e1 09 33 6d 44 86 c8 d1", "credit_cards.txt"],
+      ["ZdoGUTq3l3ULOxQ=", "94 9d 4e d6 e7 30 92 52 97 b9 ca 7e ff fd 48 ce 42 83 72 92 7f cf 6d 6c 69 3b 34 36 b7 13 7a f4", "history.txt"],
+      ["hKPDxVLa12X6ks71HQ==", "18 ab c6 56 a3 ef be 3e 11 63 89 f0 23 40 bf 50 75 50 ee 8f 26 b5 d8 70 61 a3 16 ad 55 9f 0a b5", "bookmarks.txt"],
+      ["JMsyRMpDYMaiRA==", "70 bc dd b9 81 cb d4 a3 7e 99 11 db e4 28 56 1e b0 fc 51 a2 42 d2 d0 03 23 b6 a3 f6 e0 36 9e 16", "ROOT\\CIMV2"],
+      ["MQik5jjpz8D0", "26 b0 a5 c9 ea f6 1e f1 d9 fc 68 70 24 11 34 09 93 38 3f 67 c2 fa d1 21 85 fe fe d3 c9 8f 6c a1", "%APPDATA%"],
+      ["aA1hj/aWiRDNKkkPfK0=", "18 0c 2a c8 17 25 a8 d3 a8 89 f5 ac 17 63 24 64 9c 8e 22 6a c3 9d 25 69 dd 8a 1f ed 7e 12 b7 9e", "%LOCALAPPDATA%"],
+      ["9jxzxrWCypKRNgO4Vg==", "37 d9 6b c9 27 6d e4 f9 3a b6 4d c9 2e ae ca 06 6c 8b 1b 52 03 75 f6 32 22 4d 91 af 69 71 5d 20", "%USERPROFILE%"],
+    ];
+
+    const tbody = document.getElementById('dec-tbody');
+    DEC_DATA.forEach(([b64, key, plain]) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td title="${b64}">${b64.length > 32 ? b64.slice(0, 30) + '…' : b64}</td><td title="${key}">${key.slice(0, 24)}…</td><td>${plain}</td>`;
+      tbody.appendChild(tr);
+    });
+  </script>
+</body>
+
+</html>

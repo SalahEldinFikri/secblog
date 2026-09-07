@@ -26,7 +26,7 @@ const REPORTS = [
   // ── YOUR REPORTS ────────────────────────────────────────────────
 
   {
-    slug: "VoidStealer",
+    slug: "voidstealer",
     title: "VoidStealer: A New Generation of Browser Information Stealer",
     date: "2026-09-05",
     tag: "MALWARE",

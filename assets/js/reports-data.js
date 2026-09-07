@@ -235,7 +235,7 @@ const REPORTS = [
         rule: "rule VoidStealer\n{\n    meta:\n        description = \"Detects VoidStealer\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $mutex   = \"Global\\\\composerctx\" ascii wide\n        $steamid = /765611[0-9]{11}/ ascii\n    condition:\n        uint16(0) == 0x5A4D and\n        filesize < 2MB and\n        $mutex and\n        $steamid\n}"
       }
     ]
-
+  },
   //{
   //  slug: "vulcan-malware",
   //  title: "Vulcan Malware: Analysis of a Multi-Persistent Go-Based Linux Implant",

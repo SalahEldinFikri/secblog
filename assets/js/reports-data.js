@@ -25,416 +25,416 @@ const REPORTS = [
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
 
-  //{
-  //  slug: "voidstealer",
-  //  title: "VoidStealer: A New Generation of Browser Information Stealer",
-  //  date: "2026-09-05",
-  //  tag: "MALWARE",
-  //  severity: "CRITICAL",
-  //  readTime: "15 MIN READ",
-  //  excerpt: "VoidStealer is a Malware-as-a-Service (MaaS) Windows infostealer targeting browser credentials, cookies, autofill data, credit cards, browsing history, bookmarks, and downloads. The analyzed sample performs WMI-based system fingerprinting, exception-based anti-debugging, Steam Community-based C2 resolution, and an Application-Bound Encryption (ABE) bypass using hardware breakpoints to extract the v20_master_key. Operational strings are protected using per-key Base64 + RC4 decryption.",
-  //  iocs: [
-  //    {
-  //      type: "MUTEX",
-  //      indicator: "Global\\composerctx",
-  //      family: "VoidStealer",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "STEAM_ID",
-  //      indicator: "76561199691513242",
-  //      family: "VoidStealer C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "DOMAIN",
-  //      indicator: "steamcommunity.com",
-  //      family: "VoidStealer C2 Resolution",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "DOMAIN",
-  //      indicator: "callpit.icu",
-  //      family: "VoidStealer C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "IP",
-  //      indicator: "82.25.63.156",
-  //      family: "VoidStealer C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "C2",
-  //      indicator: "82.25.63.156:9000",
-  //      family: "VoidStealer C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "URI",
-  //      indicator: "/api/config",
-  //      family: "VoidStealer C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "URI",
-  //      indicator: "/api/upload",
-  //      family: "VoidStealer C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "URI",
-  //      indicator: "/api/ping",
-  //      family: "VoidStealer C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "URI",
-  //      indicator: "/api/client",
-  //      family: "VoidStealer C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "URI",
-  //      indicator: "/api/downloads/direct/",
-  //      family: "VoidStealer C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "USER_AGENT",
-  //      indicator: "SystemInfo Client/1.0",
-  //      family: "VoidStealer C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "USER_AGENT",
-  //      indicator: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-  //      family: "VoidStealer HTTP",
-  //      confidence: "MEDIUM"
-  //    },
-  //    {
-  //      type: "FILE_PATTERN",
-  //      indicator: "D877F783D5D3EF8C*",
-  //      family: "VoidStealer Telegram Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "REGISTRY",
-  //      indicator: "SOFTWARE\\Microsoft\\Cryptography\\MachineGuid",
-  //      family: "VoidStealer Fingerprinting",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "REGISTRY",
-  //      indicator: "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
-  //      family: "VoidStealer Fingerprinting",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "REGISTRY",
-  //      indicator: "Control Panel\\Desktop\\Wallpaper",
-  //      family: "VoidStealer Fingerprinting",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "STRING",
-  //      indicator: "OSCrypt.AppBoundProvider.Decrypt.ResultCode",
-  //      family: "VoidStealer ABE Bypass",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "Login Data",
-  //      family: "VoidStealer Browser Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "Web Data",
-  //      family: "VoidStealer Browser Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "History",
-  //      family: "VoidStealer Browser Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "Cookies",
-  //      family: "VoidStealer Browser Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "Local State",
-  //      family: "VoidStealer Browser Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "Bookmarks",
-  //      family: "VoidStealer Browser Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "Preferences",
-  //      family: "VoidStealer Browser Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "places.sqlite",
-  //      family: "VoidStealer Firefox Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "key4.db",
-  //      family: "VoidStealer Firefox Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "key3.db",
-  //      family: "VoidStealer Firefox Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "cookies.sqlite",
-  //      family: "VoidStealer Firefox Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "config.vdf",
-  //      family: "VoidStealer Steam Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "loginusers.vdf",
-  //      family: "VoidStealer Steam Collection",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "ssfn*",
-  //      family: "VoidStealer Steam Collection",
-  //      confidence: "HIGH"
-  //    }
-  //  ],
-  //  yara: [
-  //    {
-  //      name: "VoidStealer",
-  //      description: "Detects the VoidStealer malware family using its mutex and Steam-based C2 identifier",
-  //      author: "SalahEldin Kamil (Mr_MaTriX)",
-  //      rule: "rule VoidStealer\n{\n    meta:\n        description = \"Detects VoidStealer\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $mutex   = \"Global\\\\composerctx\" ascii wide\n        $steamid = /765611[0-9]{11}/ ascii\n    condition:\n        uint16(0) == 0x5A4D and\n        filesize < 2MB and\n        $mutex and\n        $steamid\n}"
-  //    }
-  //  ]
-  //},
-  //{
-  //  slug: "vulcan-malware",
-  //  title: "Vulcan Malware: Analysis of a Multi-Persistent Go-Based Linux Implant",
-  //  date: "2026-08-13",
-  //  tag: "MALWARE",
-  //  severity: "CRITICAL",
-  //  readTime: "12 MIN READ",
-  //  excerpt: "A multi-architecture Go-based Linux implant distributed as UPX-packed ELF binaries. Vulcan establishes multiple persistence mechanisms, uses AES-GCM encrypted C2 communication, performs wide-scope network scanning, and targets SSH, Redis, Docker, ADB, Telnet, HTTP, HTTPS, and Huawei-related services.",
-  //  iocs: [
-  //    {
-  //      type: "IPv4",
-  //      indicator: "146.19.213.198",
-  //      family: "Vulcan",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "8443",
-  //      family: "Vulcan C2",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "C2",
-  //      indicator: "146.19.213.198:8443",
-  //      family: "Vulcan",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "DOMAIN",
-  //      indicator: "vulcan-c2.local",
-  //      family: "Vulcan",
-  //      confidence: "MEDIUM"
-  //    },
-  //    {
-  //      type: "FILE",
-  //      indicator: "vulcan-agent",
-  //      family: "Vulcan",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PATH",
-  //      indicator: "~/.cache/.icons/vulcan-agent",
-  //      family: "Vulcan",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PATH",
-  //      indicator: "~/.bashrc",
-  //      family: "Vulcan Persistence",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PATH",
-  //      indicator: "~/.profile",
-  //      family: "Vulcan Persistence",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PATH",
-  //      indicator: "/etc/init.d/",
-  //      family: "Vulcan Persistence",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PATH",
-  //      indicator: "/etc/rc.local",
-  //      family: "Vulcan Persistence",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PATH",
-  //      indicator: "/usr/sbin/ntpdbad",
-  //      family: "Vulcan Binary Hijacking",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PATH",
-  //      indicator: "/usr/bin/sshd",
-  //      family: "Vulcan Binary Hijacking",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PATH",
-  //      indicator: "/sbin/agetty",
-  //      family: "Vulcan Binary Hijacking",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "22",
-  //      family: "Vulcan Network Scanner",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "23",
-  //      family: "Vulcan Network Scanner",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "2323",
-  //      family: "Vulcan Network Scanner",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "2375",
-  //      family: "Vulcan Network Scanner",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "5555",
-  //      family: "Vulcan Network Scanner",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "6379",
-  //      family: "Vulcan Network Scanner",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "80",
-  //      family: "Vulcan Network Scanner",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "443",
-  //      family: "Vulcan Network Scanner",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "8080",
-  //      family: "Vulcan Network Scanner",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "PORT",
-  //      indicator: "37215",
-  //      family: "Vulcan Network Scanner",
-  //      confidence: "HIGH"
-  //    },
-  //    {
-  //      type: "KEY",
-  //      indicator: "can-lab-pre-shared-key-32bytes!!",
-  //      family: "Vulcan",
-  //      confidence: "HIGH"
-  //    }
-  //  ],
-  //  yara: [
-  //    {
-  //      name: "Family_Vulcan",
-  //      description: "Detects the Vulcan malware family using embedded debug and behavioral strings",
-  //      author: "SalahEldin Kamil (Mr_MaTriX)",
-  //      rule: "rule Family_Vulcan\n{\n    meta:\n        description = \"Detects Family Vulcan Malware\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $m1  = \"DEBUG_HTTP2_GOROUTINES\" ascii wide\n        $m2  = \"[DEBUG] Dial error: %v\\n\" ascii wide\n        $m3  = \"[DEBUG] Read error: %v\\n\" ascii wide\n        $m4  = \"[DEBUG] readLoop started\" ascii wide\n        $m5  = \"[DEBUG] Write error: %v\\n\" ascii wide\n        $m6  = \"[DEBUG] Scanning enabled\" ascii wide\n        $m7  = \"[DEBUG] Invalid URL: %v\\n\" ascii wide\n        $m8  = \"GODEBUG sys/cpu: value \\\"\" ascii wide\n        $m9  = \"[DEBUG] Worker %d EXITED\\n\" ascii wide\n        $m10 = \"[DEBUG] Scanning disabled\" ascii wide\n        $m11 = \"GODEBUG: can not enable \\\"\" ascii wide\n        $m12 = \"[DEBUG] Implant starting...insufficient security level\" ascii wide\n        $m13 = \"[DEBUG] WebSocket connected!\" ascii wide\n        $m14 = \"[DEBUG] Worker %d PANIC: %v\\n\" ascii wide\n        $m15 = \"[DEBUG] Unknown command: %s\\n\" ascii wide\n        $m16 = \"[DEBUG] SSH spreader started\" ascii wide\n        $m17 = \"[DEBUG] Worker 0 scanning %s\\n\" ascii wide\n        $m18 = \"[DEBUG] Received task: %s %s\\n\" ascii wide\n        $m19 = \"[DEBUG] SCP to %s failed: %v\\n\" ascii wide\n        $m20 = \"[DEBUG] Unknown DDoS type: %s\\n\" ascii wide\n        $m21 = \"GODEBUG: unknown cpu feature \\\"\" ascii wide\n        $m22 = \"[DEBUG] sendMessageSync failed!\" ascii wide\n        $m23 = \"[DEBUG] Scan worker %d started\\n\" ascii wide\n        $m24 = \"[DEBUG] Usage: <type> <args...>\" ascii wide\n        $m25 = \"[DEBUG] Self-destruct initiatedbad certificate status responseencrypted client hello required\" ascii wide\n        $m26 = \"[DEBUG] SSH spread success to %s\\n\" ascii wide\n        $m27 = \"[DEBUG] SYN flood init error: %v\\n\" ascii wide\n        $m28 = \"[DEBUG] connect() goroutine started\" ascii wide\n        $m29 = \"[DEBUG] sendMessageSync: conn is nil\" ascii wide\n        $m30 = \"[DEBUG] %s exploit SUCCESS on %s:%d\\n\" ascii wide\n        $m31 = \"GODEBUG: no value specified for \\\"\" ascii wide\n        $m32 = \"GODEBUG sys/cpu: can not enable \\\"\" ascii wide\n        $m33 = \"GODEBUG sys/cpu: can not disable \\\"\" ascii wide\n    condition:\n        uint32(0) == 0x464c457f and\n        (any of them)\n}"
-  //    },
-  //    {
-  //      name: "Vulcan_x86",
-  //      description: "Detects the Vulcan x86 ELF build using the hardcoded C2 configuration pattern",
-  //      author: "SalahEldin Kamil (Mr_MaTriX)",
-  //      rule: "rule Vulcan_x86\n{\n    meta:\n        description = \"Detects Vulcan Malware — x86 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            8D 05 ?? ?? ?? ??\n            89 04 24\n            C7 44 24 04 13 00 00 00\n            8B 44 24 34\n            89 44 24 08\n            E8 ?? ?? ?? ??\n        }\n    condition:\n        any of them\n}"
-  //    },
-  //    {
-  //      name: "Vulcan_AMD64",
-  //      description: "Detects the Vulcan AMD64 ELF build using the hardcoded C2 configuration pattern",
-  //      author: "SalahEldin Kamil (Mr_MaTriX)",
-  //      rule: "rule Vulcan_AMD64\n{\n    meta:\n        description = \"Detects Vulcan Malware — AMD64 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            48 8D 05 ?? ?? ?? ??\n            BB 13 00 00 00\n            48 8B 4C 24 58\n            E8 ?? ?? ?? ??\n        }\n    condition:\n        any of them\n}"
-  //    },
-  //    {
-  //      name: "Vulcan_ARM5",
-  //      description: "Detects the Vulcan ARM5 ELF build",
-  //      author: "SalahEldin Kamil (Mr_MaTriX)",
-  //      rule: "rule Vulcan_ARM5\n{\n    meta:\n        description = \"Detects Vulcan Malware — ARM5 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            48 02 ?? ??\n            04 00 8D E5\n            13 00 A0 E3\n            08 00 8D E5\n            38 00 9D E5\n            0C 00 8D E5\n            3D ?? ?? ??\n        }\n    condition:\n        any of them\n}"
-  //    },
-  //    {
-  //      name: "Vulcan_ARM7",
-  //      description: "Detects the Vulcan ARM7 ELF build",
-  //      author: "SalahEldin Kamil (Mr_MaTriX)",
-  //      rule: "rule Vulcan_ARM7\n{\n    meta:\n        description = \"Detects Vulcan Malware — ARM7 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            44 02 ?? ??\n            04 00 8D E5\n            13 00 A0 E3\n            08 00 8D E5\n            38 00 9D E5\n            0C 00 8D E5\n            59 ?? ?? ??\n        }\n    condition:\n        any of them\n}"
-  //    },
-  //    {
-  //      name: "Vulcan_MIPS",
-  //      description: "Detects the Vulcan MIPS big-endian ELF build",
-  //      author: "SalahEldin Kamil (Mr_MaTriX)",
-  //      rule: "rule Vulcan_MIPS\n{\n    meta:\n        description = \"Detects Vulcan Malware — MIPS big-endian ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            3C 01 00 51 24 21 ?? ??\n            AF A1 00 04\n            24 01 00 13\n            AF A1 00 08\n            8F A1 00 40\n            AF A1 00 0C\n            0C ?? ?? ??\n        }\n    condition:\n        any of them\n}"
-  //    },
-  //    {
-  //      name: "Vulcan_MIPSLE",
-  //      description: "Detects the Vulcan MIPS little-endian ELF build",
-  //      author: "SalahEldin Kamil (Mr_MaTriX)",
-  //      rule: "rule Vulcan_MIPSLE\n{\n    meta:\n        description = \"Detects Vulcan Malware — MIPS little-endian ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            51 00 01 3C ?? ?? 21 24\n            04 00 A1 AF\n            13 00 01 24\n            08 00 A1 AF\n            3C 00 A1 8F\n            0C 00 A1 AF\n            ?? ?? ?? 0C\n        }\n    condition:\n        any of them\n}"
-  //    }
-  //  ],
-  //},
+  {
+    slug: "voidstealer",
+    title: "VoidStealer: A New Generation of Browser Information Stealer",
+    date: "2026-09-05",
+    tag: "MALWARE",
+    severity: "CRITICAL",
+    readTime: "15 MIN READ",
+    excerpt: "VoidStealer is a Malware-as-a-Service (MaaS) Windows infostealer targeting browser credentials, cookies, autofill data, credit cards, browsing history, bookmarks, and downloads. The analyzed sample performs WMI-based system fingerprinting, exception-based anti-debugging, Steam Community-based C2 resolution, and an Application-Bound Encryption (ABE) bypass using hardware breakpoints to extract the v20_master_key. Operational strings are protected using per-key Base64 + RC4 decryption.",
+    iocs: [
+      {
+        type: "MUTEX",
+        indicator: "Global\\composerctx",
+        family: "VoidStealer",
+        confidence: "HIGH"
+      },
+      {
+        type: "STEAM_ID",
+        indicator: "76561199691513242",
+        family: "VoidStealer C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "DOMAIN",
+        indicator: "steamcommunity.com",
+        family: "VoidStealer C2 Resolution",
+        confidence: "HIGH"
+      },
+      {
+        type: "DOMAIN",
+        indicator: "callpit.icu",
+        family: "VoidStealer C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "IP",
+        indicator: "82.25.63.156",
+        family: "VoidStealer C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "C2",
+        indicator: "82.25.63.156:9000",
+        family: "VoidStealer C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "URI",
+        indicator: "/api/config",
+        family: "VoidStealer C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "URI",
+        indicator: "/api/upload",
+        family: "VoidStealer C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "URI",
+        indicator: "/api/ping",
+        family: "VoidStealer C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "URI",
+        indicator: "/api/client",
+        family: "VoidStealer C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "URI",
+        indicator: "/api/downloads/direct/",
+        family: "VoidStealer C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "USER_AGENT",
+        indicator: "SystemInfo Client/1.0",
+        family: "VoidStealer C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "USER_AGENT",
+        indicator: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        family: "VoidStealer HTTP",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE_PATTERN",
+        indicator: "D877F783D5D3EF8C*",
+        family: "VoidStealer Telegram Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "REGISTRY",
+        indicator: "SOFTWARE\\Microsoft\\Cryptography\\MachineGuid",
+        family: "VoidStealer Fingerprinting",
+        confidence: "HIGH"
+      },
+      {
+        type: "REGISTRY",
+        indicator: "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+        family: "VoidStealer Fingerprinting",
+        confidence: "HIGH"
+      },
+      {
+        type: "REGISTRY",
+        indicator: "Control Panel\\Desktop\\Wallpaper",
+        family: "VoidStealer Fingerprinting",
+        confidence: "HIGH"
+      },
+      {
+        type: "STRING",
+        indicator: "OSCrypt.AppBoundProvider.Decrypt.ResultCode",
+        family: "VoidStealer ABE Bypass",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "Login Data",
+        family: "VoidStealer Browser Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "Web Data",
+        family: "VoidStealer Browser Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "History",
+        family: "VoidStealer Browser Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "Cookies",
+        family: "VoidStealer Browser Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "Local State",
+        family: "VoidStealer Browser Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "Bookmarks",
+        family: "VoidStealer Browser Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "Preferences",
+        family: "VoidStealer Browser Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "places.sqlite",
+        family: "VoidStealer Firefox Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "key4.db",
+        family: "VoidStealer Firefox Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "key3.db",
+        family: "VoidStealer Firefox Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "cookies.sqlite",
+        family: "VoidStealer Firefox Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "config.vdf",
+        family: "VoidStealer Steam Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "loginusers.vdf",
+        family: "VoidStealer Steam Collection",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "ssfn*",
+        family: "VoidStealer Steam Collection",
+        confidence: "HIGH"
+      }
+    ],
+    yara: [
+      {
+        name: "VoidStealer",
+        description: "Detects the VoidStealer malware family using its mutex and Steam-based C2 identifier",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule VoidStealer\n{\n    meta:\n        description = \"Detects VoidStealer\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $mutex   = \"Global\\\\composerctx\" ascii wide\n        $steamid = /765611[0-9]{11}/ ascii\n    condition:\n        uint16(0) == 0x5A4D and\n        filesize < 2MB and\n        $mutex and\n        $steamid\n}"
+      }
+    ]
+  },
+  {
+    slug: "vulcan-malware",
+    title: "Vulcan Malware: Analysis of a Multi-Persistent Go-Based Linux Implant",
+    date: "2026-08-13",
+    tag: "MALWARE",
+    severity: "CRITICAL",
+    readTime: "12 MIN READ",
+    excerpt: "A multi-architecture Go-based Linux implant distributed as UPX-packed ELF binaries. Vulcan establishes multiple persistence mechanisms, uses AES-GCM encrypted C2 communication, performs wide-scope network scanning, and targets SSH, Redis, Docker, ADB, Telnet, HTTP, HTTPS, and Huawei-related services.",
+    iocs: [
+      {
+        type: "IPv4",
+        indicator: "146.19.213.198",
+        family: "Vulcan",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "8443",
+        family: "Vulcan C2",
+        confidence: "HIGH"
+      },
+      {
+        type: "C2",
+        indicator: "146.19.213.198:8443",
+        family: "Vulcan",
+        confidence: "HIGH"
+      },
+      {
+        type: "DOMAIN",
+        indicator: "vulcan-c2.local",
+        family: "Vulcan",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "vulcan-agent",
+        family: "Vulcan",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "~/.cache/.icons/vulcan-agent",
+        family: "Vulcan",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "~/.bashrc",
+        family: "Vulcan Persistence",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "~/.profile",
+        family: "Vulcan Persistence",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "/etc/init.d/",
+        family: "Vulcan Persistence",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "/etc/rc.local",
+        family: "Vulcan Persistence",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "/usr/sbin/ntpdbad",
+        family: "Vulcan Binary Hijacking",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "/usr/bin/sshd",
+        family: "Vulcan Binary Hijacking",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "/sbin/agetty",
+        family: "Vulcan Binary Hijacking",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "22",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "23",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "2323",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "2375",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "5555",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "6379",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "80",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "443",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "8080",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "PORT",
+        indicator: "37215",
+        family: "Vulcan Network Scanner",
+        confidence: "HIGH"
+      },
+      {
+        type: "KEY",
+        indicator: "can-lab-pre-shared-key-32bytes!!",
+        family: "Vulcan",
+        confidence: "HIGH"
+      }
+    ],
+    yara: [
+      {
+        name: "Family_Vulcan",
+        description: "Detects the Vulcan malware family using embedded debug and behavioral strings",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Family_Vulcan\n{\n    meta:\n        description = \"Detects Family Vulcan Malware\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $m1  = \"DEBUG_HTTP2_GOROUTINES\" ascii wide\n        $m2  = \"[DEBUG] Dial error: %v\\n\" ascii wide\n        $m3  = \"[DEBUG] Read error: %v\\n\" ascii wide\n        $m4  = \"[DEBUG] readLoop started\" ascii wide\n        $m5  = \"[DEBUG] Write error: %v\\n\" ascii wide\n        $m6  = \"[DEBUG] Scanning enabled\" ascii wide\n        $m7  = \"[DEBUG] Invalid URL: %v\\n\" ascii wide\n        $m8  = \"GODEBUG sys/cpu: value \\\"\" ascii wide\n        $m9  = \"[DEBUG] Worker %d EXITED\\n\" ascii wide\n        $m10 = \"[DEBUG] Scanning disabled\" ascii wide\n        $m11 = \"GODEBUG: can not enable \\\"\" ascii wide\n        $m12 = \"[DEBUG] Implant starting...insufficient security level\" ascii wide\n        $m13 = \"[DEBUG] WebSocket connected!\" ascii wide\n        $m14 = \"[DEBUG] Worker %d PANIC: %v\\n\" ascii wide\n        $m15 = \"[DEBUG] Unknown command: %s\\n\" ascii wide\n        $m16 = \"[DEBUG] SSH spreader started\" ascii wide\n        $m17 = \"[DEBUG] Worker 0 scanning %s\\n\" ascii wide\n        $m18 = \"[DEBUG] Received task: %s %s\\n\" ascii wide\n        $m19 = \"[DEBUG] SCP to %s failed: %v\\n\" ascii wide\n        $m20 = \"[DEBUG] Unknown DDoS type: %s\\n\" ascii wide\n        $m21 = \"GODEBUG: unknown cpu feature \\\"\" ascii wide\n        $m22 = \"[DEBUG] sendMessageSync failed!\" ascii wide\n        $m23 = \"[DEBUG] Scan worker %d started\\n\" ascii wide\n        $m24 = \"[DEBUG] Usage: <type> <args...>\" ascii wide\n        $m25 = \"[DEBUG] Self-destruct initiatedbad certificate status responseencrypted client hello required\" ascii wide\n        $m26 = \"[DEBUG] SSH spread success to %s\\n\" ascii wide\n        $m27 = \"[DEBUG] SYN flood init error: %v\\n\" ascii wide\n        $m28 = \"[DEBUG] connect() goroutine started\" ascii wide\n        $m29 = \"[DEBUG] sendMessageSync: conn is nil\" ascii wide\n        $m30 = \"[DEBUG] %s exploit SUCCESS on %s:%d\\n\" ascii wide\n        $m31 = \"GODEBUG: no value specified for \\\"\" ascii wide\n        $m32 = \"GODEBUG sys/cpu: can not enable \\\"\" ascii wide\n        $m33 = \"GODEBUG sys/cpu: can not disable \\\"\" ascii wide\n    condition:\n        uint32(0) == 0x464c457f and\n        (any of them)\n}"
+      },
+      {
+        name: "Vulcan_x86",
+        description: "Detects the Vulcan x86 ELF build using the hardcoded C2 configuration pattern",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_x86\n{\n    meta:\n        description = \"Detects Vulcan Malware — x86 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            8D 05 ?? ?? ?? ??\n            89 04 24\n            C7 44 24 04 13 00 00 00\n            8B 44 24 34\n            89 44 24 08\n            E8 ?? ?? ?? ??\n        }\n    condition:\n        any of them\n}"
+      },
+      {
+        name: "Vulcan_AMD64",
+        description: "Detects the Vulcan AMD64 ELF build using the hardcoded C2 configuration pattern",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_AMD64\n{\n    meta:\n        description = \"Detects Vulcan Malware — AMD64 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            48 8D 05 ?? ?? ?? ??\n            BB 13 00 00 00\n            48 8B 4C 24 58\n            E8 ?? ?? ?? ??\n        }\n    condition:\n        any of them\n}"
+      },
+      {
+        name: "Vulcan_ARM5",
+        description: "Detects the Vulcan ARM5 ELF build",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_ARM5\n{\n    meta:\n        description = \"Detects Vulcan Malware — ARM5 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            48 02 ?? ??\n            04 00 8D E5\n            13 00 A0 E3\n            08 00 8D E5\n            38 00 9D E5\n            0C 00 8D E5\n            3D ?? ?? ??\n        }\n    condition:\n        any of them\n}"
+      },
+      {
+        name: "Vulcan_ARM7",
+        description: "Detects the Vulcan ARM7 ELF build",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_ARM7\n{\n    meta:\n        description = \"Detects Vulcan Malware — ARM7 ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            44 02 ?? ??\n            04 00 8D E5\n            13 00 A0 E3\n            08 00 8D E5\n            38 00 9D E5\n            0C 00 8D E5\n            59 ?? ?? ??\n        }\n    condition:\n        any of them\n}"
+      },
+      {
+        name: "Vulcan_MIPS",
+        description: "Detects the Vulcan MIPS big-endian ELF build",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_MIPS\n{\n    meta:\n        description = \"Detects Vulcan Malware — MIPS big-endian ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            3C 01 00 51 24 21 ?? ??\n            AF A1 00 04\n            24 01 00 13\n            AF A1 00 08\n            8F A1 00 40\n            AF A1 00 0C\n            0C ?? ?? ??\n        }\n    condition:\n        any of them\n}"
+      },
+      {
+        name: "Vulcan_MIPSLE",
+        description: "Detects the Vulcan MIPS little-endian ELF build",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vulcan_MIPSLE\n{\n    meta:\n        description = \"Detects Vulcan Malware — MIPS little-endian ELF build\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $Config = {\n            51 00 01 3C ?? ?? 21 24\n            04 00 A1 AF\n            13 00 01 24\n            08 00 A1 AF\n            3C 00 A1 8F\n            0C 00 A1 AF\n            ?? ?? ?? 0C\n        }\n    condition:\n        any of them\n}"
+      }
+    ],
+  },
 
   {
     slug: "lazarusthreatactorprofile",

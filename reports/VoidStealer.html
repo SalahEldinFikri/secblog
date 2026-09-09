@@ -879,19 +879,52 @@
       <h2>8. YARA Rules</h2>
       <p>VoidStealer Yara Rule</p>
       <pre class="code-block">rule VoidStealer
-      {
-      meta:
-      description = "Detects VoidStealer"
-      author = "SalahEldin Kamil (Mr_MaTriX)"
-      strings:
-      $mutex = "Global\\\\composerctx" ascii wide
-      $steamid = /765611[0-9]{11}/ ascii
-      condition:
-      uint16(0) == 0x5A4D and
-      filesize < 2MB and
-      $mutex and
-      $steamid 
-    } </pre>
+{
+    meta:
+        description = "Detects VoidStealer"
+        author = "SalahEldin Kamil (Mr_MaTriX)"
+
+    strings:
+        $m1  = "Global\\composerctx" wide ascii
+        $m2  = "\\\\.\\pipe\\browser_key_pipe" wide ascii
+        $m3  = "{\"type\":\"get_dll\",\"dll_name\":\"" wide ascii
+        $m4  = "V10_opera.txt" wide ascii
+        
+        $s1  = "Opera GX Stable" wide ascii
+        $s2  = "chromeInjector" wide ascii
+        $s3  = "edgeInjector" wide ascii
+        $s4  = "braveInjector" wide ascii
+        $s5  = "operaGXV10Key" wide ascii
+        $s6 = "=== SENDING DATA TO SERVER ===" wide ascii
+        $s7 = "=== CHECKING INSTALLED BROWSERS ===" wide ascii
+        $s8 = "=== CREATING BROWSER PROFILES FILE ===" wide ascii
+        $s9 = "browsers_profiles.txt" wide ascii
+        $s10 = "Brave injection successful" wide ascii
+        $s11 = "Chrome injection successful" wide ascii
+        $s12 = "Edge injection successful" wide ascii
+        $s13 = "[KeyGet] Starting reflective injection, size: " wide ascii
+        $s14 = "[KeyGet] Successfully opened target process" wide ascii
+        $s15 = "[KeyGet] Browser process not found:" wide ascii
+        $s16 = "inject.dll" wide ascii 
+        $s17 = "=== INJECTING DLL INTO CHROME (FROM CACHE) ===" wide ascii
+        $s18 = "Injecting DLL into Chrome from memory cache" wide ascii
+        $s19 = "=== INJECTING DLL INTO EDGE (FROM CACHE) ===" wide ascii
+        $s20 = "[DEBUG] Parsing browser" wide ascii
+        
+        $steamid = /765611[0-9]{11}/ 
+
+    condition:
+        uint16(0) == 0x5A4D and
+        filesize < 15MB and
+        ($steamid or any of ($m*)) or
+        (7 of ($s*))
+         
+}
+
+
+
+
+ </pre>
     </div>
     <!-- ══ 9. IOCs ══ -->
     <div class="report-section">

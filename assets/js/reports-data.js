@@ -228,12 +228,19 @@ const REPORTS = [
       }
     ],
     yara: [
+
       {
+
         name: "VoidStealer",
-        description: "Detects the VoidStealer malware family using its mutex and Steam-based C2 identifier",
+
+        description: "Detects the VoidStealer malware family using mutex, browser injection artifacts, operational strings, and Steam-based C2 identifiers",
+
         author: "SalahEldin Kamil (Mr_MaTriX)",
-        rule: "rule VoidStealer\n{\n    meta:\n        description = \"Detects VoidStealer\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $mutex   = \"Global\\\\composerctx\" ascii wide\n        $steamid = /765611[0-9]{11}/ ascii\n    condition:\n        uint16(0) == 0x5A4D and\n        filesize < 2MB and\n        $mutex and\n        $steamid\n}"
+
+        rule: "rule VoidStealer\n{\n    meta:\n        description = \"Detects VoidStealer\"\n        author = \"SalahEldin Kamil (Mr_MaTriX)\"\n\n    strings:\n        $m1  = \"Global\\\\composerctx\" wide ascii\n        $m2  = \"\\\\\\\\.\\\\pipe\\\\browser_key_pipe\" wide ascii\n        $m3  = \"{\\\"type\\\":\\\"get_dll\\\",\\\"dll_name\\\":\\\"\" wide ascii\n        $m4  = \"V10_opera.txt\" wide ascii\n\n        $s1  = \"Opera GX Stable\" wide ascii\n        $s2  = \"chromeInjector\" wide ascii\n        $s3  = \"edgeInjector\" wide ascii\n        $s4  = \"braveInjector\" wide ascii\n        $s5  = \"operaGXV10Key\" wide ascii\n        $s6  = \"=== SENDING DATA TO SERVER ===\" wide ascii\n        $s7  = \"=== CHECKING INSTALLED BROWSERS ===\" wide ascii\n        $s8  = \"=== CREATING BROWSER PROFILES FILE ===\" wide ascii\n        $s9  = \"browsers_profiles.txt\" wide ascii\n        $s10 = \"Brave injection successful\" wide ascii\n        $s11 = \"Chrome injection successful\" wide ascii\n        $s12 = \"Edge injection successful\" wide ascii\n        $s13 = \"[KeyGet] Starting reflective injection, size: \" wide ascii\n        $s14 = \"[KeyGet] Successfully opened target process\" wide ascii\n        $s15 = \"[KeyGet] Browser process not found:\" wide ascii\n        $s16 = \"inject.dll\" wide ascii\n        $s17 = \"=== INJECTING DLL INTO CHROME (FROM CACHE) ===\" wide ascii\n        $s18 = \"Injecting DLL into Chrome from memory cache\" wide ascii\n        $s19 = \"=== INJECTING DLL INTO EDGE (FROM CACHE) ===\" wide ascii\n        $s20 = \"[DEBUG] Parsing browser\" wide ascii\n\n        $steamid = /765611[0-9]{11}/\n\n    condition:\n        uint16(0) == 0x5A4D and\n        filesize < 15MB and\n        (($steamid or any of ($m*)) or (7 of ($s*)))\n}",
+
       }
+
     ]
   },
   {

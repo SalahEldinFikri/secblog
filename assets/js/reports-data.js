@@ -35,6 +35,12 @@ const REPORTS = [
     excerpt: "VoidStealer is a Malware-as-a-Service (MaaS) Windows infostealer targeting browser credentials, cookies, autofill data, credit cards, browsing history, bookmarks, and downloads. The analyzed sample performs WMI-based system fingerprinting, exception-based anti-debugging, Steam Community-based C2 resolution, and an Application-Bound Encryption (ABE) bypass using hardware breakpoints to extract the v20_master_key. Operational strings are protected using per-key Base64 + RC4 decryption.",
     iocs: [
       {
+        type: "SHA256",
+        indicator: "f783fde5cf7930e4b3054393efadd3675b505cbef8e9d7ae58aa35b435adeea4",
+        family: "VoidStealer",
+        confidence: "HIGH"
+      },
+      {
         type: "MUTEX",
         indicator: "Global\\composerctx",
         family: "VoidStealer",
@@ -253,6 +259,36 @@ const REPORTS = [
     excerpt: "A multi-architecture Go-based Linux implant distributed as UPX-packed ELF binaries. Vulcan establishes multiple persistence mechanisms, uses AES-GCM encrypted C2 communication, performs wide-scope network scanning, and targets SSH, Redis, Docker, ADB, Telnet, HTTP, HTTPS, and Huawei-related services.",
     iocs: [
       {
+        type: "MD5",
+        indicator: "42671fb2dd289692203ed6ab827a2157",
+        family: "Vulcan_amd64",
+        confidence: "HIGH"
+      },
+      {
+        type: "MD5",
+        indicator: "d7f3496df78ea68ce383320cef311887",
+        family: "Vulcan_arm5",
+        confidence: "HIGH"
+      },
+      {
+        type: "MD5",
+        indicator: "eac8686232209eae2ba2294017c07707",
+        family: "Vulcan_arm7",
+        confidence: "HIGH"
+      },
+      {
+        type: "MD5",
+        indicator: "06bf9417370cd8df7ef4b0a75721ba55",
+        family: "Vulcan_mips",
+        confidence: "HIGH"
+      },
+      {
+        type: "MD5",
+        indicator: "7fe6a1ac009c8e82ec0458eac6df0d7a",
+        family: "Vulcan_mipsle",
+        confidence: "HIGH"
+      },
+      {
         type: "IPv4",
         indicator: "146.19.213.198",
         family: "Vulcan",
@@ -261,7 +297,7 @@ const REPORTS = [
       {
         type: "PORT",
         indicator: "8443",
-        family: "Vulcan C2",
+        family: "Vulcan Port",
         confidence: "HIGH"
       },
       {

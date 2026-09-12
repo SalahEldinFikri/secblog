@@ -583,6 +583,8 @@
       <a href="yara-feed.html" class="active">YARA Rules</a>
       <a href="siem-reference.html" class="active">SIEM Reference</a>
       <a href="malware-structures.html" class="active">Structures</a>
+      <a href="projects.html" class="active">Projects</a>
+      <a href="winapi-reference.html" class="active">Win API</a>
       <a href="achievements.html" class="active">Achievements</a>
       <a href="about.html" class="active">About Me</a>
 
@@ -625,7 +627,8 @@
       <div class="yref-carousel-wrap">
         <div class="yref-carousel-nav">
           <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
-            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span>
+          </div>
           <div class="yref-nav-btns">
             <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
             <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
@@ -785,7 +788,8 @@ for m in matches:
       <div class="yref-carousel-wrap">
         <div class="yref-carousel-nav">
           <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
-            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span>
+          </div>
           <div class="yref-nav-btns">
             <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
             <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
@@ -892,7 +896,8 @@ rule MyRule {
       <div class="yref-carousel-wrap">
         <div class="yref-carousel-nav">
           <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
-            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span>
+          </div>
           <div class="yref-nav-btns">
             <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
             <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
@@ -929,7 +934,8 @@ rule MyRule {
   // XOR with specific key range
   $xor2  = "cmd.exe" xor(0x01-0xff)</pre>
               <div class="yref-note">Most important modifiers: <code>nocase</code>, <code>wide</code>,
-                <code>ascii</code>, <code>xor</code>. Combine as needed.</div>
+                <code>ascii</code>, <code>xor</code>. Combine as needed.
+              </div>
             </div>
 
             <div class="yref-card">
@@ -1052,7 +1058,8 @@ condition:
       <div class="yref-carousel-wrap">
         <div class="yref-carousel-nav">
           <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
-            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span>
+          </div>
           <div class="yref-nav-btns">
             <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
             <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
@@ -1197,7 +1204,8 @@ condition:
       <div class="yref-carousel-wrap">
         <div class="yref-carousel-nav">
           <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
-            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span>
+          </div>
           <div class="yref-nav-btns">
             <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
             <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
@@ -1437,7 +1445,8 @@ import "time"
       <div class="yref-carousel-wrap">
         <div class="yref-carousel-nav">
           <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
-            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span>
+          </div>
           <div class="yref-nav-btns">
             <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
             <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
@@ -1532,7 +1541,8 @@ for m in rules.match('target.exe'):
       <div class="yref-carousel-wrap">
         <div class="yref-carousel-nav">
           <div class="yref-carousel-counter"><span class="cr-cur">1</span> / <span class="cr-tot">1</span> &nbsp;·&nbsp;
-            <span style="color:var(--green);opacity:.6">use arrows to browse</span></div>
+            <span style="color:var(--green);opacity:.6">use arrows to browse</span>
+          </div>
           <div class="yref-nav-btns">
             <button class="yref-nav-btn cr-prev" aria-label="previous">&#8592;</button>
             <button class="yref-nav-btn cr-next" aria-label="next">&#8594;</button>
@@ -1648,7 +1658,8 @@ yara compiled.yarac /large_sample_dir/
 // Bad:  /ABC.*XYZ/
 // Good: /ABC.{0,100}XYZ/</pre>
               <div class="yref-note">Order matters — YARA evaluates conditions left-to-right and short-circuits on
-                <code>and</code>. Put cheap checks first.</div>
+                <code>and</code>. Put cheap checks first.
+              </div>
             </div>
 
             <div class="yref-card">

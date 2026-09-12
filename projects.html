@@ -142,6 +142,7 @@
       transition: background .2s;
       position: relative;
       overflow: hidden;
+      cursor: pointer;
     }
 
     .pt-card:hover {
@@ -405,7 +406,7 @@
       </span>
       <div>
         Mr_MaTriX
-
+        <span class="logo-sub">SECBLOG // THREAT RESEARCH</span>
       </div>
     </div>
     <div class="nav-links">
@@ -416,6 +417,8 @@
       <a href="yara-feed.html" class="active">YARA Rules</a>
       <a href="siem-reference.html" class="active">SIEM Reference</a>
       <a href="malware-structures.html" class="active">Structures</a>
+      <a href="projects.html" class="active">Projects</a>
+      <a href="winapi-reference.html" class="active">Win API</a>
       <a href="achievements.html" class="active">Achievements</a>
       <a href="about.html" class="active">About Me</a>
 
@@ -499,19 +502,28 @@
          date      — "YYYY-MM" string
     ══════════════════════════════════════════════════════ */
     const PROJECTS = [
-      // ── EXAMPLE PLACEHOLDER — replace with your real projects ──
+      //{
+      //  name: "SecBlog",
+      //  icon: "🦇",
+      //  type: "tool",
+      //  status: "active",
+      //  desc: "Personal security research blog covering malware analysis, threat intelligence, CTF writeups, IOC feeds, and YARA rules.",
+      //  tech: ["HTML", "CSS", "JavaScript"],
+      //  github: "https://github.com/Mr-MaTriX/secblog",
+      //  demo: null,
+      //  date: "2025-01",
+      //},
       {
-        name: "SecBlog",
-        icon: "🦇",
+        name: "cfgx",
+        icon: "⚙️",
         type: "tool",
         status: "active",
-        desc: "Personal security research blog covering malware analysis, threat intelligence, CTF writeups, IOC feeds, and YARA rules.",
-        tech: ["HTML", "CSS", "JavaScript"],
-        github: "https://github.com/Mr-MaTriX/secblog",
-        demo: null,
-        date: "2025-01",
+        desc: "Python malware configuration extraction framework. Separates generic analysis infrastructure (YARA scanning, PE parsing, sample reading) from malware-family-specific logic via analyst plugins. Supports single-sample and batch analysis with JSON report output.",
+        tech: ["Python", "YARA", "pefile", "pyelftools", "CLI"],
+        github: "https://github.com/SalahEldinFikri/cfgx-tool",
+        demo: "projects/cfgx-tool.html",
+        date: "2026-01",
       },
-      // ── Add more projects below ──
     ];
 
     /* ══════════════════════════════════════════════════════
@@ -532,7 +544,7 @@
         : `<span class="pt-link disabled">↗ Demo</span>`;
 
       return `
-      <div class="pt-card" data-type="${p.type}" data-name="${p.name.toLowerCase()}" data-desc="${p.desc.toLowerCase()}">
+      <div class="pt-card" data-type="${p.type}" data-name="${p.name.toLowerCase()}" data-desc="${p.desc.toLowerCase()}" data-url="${p.demo || ''}" ${p.demo ? 'tabindex="0" role="link"' : ''}>
         <div class="pt-card-top">
           <span class="pt-card-icon">${p.icon}</span>
           <div class="pt-card-badges">
@@ -553,6 +565,28 @@
     function render() {
       const grid = document.getElementById('pt-grid');
       grid.innerHTML = PROJECTS.map(buildCard).join('');
+
+      document.querySelectorAll('.pt-card[data-url]').forEach(card => {
+        const openCard = (e) => {
+          // Let GitHub/Demo links work normally without triggering the card.
+          if (e.target.closest('a, button, input')) return;
+
+          const url = card.dataset.url;
+          if (url) window.location.href = url;
+        };
+
+        card.addEventListener('click', openCard);
+
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            if (e.target.closest('a, button, input')) return;
+            e.preventDefault();
+            const url = card.dataset.url;
+            if (url) window.location.href = url;
+          }
+        });
+      });
+
       updateStats();
       applyFilters();
     }

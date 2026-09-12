@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>cfgx — Malware Config Extraction Framework · SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <style>
+    /* ── Layout ── */
+    .cx-wrap {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    /* ── Hero ── */
+    .cx-hero {
+      padding: 3rem 2rem 2.5rem;
+      max-width: 1060px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cx-hero-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .cx-hero-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .cx-hero-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cx-hero-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: .4rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cx-hero-label::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+    }
+
+    .cx-hero-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 700;
+      color: #e8f4ff;
+      letter-spacing: -.5px;
+      margin-bottom: .35rem;
+      line-height: 1.2;
+    }
+
+    .cx-hero-title em {
+      color: var(--green);
+      font-style: normal;
+    }
+
+    .cx-hero-sub {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 580px;
+      margin-bottom: .85rem;
+    }
+
+    .cx-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: .85rem;
+    }
+
+    .cx-badge {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .5px;
+      padding: 3px 10px;
+      border: 1px solid;
+    }
+
+    .cb-green {
+      border-color: rgba(0, 255, 157, .35);
+      color: var(--green);
+      background: rgba(0, 255, 157, .05);
+    }
+
+    .cb-blue {
+      border-color: rgba(56, 189, 248, .35);
+      color: var(--blue);
+      background: rgba(56, 189, 248, .05);
+    }
+
+    .cb-amber {
+      border-color: rgba(245, 158, 11, .35);
+      color: var(--amber);
+      background: rgba(245, 158, 11, .05);
+    }
+
+    .cb-muted {
+      border-color: var(--border);
+      color: var(--muted);
+    }
+
+    .cb-purple {
+      border-color: rgba(167, 139, 250, .35);
+      color: #a78bfa;
+      background: rgba(167, 139, 250, .05);
+    }
+
+    .cx-hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .cx-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      padding: 8px 18px;
+      text-decoration: none;
+      transition: all .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .cx-btn-primary {
+      background: var(--green);
+      color: #0a0e17;
+      font-weight: 700;
+    }
+
+    .cx-btn-primary:hover {
+      background: var(--green-dim);
+    }
+
+    .cx-btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .cx-btn-ghost:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    /* ── Stats bar ── */
+    .cx-stats {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-top: none;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .cx-stat {
+      flex: 1;
+      min-width: 120px;
+      padding: .9rem 1.25rem;
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .cx-stat:last-child {
+      border-right: none;
+    }
+
+    .cx-stat-n {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green);
+      display: block;
+      font-family: var(--mono);
+    }
+
+    .cx-stat-l {
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* ── Body grid ── */
+    .cx-body {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* ── Section ── */
+    .cx-section {
+      margin-bottom: 2rem;
+    }
+
+    .cx-section-title {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--green);
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .cx-section-title::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* ── Prose ── */
+    .cx-prose {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .cx-prose p {
+      margin-bottom: .85rem;
+    }
+
+    .cx-prose p:last-child {
+      margin-bottom: 0;
+    }
+
+    .cx-prose strong {
+      color: var(--text);
+    }
+
+    .cx-prose code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--green);
+      background: rgba(0, 255, 157, .07);
+      padding: 1px 5px;
+      border: 1px solid rgba(0, 255, 157, .15);
+    }
+
+    /* ── Pipeline diagram ── */
+    .cx-pipeline {
+      background: rgba(2, 8, 20, .7);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--green);
+      padding: 1.25rem 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .cx-pipe-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .cx-pipe-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: .4rem 0;
+    }
+
+    .cx-pipe-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--green);
+      width: 22px;
+      flex-shrink: 0;
+      padding-top: 3px;
+      opacity: .7;
+    }
+
+    .cx-pipe-fn {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 700;
+      flex-shrink: 0;
+      min-width: 140px;
+    }
+
+    .cx-pipe-note {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .cx-pipe-arrow {
+      font-size: 9px;
+      color: var(--border);
+      padding-left: 22px;
+      line-height: 1;
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+
+    /* ── Code block ── */
+    .cx-code {
+      background: rgba(2, 8, 20, .85);
+      border: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--text);
+      line-height: 1.75;
+      overflow-x: auto;
+      white-space: pre;
+      margin: .75rem 0;
+      position: relative;
+    }
+
+    .cx-code-label {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 8px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      opacity: .6;
+    }
+
+    .cc {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* comment */
+    .cs {
+      color: var(--amber);
+    }
+
+    /* string */
+    .ck {
+      color: #cc99cd;
+    }
+
+    /* keyword */
+    .cf {
+      color: var(--green);
+    }
+
+    /* function */
+    .cn {
+      color: var(--blue);
+    }
+
+    /* number/const */
+
+    /* ── Feature grid ── */
+    .cx-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      margin: .75rem 0;
+    }
+
+    .cx-feature {
+      background: var(--surface);
+      padding: .85rem 1rem;
+      transition: background .15s;
+    }
+
+    .cx-feature:hover {
+      background: var(--surface2);
+    }
+
+    .cx-feat-icon {
+      font-size: 15px;
+      margin-bottom: .3rem;
+    }
+
+    .cx-feat-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--green);
+      margin-bottom: .25rem;
+      letter-spacing: .5px;
+    }
+
+    .cx-feat-desc {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ── Install block ── */
+    .cx-install {
+      background: rgba(2, 8, 20, .85);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--amber);
+      padding: .85rem 1.25rem;
+      margin: .75rem 0;
+    }
+
+    .cx-install-label {
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--amber);
+      margin-bottom: .5rem;
+    }
+
+    .cx-install-cmd {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    .cx-install-cmd span.prompt {
+      color: var(--green);
+      user-select: none;
+    }
+
+    /* ── Sidebar ── */
+    .cx-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      position: sticky;
+      top: 64px;
+    }
+
+    .cx-info-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--green);
+    }
+
+    .cx-info-head {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      padding: .65rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    .cx-info-body {
+      padding: .85rem 1rem;
+    }
+
+    .cx-info-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: .4rem 0;
+      border-bottom: 1px solid rgba(31, 45, 69, .4);
+      gap: 8px;
+    }
+
+    .cx-info-row:last-child {
+      border-bottom: none;
+    }
+
+    .cx-info-key {
+      font-size: 10px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .cx-info-val {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--text);
+      text-align: right;
+      word-break: break-all;
+    }
+
+    .cx-info-val a {
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    .cx-info-val a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Dep list ── */
+    .cx-dep {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .5rem 0;
+      border-bottom: 1px solid rgba(31, 45, 69, .4);
+    }
+
+    .cx-dep:last-child {
+      border-bottom: none;
+    }
+
+    .cx-dep-name {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text);
+    }
+
+    .cx-dep-ver {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--green);
+    }
+
+    /* ── File tree ── */
+    .cx-tree {
+      background: rgba(2, 8, 20, .7);
+      border: 1px solid var(--border);
+      padding: .85rem 1rem;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    .cx-tree .dir {
+      color: var(--blue);
+    }
+
+    .cx-tree .file {
+      color: var(--text);
+    }
+
+    .cx-tree .main {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .cx-tree .note {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* ── Architecture boxes ── */
+    .cx-arch {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      margin: .75rem 0;
+    }
+
+    .cx-arch-box {
+      background: var(--surface);
+      padding: .75rem .9rem;
+    }
+
+    .cx-arch-label {
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: .4rem;
+    }
+
+    .cx-arch-items {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cx-arch-item {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--muted);
+    }
+
+    .cx-arch-item.owned {
+      color: var(--green);
+    }
+
+    .cx-arch-item.plugin {
+      color: var(--amber);
+    }
+
+    /* ── Contract table ── */
+    .cx-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: .75rem 0;
+    }
+
+    .cx-table th {
+      padding: 7px 10px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    .cx-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid rgba(31, 45, 69, .4);
+      vertical-align: top;
+    }
+
+    .cx-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .cx-table tr:hover td {
+      background: var(--surface2);
+    }
+
+    .cx-td-key {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .cx-td-type {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #a78bfa;
+    }
+
+    .cx-td-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* ── TOC (sidebar) ── */
+    .cx-toc {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .cx-toc li {
+      border-bottom: 1px solid rgba(31, 45, 69, .4);
+    }
+
+    .cx-toc li:last-child {
+      border-bottom: none;
+    }
+
+    .cx-toc a {
+      display: block;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      padding: .45rem .75rem;
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: all .15s;
+    }
+
+    .cx-toc a:hover {
+      color: var(--green);
+      border-left-color: var(--green);
+      background: rgba(0, 255, 157, .04);
+    }
+
+    /* ── Back link ── */
+    .cx-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      padding: .75rem 0;
+      transition: color .15s;
+      margin-bottom: .5rem;
+    }
+
+    .cx-back:hover {
+      color: var(--green);
+    }
+
+    @media(max-width:860px) {
+      .cx-body {
+        grid-template-columns: 1fr;
+      }
+
+      .cx-sidebar {
+        position: static;
+      }
+
+      .cx-arch {
+        grid-template-columns: 1fr;
+      }
+
+      .cx-features {
+        grid-template-columns: 1fr;
+      }
+
+      .cx-hero {
+        padding: 2rem 1.25rem 1.75rem;
+      }
+
+      .cx-wrap {
+        padding: 0 1.25rem 4rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </button>
+    <div class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+          <path d="M12 2v13M12 2L7 7M12 2l5 5M5 9c0 3 2 5 2 5s-3 0-3 4 3 6 3 6M19 9c0 3-2 5-2 5s3 0 3 4-3 6-3 6"
+            stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <div>
+        Mr_MaTriX
+        <span class="logo-sub">SECBLOG // THREAT RESEARCH</span>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="reports.html" class="active">Reports</a>
+      <a href="APT.html" class="active">APTs</a>
+      <a href="ioc-feed.html" class="active">IOCs</a>
+      <a href="yara-feed.html" class="active">YARA Rules</a>
+      <a href="siem-reference.html" class="active">SIEM Reference</a>
+      <a href="malware-structures.html" class="active">Structures</a>
+      <a href="projects.html" class="active">Projects</a>
+      <a href="winapi-reference.html" class="active">Win API</a>
+      <a href="achievements.html" class="active">Achievements</a>
+      <a href="about.html" class="active">About Me</a>
+
+      <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
+    </div>
+    <a href="assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <div class="cx-hero">
+    <a href="projects.html" class="cx-back" style="display:inline-flex">← Back to Projects</a>
+    <div class="cx-hero-top">
+      <div class="cx-hero-icon">⚙️</div>
+      <div class="cx-hero-text">
+        <div class="cx-hero-label">OPEN-SOURCE PROJECT · MALWARE ANALYSIS TOOL</div>
+        <h1 class="cx-hero-title">cfgx <em>— Config Extraction Framework</em></h1>
+        <p class="cx-hero-sub">A Python framework that separates generic malware-analysis infrastructure from
+          malware-family-specific extraction logic. Plug in a YARA rule, point it at samples, write an analyst plugin —
+          get structured JSON config reports.</p>
+        <div class="cx-badges">
+          <span class="cx-badge cb-green">ACTIVE</span>
+          <span class="cx-badge cb-blue">TOOL</span>
+          <span class="cx-badge cb-amber">Python 3.12+</span>
+          <span class="cx-badge cb-purple">YARA</span>
+          <span class="cx-badge cb-muted">MNCL v1.0</span>
+          <span class="cx-badge cb-muted">v0.1.0</span>
+        </div>
+        <div class="cx-hero-actions">
+          <a href="https://github.com/SalahEldinFikri/cfgx-tool" target="_blank" class="cx-btn cx-btn-primary">⌥ View on
+            GitHub</a>
+          <a href="#install" class="cx-btn cx-btn-ghost">⬇ Quick Install</a>
+          <a href="#plugin" class="cx-btn cx-btn-ghost">↗ Write a Plugin</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STATS BAR ── -->
+  <div class="cx-wrap" style="padding-top:0">
+    <div class="cx-stats">
+      <div class="cx-stat"><span class="cx-stat-n">7</span><span class="cx-stat-l">CORE MODULES</span></div>
+      <div class="cx-stat"><span class="cx-stat-n">10</span><span class="cx-stat-l">PIPELINE STEPS</span></div>
+      <div class="cx-stat"><span class="cx-stat-n">PE+ELF</span><span class="cx-stat-l">FORMAT SUPPORT</span></div>
+      <div class="cx-stat"><span class="cx-stat-n">∞</span><span class="cx-stat-l">MALWARE FAMILIES</span></div>
+      <div class="cx-stat"><span class="cx-stat-n">0.1.0</span><span class="cx-stat-l">CURRENT MVP</span></div>
+    </div>
+
+    <!-- ── BODY ── -->
+    <div class="cx-body">
+
+      <!-- MAIN COLUMN -->
+      <div>
+
+        <!-- OVERVIEW -->
+        <div class="cx-section" id="overview">
+          <div class="cx-section-title">OVERVIEW</div>
+          <div class="cx-prose">
+            <p>Extracting malware configurations is tedious — every family requires the same boilerplate: load the
+              sample, run YARA, find the interesting bytes, resolve PE offsets, read the config, parse it, report it.
+              <strong>cfgx handles all of that.</strong> You only write the part that's specific to the malware family
+              you're analysing.
+            </p>
+            <p>The framework's core design principle: <strong>cfgx provides evidence and controlled access to the
+                sample. The analyst plugin decides what that evidence means.</strong> The framework never knows whether
+              <code>$Config</code> means a configuration or something else — that interpretation lives entirely in your
+              plugin/extractor.
+            </p>
+            <p>This means you can reuse the same cfgx installation for RedLine, Lumma, VoidStealer, StealC, or any
+              future family — just swap the YARA rule and the analyst plugin.</p>
+          </div>
+        </div>
+
+        <!-- PIPELINE -->
+        <div class="cx-section" id="pipeline">
+          <div class="cx-section-title">EXTRACTION PIPELINE</div>
+          <div class="cx-prose" style="margin-bottom:.75rem">Every sample goes through the same 10-step pipeline. Steps
+            1–7 are handled by cfgx. Step 8 is yours.</div>
+          <div class="cx-pipeline">
+            <div class="cx-pipe-steps">
+              <div class="cx-pipe-step">
+                <span class="cx-pipe-num">01</span>
+                <span class="cx-pipe-fn">CLI Validate</span>
+                <span class="cx-pipe-note">Verify YARA rule path, sample path, and plugin path all exist and are the
+                  correct types</span>
+              </div>
+              <div class="cx-pipe-arrow">↓</div>
+              <div class="cx-pipe-step">
+                <span class="cx-pipe-num">02</span>
+                <span class="cx-pipe-fn">Load Plugin</span>
+                <span class="cx-pipe-note">Dynamically import the analyst plugin, verify it exposes a callable
+                  <code>extract(matches, reader)</code></span>
+              </div>
+              <div class="cx-pipe-arrow">↓</div>
+              <div class="cx-pipe-step">
+                <span class="cx-pipe-num">03</span>
+                <span class="cx-pipe-fn">Load PE / ELF</span>
+                <span class="cx-pipe-note">Parse the sample as a PE or ELF binary — identifies sections, image base,
+                  entry point</span>
+              </div>
+              <div class="cx-pipe-arrow">↓</div>
+              <div class="cx-pipe-step">
+                <span class="cx-pipe-num">04</span>
+                <span class="cx-pipe-fn">YARA Scan</span>
+                <span class="cx-pipe-note">Compile the rule, scan the sample, emit one <code>Match</code> object per
+                  string occurrence (not per rule)</span>
+              </div>
+              <div class="cx-pipe-arrow">↓</div>
+              <div class="cx-pipe-step">
+                <span class="cx-pipe-num">05</span>
+                <span class="cx-pipe-fn">Normalize Matches</span>
+                <span class="cx-pipe-note">Convert raw YARA results into generic
+                  <code>{ rule, identifier, offset }</code> structures</span>
+              </div>
+              <div class="cx-pipe-arrow">↓</div>
+              <div class="cx-pipe-step">
+                <span class="cx-pipe-num">06</span>
+                <span class="cx-pipe-fn">Resolve PE Metadata</span>
+                <span class="cx-pipe-note">Enrich each match: file offset → PE section → RVA → VA. Adds
+                  <code>section</code>, <code>rva</code>, <code>va</code> fields</span>
+              </div>
+              <div class="cx-pipe-arrow">↓</div>
+              <div class="cx-pipe-step">
+                <span class="cx-pipe-num">07</span>
+                <span class="cx-pipe-fn">Create SampleReader</span>
+                <span class="cx-pipe-note">Wrap the sample file handle in a validated reader —
+                  <code>reader.read(offset, size)</code> is the only access path</span>
+              </div>
+              <div class="cx-pipe-arrow">↓</div>
+              <div class="cx-pipe-step"
+                style="border:1px solid rgba(245,158,11,.3); padding:.6rem .75rem; margin: 2px 0; background:rgba(245,158,11,.03)">
+                <span class="cx-pipe-num" style="color:var(--amber)">08</span>
+                <span class="cx-pipe-fn" style="color:var(--amber)">plugin.extract()</span>
+                <span class="cx-pipe-note" style="color:var(--text)"><strong>Your code runs here.</strong> Select
+                  matches, read bytes, decrypt/decode, return structured config</span>
+              </div>
+              <div class="cx-pipe-arrow">↓</div>
+              <div class="cx-pipe-step">
+                <span class="cx-pipe-num">09</span>
+                <span class="cx-pipe-fn">Validate Result</span>
+                <span class="cx-pipe-note">Verify the plugin returned <code>{ status: str, config: any }</code> —
+                  rejects malformed results with clear errors</span>
+              </div>
+              <div class="cx-pipe-arrow">↓</div>
+              <div class="cx-pipe-step">
+                <span class="cx-pipe-num">10</span>
+                <span class="cx-pipe-fn">Output</span>
+                <span class="cx-pipe-note">Print to terminal + write <code>rule-name.json</code> to output directory
+                  (combined for batch runs)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FEATURES -->
+        <div class="cx-section" id="features">
+          <div class="cx-section-title">WHAT CFGX HANDLES FOR YOU</div>
+          <div class="cx-features">
+            <div class="cx-feature">
+              <div class="cx-feat-icon">🎯</div>
+              <div class="cx-feat-title">YARA SCANNING</div>
+              <div class="cx-feat-desc">Compile rules, scan samples, flatten string instances into individual match
+                objects — one per occurrence, with file offset.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-icon">🏗️</div>
+              <div class="cx-feat-title">PE + ELF PARSING</div>
+              <div class="cx-feat-desc">Loads PE and ELF binaries. Resolves file offsets to sections, RVAs, and virtual
+                addresses automatically.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-icon">📖</div>
+              <div class="cx-feat-title">CONTROLLED BYTE ACCESS</div>
+              <div class="cx-feat-desc">SampleReader wraps all file I/O with bounds checking. Your plugin calls
+                <code>reader.read(offset, n)</code> — no raw file handles.
+              </div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-icon">🔌</div>
+              <div class="cx-feat-title">EXTERNAL PLUGINS</div>
+              <div class="cx-feat-desc">Drop a Python file anywhere, pass its path to cfgx. No framework modification
+                needed. One plugin per malware family.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-icon">📂</div>
+              <div class="cx-feat-title">BATCH ANALYSIS</div>
+              <div class="cx-feat-desc">Point cfgx at a directory — it processes every file, combines results into one
+                <code>rule-name.json</code> report per rule.
+              </div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-icon">✅</div>
+              <div class="cx-feat-title">RESULT VALIDATION</div>
+              <div class="cx-feat-desc">Verifies plugin output format, validates status type, reports clear errors for
+                missing fields or uncallable extract functions.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- INSTALL -->
+        <div class="cx-section" id="install">
+          <div class="cx-section-title">INSTALLATION</div>
+          <div class="cx-prose">
+            <p>Clone the repo and install in editable mode. Python 3.12+ required.</p>
+          </div>
+          <div class="cx-install">
+            <div class="cx-install-label">// INSTALL</div>
+            <div class="cx-install-cmd">
+              <span class="prompt">$</span> git clone https://github.com/SalahEldinFikri/cfgx-tool.git<br>
+              <span class="prompt">$</span> cd cfgx-tool<br>
+              <span class="prompt">$</span> py -3.12 -m pip install -e .<br>
+              <span class="prompt">$</span> cfgx --help<br>
+            </div>
+          </div>
+
+          <div class="cx-section-title" style="margin-top:1.5rem">COMMAND SYNTAX</div>
+          <div class="cx-code"><span class="cx-code-label">SHELL</span><span class="ck">cfgx</span> <span
+              class="cs">&lt;rule.yar&gt;</span> <span class="cs">&lt;sample_or_dir&gt;</span> <span
+              class="cs">&lt;plugin.py&gt;</span> [--output <span class="cs">&lt;dir&gt;</span>]
+
+            <span class="cc"># Single sample</span>
+            cfgx rules/voidstealer.yar samples/sample.exe plugins/voidstealer.py
+
+            <span class="cc"># Batch — entire directory</span>
+            cfgx rules/voidstealer.yar samples/ plugins/voidstealer.py --output results/
+
+            <span class="cc"># Custom output path</span>
+            cfgx rules/stealc.yar samples/ plugins/stealc.py --output D:\analysis\results
+          </div>
+
+          <div class="cx-section-title" style="margin-top:1.5rem">EXAMPLE OUTPUT</div>
+          <div class="cx-code"><span class="cx-code-label">TERMINAL</span>Extraction status: <span
+              class="cf">success</span>
+
+            Extraction result:
+            [
+            {
+            <span class="cs">"identifier"</span>: <span class="cs">"$steamid"</span>,
+            <span class="cs">"offset"</span>: <span class="cn">450664</span>,
+            <span class="cs">"value"</span>: <span class="cs">"7656119987836894"</span>,
+            <span class="cs">"data_length"</span>: <span class="cn">16</span>
+            }
+            ]
+          </div>
+        </div>
+
+        <!-- PLUGIN -->
+        <div class="cx-section" id="plugin">
+          <div class="cx-section-title">WRITING AN ANALYST PLUGIN</div>
+          <div class="cx-prose">
+            <p>A plugin is a plain Python file that exports a single function: <code>extract(matches, reader)</code>.
+              That's the entire interface. cfgx calls it with the enriched YARA matches and the SampleReader. You decide
+              what to do with them.</p>
+          </div>
+
+          <div class="cx-code"><span class="cx-code-label">PLUGIN EXAMPLE</span><span class="ck">def</span> <span
+              class="cf">extract</span>(matches, reader):
+            results = []
+
+            <span class="ck">for</span> match <span class="ck">in</span> matches:
+            <span class="cc"># Only interested in one specific YARA string</span>
+            <span class="ck">if</span> match[<span class="cs">"identifier"</span>] != <span
+              class="cs">"$steamid"</span>:
+            <span class="ck">continue</span>
+
+            <span class="cc"># Read 16 bytes from that file offset</span>
+            data = reader.read(match[<span class="cs">"offset"</span>], <span class="cn">16</span>)
+
+            <span class="cc"># Interpret as ASCII — only the plugin knows what this means</span>
+            results.append({
+            <span class="cs">"identifier"</span>: match[<span class="cs">"identifier"</span>],
+            <span class="cs">"offset"</span>: match[<span class="cs">"offset"</span>],
+            <span class="cs">"section"</span>: match.get(<span class="cs">"section"</span>), <span class="cc"># .rdata,
+              .data, etc.</span>
+            <span class="cs">"rva"</span>: match.get(<span class="cs">"rva"</span>), <span class="cc"># resolved by
+              cfgx</span>
+            <span class="cs">"value"</span>: data.decode(<span class="cs">"ascii"</span>),
+            })
+
+            <span class="cc"># Return the contract: status (str) + config (anything)</span>
+            <span class="ck">return</span> {
+            <span class="cs">"status"</span>: <span class="cs">"success"</span>,
+            <span class="cs">"config"</span>: results,
+            }
+          </div>
+
+          <div class="cx-prose" style="margin-top:.85rem">
+            <p>The <code>matches</code> list is flat — if <code>$steamid</code> appears 3 times, you get 3 match
+              objects. Each one includes: <code>rule</code>, <code>identifier</code>, <code>offset</code>, and (when PE
+              info is available) <code>section</code>, <code>rva</code>, <code>va</code>.</p>
+            <p>The <code>reader.read(offset, size)</code> call validates bounds and returns raw <code>bytes</code>. From
+              there, decryption, base64 decoding, struct unpacking — all yours.</p>
+          </div>
+        </div>
+
+        <!-- CONTRACT -->
+        <div class="cx-section" id="contract">
+          <div class="cx-section-title">PLUGIN RESULT CONTRACT</div>
+          <div class="cx-prose" style="margin-bottom:.75rem">Every plugin must return a dict with exactly these two
+            keys. cfgx validates this before writing output.</div>
+          <table class="cx-table">
+            <thead>
+              <tr>
+                <th>FIELD</th>
+                <th>TYPE</th>
+                <th>DESCRIPTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="cx-td-key">status</td>
+                <td class="cx-td-type">str</td>
+                <td class="cx-td-note">Any string — cfgx doesn't restrict the value. Use <code>"success"</code>,
+                  <code>"not_found"</code>, <code>"decryption_failed"</code>, <code>"partial"</code>, or anything
+                  meaningful to your analysis workflow.
+                </td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">config</td>
+                <td class="cx-td-type">any</td>
+                <td class="cx-td-note">Intentionally unrestricted. Can be a list, dict, string, or nested structure. You
+                  define the schema — cfgx serialises it to JSON as-is.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="cx-section-title" style="margin-top:1.5rem">MATCH OBJECT SCHEMA</div>
+          <table class="cx-table">
+            <thead>
+              <tr>
+                <th>FIELD</th>
+                <th>TYPE</th>
+                <th>DESCRIPTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="cx-td-key">rule</td>
+                <td class="cx-td-type">str</td>
+                <td class="cx-td-note">Name of the matching YARA rule (e.g. <code>"VoidStealer"</code>)</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">identifier</td>
+                <td class="cx-td-type">str</td>
+                <td class="cx-td-note">YARA string identifier (e.g. <code>"$steamid"</code>, <code>"$c2_url"</code>)
+                </td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">offset</td>
+                <td class="cx-td-type">int</td>
+                <td class="cx-td-note">Raw file offset of this string occurrence — pass directly to
+                  <code>reader.read()</code>
+                </td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">section</td>
+                <td class="cx-td-type">str?</td>
+                <td class="cx-td-note">PE section name (e.g. <code>".rdata"</code>, <code>".data"</code>) — None for
+                  non-PE targets</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">rva</td>
+                <td class="cx-td-type">int?</td>
+                <td class="cx-td-note">Relative Virtual Address — offset from image base. Useful for cross-referencing
+                  IDA or x64dbg</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">va</td>
+                <td class="cx-td-type">int?</td>
+                <td class="cx-td-note">Full Virtual Address (<code>ImageBase + RVA</code>) — matches addresses in a live
+                  debugger session</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ARCHITECTURE -->
+        <div class="cx-section" id="architecture">
+          <div class="cx-section-title">DESIGN BOUNDARY</div>
+          <div class="cx-prose" style="margin-bottom:.75rem">This split is the core of cfgx — the framework never leaks
+            malware-family knowledge into its own code.</div>
+          <div class="cx-arch">
+            <div class="cx-arch-box">
+              <div class="cx-arch-label">// CFGX OWNS</div>
+              <div class="cx-arch-items">
+                <span class="cx-arch-item owned">CLI &amp; arg validation</span>
+                <span class="cx-arch-item owned">YARA compilation</span>
+                <span class="cx-arch-item owned">YARA scanning</span>
+                <span class="cx-arch-item owned">Match normalization</span>
+                <span class="cx-arch-item owned">PE parsing</span>
+                <span class="cx-arch-item owned">ELF parsing</span>
+                <span class="cx-arch-item owned">PE metadata enrichment</span>
+                <span class="cx-arch-item owned">Sample byte access</span>
+                <span class="cx-arch-item owned">Plugin loading</span>
+                <span class="cx-arch-item owned">Result validation</span>
+                <span class="cx-arch-item owned">JSON output</span>
+                <span class="cx-arch-item owned">Batch processing</span>
+              </div>
+            </div>
+            <div class="cx-arch-box">
+              <div class="cx-arch-label">// ANALYST PLUGIN OWNS</div>
+              <div class="cx-arch-items">
+                <span class="cx-arch-item plugin">Match selection</span>
+                <span class="cx-arch-item plugin">Byte interpretation</span>
+                <span class="cx-arch-item plugin">Decryption logic</span>
+                <span class="cx-arch-item plugin">Decoding logic</span>
+                <span class="cx-arch-item plugin">Config identification</span>
+                <span class="cx-arch-item plugin">Config schema</span>
+                <span class="cx-arch-item plugin">Status meaning</span>
+                <span class="cx-arch-item plugin">Family-specific logic</span>
+              </div>
+            </div>
+            <div class="cx-arch-box">
+              <div class="cx-arch-label">// EXAMPLE PLUGINS</div>
+              <div class="cx-arch-items">
+                <span class="cx-arch-item" style="color:var(--muted)">voidstealer.py</span>
+                <span class="cx-arch-item" style="color:var(--muted)">stealc.py</span>
+                <span class="cx-arch-item" style="color:var(--muted)">redline.py</span>
+                <span class="cx-arch-item" style="color:var(--muted)">lumma.py</span>
+                <span class="cx-arch-item" style="color:var(--muted)">qardar.py</span>
+                <span class="cx-arch-item" style="color:var(--muted)">kalim.py</span>
+                <span class="cx-arch-item" style="color:var(--muted)">custom_family.py</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STRUCTURE -->
+        <div class="cx-section" id="structure">
+          <div class="cx-section-title">PROJECT STRUCTURE</div>
+          <div class="cx-tree">
+            <span class="dir">cfgx-tool/</span><br>
+
+            ├── <span class="dir">cfgx/</span><br>
+
+            │ ├── <span class="file">cli.py</span> <span class="note">← entry point, arg parsing,
+              orchestration</span><br>
+
+            │ ├── <span class="file">main.py</span> <span class="note">← process_sample() pipeline</span><br>
+
+            │ ├── <span class="file">plugin.py</span> <span class="note">← dynamic plugin loader + result
+              validator</span><br>
+
+            │ ├── <span class="main">reader.py</span> <span class="note">← SampleReader — controlled byte
+              access</span><br>
+
+            │ └── <span class="file">models.py</span> <span class="note">← TypedDict: Match, PEMatch,
+              ExtractionResult</span><br>
+
+
+            ├── <span class="dir">formats/</span><br>
+
+            │ ├── <span class="main">pe.py</span> <span class="note">← load_pe, offset_to_rva, rva_to_va,
+              resolve_offset</span><br>
+
+            │ ├── <span class="file">elf.py</span> <span class="note">← ELF section/VA resolution</span><br>
+
+            │ └── <span class="file">detect.py</span> <span class="note">← format detection (PE vs ELF)</span><br>
+
+
+            ├── <span class="dir">yara_handler/</span><br>
+
+            │ └── <span class="main">runner.py</span> <span class="note">← compile rule → scan → normalize
+              matches</span><br>
+
+            │
+            ├── <span class="file">decryptor.py</span> <span class="note">← example analyst plugin
+              (VoidStealer)</span><br>
+
+
+
+            └── <span class="file">pyproject.toml</span> <span class="note">← package config, entry point,
+              deps</span><br>
+
+          </div>
+        </div>
+
+
+        <!-- DESIGN PHILOSOPHY -->
+        <div class="cx-section" id="philosophy">
+          <div class="cx-section-title">DESIGN PHILOSOPHY</div>
+          <div class="cx-prose">
+            <p>The central design principle of cfgx is simple:
+              <strong>the framework provides evidence and controlled access to the sample; the analyst plugin decides
+                what that evidence means.</strong>
+            </p>
+            <p>The core is deliberately malware-family agnostic. cfgx can know that a YARA rule named
+              <code>VoidStealer</code> matched <code>$steamid</code> at offset <code>450664</code>, but it does not
+              decide that the value is a Steam ID. That interpretation belongs to the analyst plugin.
+            </p>
+            <p>This separation lets one cfgx installation support different families by changing the YARA rule and
+              plugin instead of modifying the framework itself.</p>
+          </div>
+        </div>
+
+        <!-- BATCH ANALYSIS -->
+        <div class="cx-section" id="batch">
+          <div class="cx-section-title">FOLDER / BATCH ANALYSIS</div>
+          <div class="cx-prose">
+            <p>When the sample argument is a directory, cfgx processes each file independently through the extraction
+              pipeline and then combines the results into one JSON report named after the YARA rule.</p>
+          </div>
+          <div class="cx-code">
+            <span class="cx-code-label">COMMAND</span>cfgx D:\rules\voidstealer.yar D:\samples\test_samples
+            D:\plugins\voidstealer.py --output results
+
+            <span class="cc"># Example input directory</span>
+            test_samples/
+            ├── sample
+            └── sample2
+
+            <span class="cc"># Final output</span>
+            results/
+            └── voidstealer.json
+          </div>
+          <div class="cx-prose">
+            <p>For example, <code>sample → YARA → PE → plugin → result</code> and
+              <code>sample2 → YARA → PE → plugin → result</code> are combined into the same rule-level report.
+              This allows multiple samples belonging to the same malware family/rule to be represented together.
+            </p>
+          </div>
+        </div>
+
+        <!-- HOW IT WORKS -->
+        <div class="cx-section" id="how-it-works">
+          <div class="cx-section-title">HOW CFGX WORKS</div>
+          <div class="cx-prose">
+            <p><strong>1. CLI validation.</strong> cfgx verifies that the YARA rule exists and is a file, the sample
+              path exists and is a file or directory, and the analyst plugin exists and is a file.</p>
+            <p><strong>2. Analyst plugin loading.</strong> The external Python plugin is loaded dynamically and is
+              never hard-coded into the framework.</p>
+            <p><strong>3. PE loading.</strong> PE samples are loaded with <code>pefile</code> so YARA offsets can be
+              enriched with section and address information.</p>
+            <p><strong>4. ELF support.</strong> The project includes ELF loading, section identification, virtual
+              address resolution, and file-offset-to-virtual-address resolution.</p>
+            <p><strong>5. YARA scanning.</strong> The rule is compiled and executed. Every individual string instance
+              becomes its own generic match.</p>
+            <p><strong>6. PE metadata enrichment.</strong> A file offset can be resolved into a PE section, RVA, and
+              virtual address.</p>
+            <p><strong>7. SampleReader.</strong> The plugin receives controlled access through
+              <code>reader.read(offset, size)</code> rather than the sample path or raw file handle.
+            </p>
+            <p><strong>8. Analyst extraction.</strong> cfgx calls <code>extract(matches, reader)</code>. The plugin
+              selects matches, reads bytes, decrypts/decodes data when needed, and builds its configuration.</p>
+            <p><strong>9. Result validation.</strong> cfgx requires a dictionary containing <code>status</code> and
+              <code>config</code>, with <code>status</code> being a string.
+            </p>
+            <p><strong>10. Output.</strong> The result is displayed in the terminal and saved as JSON.</p>
+          </div>
+        </div>
+
+        <!-- YARA -->
+        <div class="cx-section" id="yara">
+          <div class="cx-section-title">YARA PROCESSING</div>
+          <div class="cx-prose">
+            <p>YARA processing lives in <code>yara_handler/runner.py</code>. The runner compiles the rule, scans the
+              sample, iterates through matches and their string instances, and converts them into a flat list of
+              normalized match objects.</p>
+          </div>
+          <div class="cx-code">
+            <span class="cx-code-label">MATCH</span>{
+            "rule": "VoidStealer",
+            "identifier": "$steamid",
+            "offset": 450664
+            }
+
+            <span class="cc"># Repeated occurrences remain separate</span>
+            $steamid → offset 450664
+            $steamid → offset 450688
+            $steamid → offset 450712
+          </div>
+          <div class="cx-prose">
+            <p>The framework intentionally treats YARA matches as <strong>evidence/anchors</strong>, not automatically
+              as configuration data. If one YARA string occurs three times, cfgx produces three independent matches.</p>
+          </div>
+        </div>
+
+        <!-- PE / ELF -->
+        <div class="cx-section" id="pe">
+          <div class="cx-section-title">PE &amp; ELF PROCESSING</div>
+          <div class="cx-prose">
+            <p>PE functionality is implemented in <code>formats/pe.py</code>. The module loads PE files, locates
+              sections, converts file offsets to RVAs, converts RVAs to virtual addresses, and enriches YARA matches
+              with that metadata.</p>
+          </div>
+          <div class="cx-code">
+            <span class="cx-code-label">PE RESOLUTION</span>file offset
+            ↓
+            PE section
+            ↓
+            RVA
+            ↓
+            VA = ImageBase + RVA
+
+            <span class="cc"># Example resolved metadata</span>{
+            "section": ".rdata",
+            "rva": 456992,
+            "va": 5369166112
+            }
+          </div>
+          <div class="cx-prose">
+            <p>The repository also documents ELF support for loading, section identification, virtual-address
+              resolution, and file-offset-to-virtual-address resolution.</p>
+          </div>
+        </div>
+
+        <!-- READER -->
+        <div class="cx-section" id="reader">
+          <div class="cx-section-title">SAMPLEREADER</div>
+          <div class="cx-prose">
+            <p><code>cfgx/reader.py</code> provides the <code>SampleReader</code> abstraction. Its primary API is:</p>
+          </div>
+          <div class="cx-code">data = reader.read(450664, 16)
+
+            <span class="cc"># raw bytes can then be interpreted by the analyst plugin</span>
+            value = data.decode("ascii")
+          </div>
+          <div class="cx-prose">
+            <p>The reader validates offsets and sizes before accessing the sample. The plugin does not receive the
+              sample path or file handle, keeping sample access behind the framework's controlled reader interface.</p>
+            <p>The repository testing covers normal reads, different read sizes, multiple independent reads, negative
+              offsets, negative sizes, and reads beyond EOF.</p>
+          </div>
+        </div>
+
+        <!-- ERROR HANDLING -->
+        <div class="cx-section" id="errors">
+          <div class="cx-section-title">ERROR HANDLING</div>
+          <table class="cx-table">
+            <thead>
+              <tr>
+                <th>CASE</th>
+                <th>CFGX RESPONSE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="cx-td-key">Missing <code>extract()</code></td>
+                <td class="cx-td-note"><code>[ERROR] Analyst plugin must define extract(matches, reader)</code></td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">Non-callable extract</td>
+                <td class="cx-td-note"><code>[ERROR] Analyst plugin 'extract' must be callable</code></td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">Plugin exception</td>
+                <td class="cx-td-note">The CLI reports the analyst extraction error.</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">Missing config</td>
+                <td class="cx-td-note"><code>[ERROR] Result must contain 'config'</code></td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">Invalid status</td>
+                <td class="cx-td-note"><code>[ERROR] Result 'status' must be a string</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- FILE GUIDE -->
+        <div class="cx-section" id="file-guide">
+          <div class="cx-section-title">FILE-BY-FILE GUIDE</div>
+          <table class="cx-table">
+            <thead>
+              <tr>
+                <th>FILE</th>
+                <th>ROLE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="cx-td-key">cfgx/__init__.py</td>
+                <td class="cx-td-note">Initializes the main cfgx Python package.</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">cfgx/cli.py</td>
+                <td class="cx-td-note">CLI argument parsing, path validation, single/batch processing, output directory
+                  creation, terminal display, and JSON saving.</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">cfgx/main.py</td>
+                <td class="cx-td-note">Main orchestration layer and <code>process_sample()</code> pipeline.</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">cfgx/plugin.py</td>
+                <td class="cx-td-note">Dynamic plugin loading and validation of <code>status</code> +
+                  <code>config</code>.
+                </td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">cfgx/reader.py</td>
+                <td class="cx-td-note">Controlled sample-byte access through <code>SampleReader</code>.</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">cfgx/models.py</td>
+                <td class="cx-td-note">Typed definitions for <code>Match</code>, <code>PEMetadata</code>,
+                  <code>PEMatch</code>, and <code>ExtractionResult</code>.
+                </td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">formats/pe.py</td>
+                <td class="cx-td-note">PE loading, offset/RVA/VA conversion, section lookup, and match enrichment.</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">formats/elf.py</td>
+                <td class="cx-td-note">ELF section and virtual-address resolution functionality documented by the
+                  project.</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">formats/detect.py</td>
+                <td class="cx-td-note">Format detection (PE vs ELF).</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">yara_handler/runner.py</td>
+                <td class="cx-td-note">YARA compilation, scanning, string-instance iteration, and normalized matches.
+                </td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">test_decryptor.py</td>
+                <td class="cx-td-note">Analyst/test plugin used to verify match selection, reader access, variable-size
+                  and multiple reads, decoding, result generation, and status handling.</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">bad_decryptor.py</td>
+                <td class="cx-td-note">Negative-testing plugin for missing/non-callable extract functions, exceptions,
+                  and invalid results.</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">decryptor.py</td>
+                <td class="cx-td-note">Development/experimental extraction-related file from earlier project stages; the
+                  current architecture uses <code>extract(matches, reader)</code>.</td>
+              </tr>
+              <tr>
+                <td class="cx-td-key">pyproject.toml</td>
+                <td class="cx-td-note">Package/build configuration, dependencies, Python requirement, package discovery,
+                  and <code>cfgx = "cfgx.cli:main"</code> entry point.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TESTING -->
+        <div class="cx-section" id="testing">
+          <div class="cx-section-title">TESTING</div>
+          <div class="cx-features">
+            <div class="cx-feature">
+              <div class="cx-feat-icon">🎯</div>
+              <div class="cx-feat-title">YARA TESTING</div>
+              <div class="cx-feat-desc">A VoidStealer rule successfully produced 10 individual match instances,
+                including
+                $m2, $m3, $m4, $s1, $s9, $s16, and $steamid, with repeated occurrences represented separately.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-icon">🏗️</div>
+              <div class="cx-feat-title">PE TESTING</div>
+              <div class="cx-feat-desc">File offsets were successfully resolved into section, RVA, and VA metadata; one
+                documented example maps offset 452384 to .rdata.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-icon">📖</div>
+              <div class="cx-feat-title">READER TESTING</div>
+              <div class="cx-feat-desc">Normal reads, different sizes, multiple reads, negative offsets, negative sizes,
+                and beyond-EOF reads were tested.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-icon">🔌</div>
+              <div class="cx-feat-title">PLUGIN TESTING</div>
+              <div class="cx-feat-desc">Valid plugins, missing/non-callable extract, exceptions, missing config, invalid
+                status, custom status strings, and empty results were tested.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-icon">📂</div>
+              <div class="cx-feat-title">BATCH TESTING</div>
+              <div class="cx-feat-desc">Multiple samples were processed from a directory and successfully combined into
+                rule-level JSON output.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MVP -->
+        <div class="cx-section" id="mvp">
+          <div class="cx-section-title">CURRENT MVP CAPABILITIES</div>
+          <div class="cx-features">
+            <div class="cx-feature">
+              <div class="cx-feat-title">CLI</div>
+              <div class="cx-feat-desc">Command-line interface, argument parsing, path validation, single-file analysis,
+                directory analysis, and configurable output directory.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">YARA</div>
+              <div class="cx-feat-desc">Rule compilation, sample scanning, individual string-instance extraction, and
+                normalized matches.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">PE</div>
+              <div class="cx-feat-desc">PE loading, section identification, RVA resolution, and virtual-address
+                resolution.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">READER</div>
+              <div class="cx-feat-desc">Controlled byte reads, arbitrary sizes, multiple reads, offset/size validation,
+                and safe EOF behavior.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">PLUGINS</div>
+              <div class="cx-feat-desc">External loading plus analyst-controlled match selection, byte interpretation,
+                extraction logic, and a generic result contract.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">OUTPUT</div>
+              <div class="cx-feat-desc">Extraction status, terminal configuration output, JSON output, and combined
+                batch results.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CORE PHILOSOPHY -->
+        <div class="cx-section" id="core-philosophy">
+          <div class="cx-section-title">CORE PHILOSOPHY</div>
+
+          <div class="cx-code">
+            <pre><span class="cc">                                  cfgx</span>
+                                   │
+                            ┌──────┴──────┐
+                            │             │
+                            Evidence    Access
+                            │             │
+                            YARA        Reader
+                            │             │
+                            └──────┬──────┘
+                                   │
+                                   ▼
+                            Analyst Plugin
+                                   │
+                                   ▼
+                            Interpretation
+                                   │
+                                   ▼
+                            Configuration</pre>
+          </div>
+
+          <div class="cx-prose">
+            <p>
+              This architecture lets the same cfgx installation support different malware families without changing
+              the framework. Analysts can provide different plugins such as <code>voidstealer.py</code>,
+              <code>redline.py</code>, <code>lumma.py</code>, <code>stealc.py</code>, or
+              <code>custom_family.py</code>.
+            </p>
+          </div>
+        </div>
+
+        <!-- COMPLETE EXAMPLE -->
+        <div class="cx-section" id="example">
+          <div class="cx-section-title">COMPLETE EXAMPLE</div>
+          <div class="cx-code"><span class="cx-code-label">POWERSHELL / CMD</span>cfgx D:\rules\voidstealer.yar
+            D:\samples\voidstealer D:\plugins\voidstealer.py --output D:\results
+
+            <span class="cc"># cfgx then:</span>
+            1. Validates the rule
+            2. Validates the sample directory
+            3. Loads the analyst plugin
+            4. Processes every sample
+            5. Runs YARA
+            6. Normalizes matches
+            7. Resolves PE metadata
+            8. Creates a SampleReader
+            9. Calls extract(matches, reader)
+            10. Validates the result
+            11. Displays the extraction
+            12. Combines results from all samples
+            13. Writes the final JSON report
+
+            <span class="cc"># result</span>
+            D:\results\
+            └── voidstealer.json
+          </div>
+        </div>
+
+        <!-- LICENSE -->
+        <div class="cx-section" id="license">
+          <div class="cx-section-title">LICENSE</div>
+          <div class="cx-prose">
+            <p>cfgx is released under the <strong>MaTriX Non-Commercial License (MNCL) v1.0</strong>.
+              Copyright (c) 2026 SalahEldin Kamil. All Rights Reserved.</p>
+            <p>The license permits use, copying, study, modification, and redistribution for non-commercial purposes,
+              subject to its terms. Commercial use requires a separate written commercial license. Attribution and the
+              original copyright notice must be retained in copies and derivative works.</p>
+            <p>Commercial use requires a separate written commercial license from the copyright holder. See the
+              repository's <a href="https://github.com/SalahEldinFikri/cfgx-tool/blob/main/LICENSE" target="_blank"
+                rel="noopener">LICENSE</a> file for the complete terms.</p>
+          </div>
+        </div>
+
+        <!-- FUTURE -->
+        <div class="cx-section" id="roadmap">
+          <div class="cx-section-title">ROADMAP</div>
+          <div class="cx-prose" style="margin-bottom:.75rem">
+            The current MVP is complete enough to serve as the foundation for additional features. These are
+            enhancements rather than requirements for the current MVP.
+          </div>
+          <div class="cx-features">
+            <div class="cx-feature">
+              <div class="cx-feat-title">RICHER CLI FORMATTING</div>
+              <div class="cx-feat-desc">Improve terminal presentation and usability.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">STRUCTURED LOGGING</div>
+              <div class="cx-feat-desc">Add structured logs for extraction workflows.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">VERBOSE / DEBUG MODE</div>
+              <div class="cx-feat-desc">Expose detailed per-step execution information.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">MULTIPLE YARA RULES</div>
+              <div class="cx-feat-desc">Support multiple rules in a single run.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">PLUGIN METADATA</div>
+              <div class="cx-feat-desc">Add metadata associated with analyst plugins.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">PLUGIN DISCOVERY</div>
+              <div class="cx-feat-desc">Discover plugins automatically.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">PLUGIN VERSIONING</div>
+              <div class="cx-feat-desc">Track plugin versions independently.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">EXTRACTION TIMESTAMPS</div>
+              <div class="cx-feat-desc">Standardize extraction timestamps and improve JSON schema/versioning.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">MORE EXECUTABLE FORMATS</div>
+              <div class="cx-feat-desc">Extend format support beyond the current PE/ELF functionality.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">BATCH CONTROLS</div>
+              <div class="cx-feat-desc">Improve batch-processing controls and configuration deduplication.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">EXTRACTION STATISTICS</div>
+              <div class="cx-feat-desc">Expose useful statistics from extraction runs.</div>
+            </div>
+            <div class="cx-feature">
+              <div class="cx-feat-title">TEST &amp; RELEASE AUTOMATION</div>
+              <div class="cx-feat-desc">Add unit/integration suites plus packaging and release automation.</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /main col -->
+
+      <!-- SIDEBAR -->
+      <aside class="cx-sidebar">
+
+        <!-- Project info -->
+        <div class="cx-info-box">
+          <div class="cx-info-head">// PROJECT INFO</div>
+          <div class="cx-info-body">
+            <div class="cx-info-row"><span class="cx-info-key">Author</span><span class="cx-info-val">SalahEldin
+                Kamil</span></div>
+            <div class="cx-info-row"><span class="cx-info-key">Handle</span><span class="cx-info-val">MR_MATRIX</span>
+            </div>
+            <div class="cx-info-row"><span class="cx-info-key">Version</span><span class="cx-info-val">0.1.0
+                (MVP)</span></div>
+            <div class="cx-info-row"><span class="cx-info-key">Language</span><span class="cx-info-val">Python
+                3.12+</span></div>
+            <div class="cx-info-row"><span class="cx-info-key">License</span><span class="cx-info-val">MaTriX MNCL
+                v1.0<br><small style="color:var(--muted);font-size:9px">Non-commercial use</small></span></div>
+            <div class="cx-info-row"><span class="cx-info-key">Status</span><span class="cx-info-val"
+                style="color:var(--green)">Active</span></div>
+            <div class="cx-info-row"><span class="cx-info-key">Repository</span><span class="cx-info-val"><a
+                  href="https://github.com/SalahEldinFikri/cfgx-tool" target="_blank">GitHub →</a></span></div>
+          </div>
+        </div>
+
+        <!-- Repository facts -->
+        <div class="cx-info-box">
+          <div class="cx-info-head">// REPOSITORY FACTS</div>
+          <div class="cx-info-body">
+            <div class="cx-info-row"><span class="cx-info-key">Version</span><span class="cx-info-val">cfgx 0.1.0</span>
+            </div>
+            <div class="cx-info-row"><span class="cx-info-key">Python</span><span class="cx-info-val">≥ 3.12</span>
+            </div>
+            <div class="cx-info-row"><span class="cx-info-key">CLI</span><span class="cx-info-val">cfgx.cli:main</span>
+            </div>
+            <div class="cx-info-row"><span class="cx-info-key">Formats</span><span class="cx-info-val">PE + ELF</span>
+            </div>
+            <div class="cx-info-row"><span class="cx-info-key">Output</span><span class="cx-info-val">Terminal +
+                JSON</span></div>
+          </div>
+        </div>
+
+        <!-- Dependencies -->
+        <div class="cx-info-box">
+          <div class="cx-info-head">// DEPENDENCIES</div>
+          <div class="cx-info-body">
+            <div class="cx-dep"><span class="cx-dep-name">yara-python</span><span class="cx-dep-ver">≥ 4.5.0</span>
+            </div>
+            <div class="cx-dep"><span class="cx-dep-name">pefile</span><span class="cx-dep-ver">≥ 2024.8.26</span></div>
+            <div class="cx-dep"><span class="cx-dep-name">pyelftools</span><span class="cx-dep-ver">≥ 0.32</span></div>
+            <div class="cx-dep"><span class="cx-dep-name">Python</span><span class="cx-dep-ver">≥ 3.12</span></div>
+          </div>
+        </div>
+
+        <!-- Sections nav -->
+        <div class="cx-info-box">
+          <div class="cx-info-head">// SECTIONS</div>
+          <div class="cx-info-body" style="padding:.4rem 0">
+            <ul class="cx-toc">
+              <li><a href="#overview">Overview</a></li>
+              <li><a href="#philosophy">Design Philosophy</a></li>
+              <li><a href="#pipeline">Extraction Pipeline</a></li>
+              <li><a href="#features">Features</a></li>
+              <li><a href="#install">Installation &amp; Usage</a></li>
+              <li><a href="#batch">Batch Analysis</a></li>
+              <li><a href="#how-it-works">How cfgx Works</a></li>
+              <li><a href="#yara">YARA Processing</a></li>
+              <li><a href="#pe">PE &amp; ELF Processing</a></li>
+              <li><a href="#reader">SampleReader</a></li>
+              <li><a href="#plugin">Writing a Plugin</a></li>
+              <li><a href="#contract">Plugin Contract</a></li>
+              <li><a href="#errors">Error Handling</a></li>
+              <li><a href="#file-guide">File-by-File Guide</a></li>
+              <li><a href="#architecture">Design Boundary</a></li>
+              <li><a href="#structure">Project Structure</a></li>
+              <li><a href="#testing">Testing</a></li>
+              <li><a href="#mvp">Current MVP</a></li>
+              <li><a href="#roadmap">Future Improvements</a></li>
+              <li><a href="#core-philosophy">Core Philosophy</a></li>
+              <li><a href="#example">Complete Example</a></li>
+              <li><a href="#license">License</a></li>
+              <li><a href="#example">Complete Example</a></li>
+              <li><a href="#license">License</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Quick command -->
+        <div class="cx-info-box">
+          <div class="cx-info-head">// QUICK START</div>
+          <div class="cx-info-body">
+            <div class="cx-install" style="margin:0">
+              <div class="cx-install-label">// CLI</div>
+              <div class="cx-install-cmd" style="font-size:10.5px">
+                <span class="prompt">$</span> cfgx rule.yar \
+                samples/ \
+                plugin.py \
+                --output results/
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div><!-- /cx-body -->
+  </div><!-- /cx-wrap -->
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script>
+    (function () {
+      var fl = document.getElementById('footer-links');
+      if (!fl || typeof SITE_CONFIG === 'undefined') return;
+      var l = SITE_CONFIG.links;
+      if (l.github) fl.innerHTML += '<a href="' + l.github + '" target="_blank">GitHub</a>';
+      if (l.linkedin) fl.innerHTML += '<a href="' + l.linkedin + '" target="_blank">LinkedIn</a>';
+      if (l.email) fl.innerHTML += '<a href="' + l.email + '">Email</a>';
+    })();
+
+    // nav toggle
+    (function () {
+      var btn = document.getElementById('nav-toggle');
+      var links = document.querySelector('nav .nav-links');
+      if (!btn || !links) return;
+      btn.addEventListener('click', function () {
+        var o = links.classList.toggle('open');
+        btn.classList.toggle('open', o);
+        btn.setAttribute('aria-expanded', o ? 'true' : 'false');
+      });
+      links.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          links.classList.remove('open');
+          btn.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
+
+    // Active TOC link on scroll
+    var tocLinks = document.querySelectorAll('.cx-toc a');
+    window.addEventListener('scroll', function () {
+      var cur = '';
+      document.querySelectorAll('.cx-section[id]').forEach(function (s) {
+        if (s.getBoundingClientRect().top <= 90) cur = s.id;
+      });
+      tocLinks.forEach(function (a) {
+        a.style.color = a.getAttribute('href') === '#' + cur ? 'var(--green)' : '';
+        a.style.borderLeftColor = a.getAttribute('href') === '#' + cur ? 'var(--green)' : 'transparent';
+      });
+    }, { passive: true });
+  </script>
+</body>
+
+</html>

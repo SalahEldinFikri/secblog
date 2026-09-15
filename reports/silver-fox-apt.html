@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,10 +36,20 @@
     }
 
     /* ── Table ── */
-    .table-wrap { overflow-x: auto; margin: 1rem 0; }
-    .report-section table.ioc-table { width: 100%; margin: .5rem 0; }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .report-section table.ioc-table {
+      width: 100%;
+      margin: .5rem 0;
+    }
+
     .report-section table.ioc-table td,
-    .report-section table.ioc-table th { font-size: 12.5px; }
+    .report-section table.ioc-table th {
+      font-size: 12.5px;
+    }
 
     /* ── Blockquote ── */
     blockquote.report-quote {
@@ -73,7 +84,10 @@
       flex-shrink: 0;
     }
 
-    .intel-card-body { flex: 1; min-width: 220px; }
+    .intel-card-body {
+      flex: 1;
+      min-width: 220px;
+    }
 
     .intel-card-label {
       font-family: var(--mono);
@@ -152,7 +166,9 @@
       line-height: 1.75;
     }
 
-    .technique-card ul li::marker { color: var(--green); }
+    .technique-card ul li::marker {
+      color: var(--green);
+    }
 
     /* ── Campaign card ── */
     .campaign-card {
@@ -187,7 +203,9 @@
       margin-top: .4rem;
     }
 
-    .campaign-card ul li::marker { color: var(--blue); }
+    .campaign-card ul li::marker {
+      color: var(--blue);
+    }
 
     /* ── Arsenal row ── */
     .arsenal-tag {
@@ -201,11 +219,35 @@
       white-space: nowrap;
     }
 
-    .tag-rat    { background: rgba(255,77,109,.1);  color: var(--red);   border: 1px solid rgba(255,77,109,.3); }
-    .tag-loader { background: rgba(56,189,248,.1);  color: var(--blue);  border: 1px solid rgba(56,189,248,.3); }
-    .tag-kernel { background: rgba(245,158,11,.1);  color: var(--amber); border: 1px solid rgba(245,158,11,.3); }
-    .tag-back   { background: rgba(167,139,250,.1); color: #a78bfa;      border: 1px solid rgba(167,139,250,.3); }
-    .tag-trojan { background: rgba(0,255,157,.08);  color: var(--green); border: 1px solid rgba(0,255,157,.25); }
+    .tag-rat {
+      background: rgba(255, 77, 109, .1);
+      color: var(--red);
+      border: 1px solid rgba(255, 77, 109, .3);
+    }
+
+    .tag-loader {
+      background: rgba(56, 189, 248, .1);
+      color: var(--blue);
+      border: 1px solid rgba(56, 189, 248, .3);
+    }
+
+    .tag-kernel {
+      background: rgba(245, 158, 11, .1);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, .3);
+    }
+
+    .tag-back {
+      background: rgba(167, 139, 250, .1);
+      color: #a78bfa;
+      border: 1px solid rgba(167, 139, 250, .3);
+    }
+
+    .tag-trojan {
+      background: rgba(0, 255, 157, .08);
+      color: var(--green);
+      border: 1px solid rgba(0, 255, 157, .25);
+    }
 
     /* ── MITRE table ── */
     .mitre-grid {
@@ -271,13 +313,23 @@
       text-decoration: none;
     }
 
-    .report-toc a:hover { color: var(--green); }
+    .report-toc a:hover {
+      color: var(--green);
+    }
 
     /* ── Responsive ── */
     @media(max-width:640px) {
-      .intel-card { flex-direction: column; }
-      .intel-card img { width: 100%; }
-      .mitre-grid { grid-template-columns: 1fr; }
+      .intel-card {
+        flex-direction: column;
+      }
+
+      .intel-card img {
+        width: 100%;
+      }
+
+      .mitre-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -287,23 +339,23 @@
   <nav>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
       <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
       <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
     </button>
     <div class="logo">&gt;_ <span>//</span> MR_MATRIX</div>
     <div class="nav-links">
-      <a href="../index.html">Home</a>
-      <a href="../reports.html">Reports</a>
-      <a href="../APT.html">APTs</a>
-      <a href="../ioc-feed.html">IOCs</a>
-      <a href="../yara-feed.html">YARA Rules</a>
-      <a href="../siem-reference.html">SIEM Reference</a>
-      <a href="../malware-structures.html">Structures</a>
-      <a href="../achievements.html">Achievements</a>
-      <a href="../about.html">About Me</a>
+      <a href="../index.html" class="active">Home</a>
+      <a href="../reports.html" class="active">Reports</a>
+      <a href="../APT.html" class="active">APTs</a>
+      <a href="../ioc-feed.html" class="active">IOCs</a>
+      <a href="../yara-feed.html" class="active">YARA Rules</a>
+      <a href="../siem-reference.html" class="active">SIEM Reference</a>
+      <a href="../malware-structures.html" class="active">Structures</a>
+      <a href="../achievements.html" class="active">Achievements</a>
+      <a href="../about.html" class="active">About Me</a>
       <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
     </div>
     <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
@@ -323,8 +375,10 @@
       <div class="report-tags">
         <span class="tag-pill tag-apt">APT PROFILE</span>
         <span class="tag-pill tag-malware">THREAT INTEL</span>
-        <span class="tag-pill" style="background:rgba(56,189,248,.1);color:var(--blue);border:1px solid rgba(56,189,248,.3);">CHINA-ALIGNED</span>
-        <span class="tag-pill" style="background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.3);">APAC</span>
+        <span class="tag-pill"
+          style="background:rgba(56,189,248,.1);color:var(--blue);border:1px solid rgba(56,189,248,.3);">CHINA-ALIGNED</span>
+        <span class="tag-pill"
+          style="background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.3);">APAC</span>
       </div>
 
       <h1 class="report-title">Silver Fox APT: Threat Actor Profile</h1>
@@ -393,7 +447,7 @@
       <!-- Hunt.io tweet: MODBEACON — current activity intel -->
       <div class="intel-card">
         <img src="../assets/apts/intel/Screenshot_2026-07-11_201527.png"
-             alt="Hunt.io tweet: Silver Fox deploys MODBEACON RAT through fake software installers" />
+          alt="Hunt.io tweet: Silver Fox deploys MODBEACON RAT through fake software installers" />
         <div class="intel-card-body">
           <div class="intel-card-label">// CURRENT INTEL — LATEST CAMPAIGN (JUL 2026)</div>
           <p class="intel-card-text">
@@ -412,7 +466,7 @@
       <!-- CyberAtlas tweet: Silver Fox in broader threat context -->
       <div class="intel-card">
         <img src="../assets/apts/intel/Screenshot_2026-07-11_201643.png"
-             alt="CyberAtlas tweet: China-linked Silver Fox deploys MODBEACON RAT targeting Asian tech sectors" />
+          alt="CyberAtlas tweet: China-linked Silver Fox deploys MODBEACON RAT targeting Asian tech sectors" />
         <div class="intel-card-body">
           <div class="intel-card-label">// CURRENT INTEL — THREAT CONTEXT (JUL 2026)</div>
           <p class="intel-card-text">
@@ -448,12 +502,30 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>Silver Fox</td><td>ThreatBook</td></tr>
-            <tr><td>Void Arachne</td><td>Trend Micro / Industry Reporting</td></tr>
-            <tr><td>SwimSnake</td><td>Security Researchers</td></tr>
-            <tr><td>The Great Thief of Valley</td><td>Chinese Threat Intelligence</td></tr>
-            <tr><td>UTG-Q-1000</td><td>Palo Alto Networks Unit 42</td></tr>
-            <tr><td>Valley Thief</td><td>Regional Threat Intelligence</td></tr>
+            <tr>
+              <td>Silver Fox</td>
+              <td>ThreatBook</td>
+            </tr>
+            <tr>
+              <td>Void Arachne</td>
+              <td>Trend Micro / Industry Reporting</td>
+            </tr>
+            <tr>
+              <td>SwimSnake</td>
+              <td>Security Researchers</td>
+            </tr>
+            <tr>
+              <td>The Great Thief of Valley</td>
+              <td>Chinese Threat Intelligence</td>
+            </tr>
+            <tr>
+              <td>UTG-Q-1000</td>
+              <td>Palo Alto Networks Unit 42</td>
+            </tr>
+            <tr>
+              <td>Valley Thief</td>
+              <td>Regional Threat Intelligence</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -516,41 +588,41 @@
       <div class="technique-card">
         <h4>// 2019–2023 · EARLY OPERATIONS</h4>
         <p>Financially motivated campaigns targeting Chinese-speaking users via Gh0st RAT variants and
-        early ValleyRAT. Distribution through phishing emails, messaging platforms, and malicious
-        software downloads.</p>
+          early ValleyRAT. Distribution through phishing emails, messaging platforms, and malicious
+          software downloads.</p>
       </div>
 
       <div class="technique-card">
         <h4>// 2023–2024 · SEO POISONING EXPANSION</h4>
         <p>Rapid adoption of SEO poisoning to distribute trojanized popular software (Chrome, Telegram,
-        WPS Office, AI tools). Introduction of HoldingHands RAT and Winos 4.0 alongside ValleyRAT.</p>
+          WPS Office, AI tools). Introduction of HoldingHands RAT and Winos 4.0 alongside ValleyRAT.</p>
       </div>
 
       <div class="technique-card">
         <h4>// 2024 · TELEGRAM & TAIWAN PIVOT</h4>
         <p>Abuse of Telegram channels for malware distribution. Major Taiwan espionage campaigns begin,
-        targeting government, finance, and technology organizations. First observed BYOVD techniques
-        against security products.</p>
+          targeting government, finance, and technology organizations. First observed BYOVD techniques
+          against security products.</p>
       </div>
 
       <div class="technique-card">
         <h4>// 2024–2025 · ESPIONAGE ESCALATION</h4>
         <p>Healthcare and manufacturing targeting across Asia. Introduction of ABCDoor Python backdoor
-        via ValleyRAT. Geographic expansion to Japan, Malaysia, Indonesia, India, and Russia.</p>
+          via ValleyRAT. Geographic expansion to Japan, Malaysia, Indonesia, India, and Russia.</p>
       </div>
 
       <div class="technique-card">
         <h4>// 2025–2026 · FULL APT MATURITY</h4>
         <p>Large-scale tax-themed phishing campaigns (1,600+ emails in a single operation). Introduction
-        of RustSL loader, PNGPlug, Catena, and Nidhogg kernel rootkit. AtlasCross RAT deployed through
-        fake Teams, Zoom, and VPN installers.</p>
+          of RustSL loader, PNGPlug, Catena, and Nidhogg kernel rootkit. AtlasCross RAT deployed through
+          fake Teams, Zoom, and VPN installers.</p>
       </div>
 
       <div class="technique-card">
         <h4>// 2026–PRESENT · MODBEACON & ONGOING EVOLUTION</h4>
         <p>Introduction of MODBEACON — a Rust-based in-memory RAT using encrypted gRPC C2. Continued
-        modular architecture expansion, stolen digital certificate abuse, and targeting across global
-        Asian tech sectors.</p>
+          modular architecture expansion, stolen digital certificate abuse, and targeting across global
+          Asian tech sectors.</p>
       </div>
     </div>
 
@@ -605,24 +677,24 @@
       <div class="technique-card">
         <h4>Spear Phishing</h4>
         <p>Primary initial access vector. Campaigns impersonate government agencies, taxation authorities,
-        software vendors, and financial institutions. Common lures include tax notifications, salary
-        adjustment notices, government documents, payment invoices, and corporate announcements.
-        Typical payloads: PDF documents, ZIP/RAR archives, LNK shortcut files, MSI/EXE installers.</p>
+          software vendors, and financial institutions. Common lures include tax notifications, salary
+          adjustment notices, government documents, payment invoices, and corporate announcements.
+          Typical payloads: PDF documents, ZIP/RAR archives, LNK shortcut files, MSI/EXE installers.</p>
       </div>
 
       <div class="technique-card">
         <h4>SEO Poisoning</h4>
         <p>Attackers register domains impersonating legitimate software vendors and optimize them to rank
-        in search results. Victims download trojanized installers instead of legitimate software. Commonly
-        impersonated: Google Chrome, Telegram, WPS Office, Microsoft Office, DeepSeek, ChatGPT, Sogou AI,
-        and VPN clients.</p>
+          in search results. Victims download trojanized installers instead of legitimate software. Commonly
+          impersonated: Google Chrome, Telegram, WPS Office, Microsoft Office, DeepSeek, ChatGPT, Sogou AI,
+          and VPN clients.</p>
       </div>
 
       <div class="technique-card">
         <h4>Trojanized Software Distribution</h4>
         <p>Modified installers silently install multiple malware components while simultaneously presenting
-        the expected software installation to avoid suspicion. Significantly improves infection success
-        rates versus pure phishing.</p>
+          the expected software installation to avoid suspicion. Significantly improves infection success
+          rates versus pure phishing.</p>
       </div>
 
       <h3>// Execution &amp; Evasion</h3>
@@ -630,42 +702,42 @@
       <div class="technique-card">
         <h4>DLL Sideloading</h4>
         <p>Frequently abuses trusted executables that automatically load malicious DLL files from the same
-        directory. Benefits: executing malicious code through signed binaries, bypassing application control
-        policies, reducing antivirus detection.</p>
+          directory. Benefits: executing malicious code through signed binaries, bypassing application control
+          policies, reducing antivirus detection.</p>
       </div>
 
       <div class="technique-card">
         <h4>Multi-Stage Loaders</h4>
         <p>Attacks typically involve: initial loader → shellcode execution → payload decryption →
-        ValleyRAT deployment → additional modules → ABCDoor installation. This layered architecture
-        complicates analysis and increases detection resilience.</p>
+          ValleyRAT deployment → additional modules → ABCDoor installation. This layered architecture
+          complicates analysis and increases detection resilience.</p>
       </div>
 
       <div class="technique-card">
         <h4>Shellcode-Based Payload Delivery</h4>
         <p>Many campaigns execute encrypted shellcode entirely in memory before loading malware. Reduces
-        disk artifacts, improves stealth, and evades signature-based detection.</p>
+          disk artifacts, improves stealth, and evades signature-based detection.</p>
       </div>
 
       <div class="technique-card">
         <h4>Bring Your Own Vulnerable Driver (BYOVD)</h4>
         <p>Attackers install legitimate but vulnerable drivers to execute privileged kernel operations.
-        Objectives: disabling EDR, terminating antivirus processes, kernel privilege abuse, and process
-        protection bypass. One of the group's most advanced defensive evasion techniques. Observed drivers:
-        Zemana driver, WatchDog Driver, Nidhogg kernel rootkit.</p>
+          Objectives: disabling EDR, terminating antivirus processes, kernel privilege abuse, and process
+          protection bypass. One of the group's most advanced defensive evasion techniques. Observed drivers:
+          Zemana driver, WatchDog Driver, Nidhogg kernel rootkit.</p>
       </div>
 
       <div class="technique-card">
         <h4>Anti-VM / Anti-Sandbox Detection</h4>
         <p>Environment validation before payload execution. Checks include: VM detection, sandbox
-        identification, username validation, hostname checks, process enumeration, hardware inspection,
-        and memory analysis. Execution terminates if analysis environments are detected.</p>
+          identification, username validation, hostname checks, process enumeration, hardware inspection,
+          and memory analysis. Execution terminates if analysis environments are detected.</p>
       </div>
 
       <div class="technique-card">
         <h4>Geofencing</h4>
         <p>Malware execution limited based on victim's geographic location, reducing exposure to
-        researchers while ensuring execution only within intended target regions.</p>
+          researchers while ensuring execution only within intended target regions.</p>
       </div>
 
       <h3>// Persistence &amp; C2</h3>
@@ -673,20 +745,20 @@
       <div class="technique-card">
         <h4>Scheduled Task Persistence</h4>
         <p>Tasks configured to execute malware after reboot, relaunch payloads after termination,
-        and periodically contact C2 servers for updated commands and modules.</p>
+          and periodically contact C2 servers for updated commands and modules.</p>
       </div>
 
       <div class="technique-card">
         <h4>Registry-Based Persistence</h4>
         <p>Common methods: Run Keys, RunOnce Keys, registry-based configuration storage, and encrypted
-        malware configuration. Blends into normal Windows registry activity.</p>
+          malware configuration. Blends into normal Windows registry activity.</p>
       </div>
 
       <div class="technique-card">
         <h4>Command and Control (C2)</h4>
         <p>Resilient C2 infrastructure featuring: encrypted communications, multiple fallback servers,
-        dynamic configuration updates, custom network protocols, and modular plugin delivery. Recent
-        campaigns use encrypted gRPC streaming (MODBEACON) for C2 traffic.</p>
+          dynamic configuration updates, custom network protocols, and modular plugin delivery. Recent
+          campaigns use encrypted gRPC streaming (MODBEACON) for C2 traffic.</p>
       </div>
 
       <h3>// Collection &amp; Exfiltration</h3>
@@ -694,15 +766,15 @@
       <div class="technique-card">
         <h4>Intelligence Collection</h4>
         <p>Collected information commonly includes: system information, running processes, user documents,
-        clipboard contents, screenshots, file system data, network configuration, browser credentials
-        and session cookies, and organizational documents. Data is exfiltrated to remote C2
-        infrastructure for operator analysis.</p>
+          clipboard contents, screenshots, file system data, network configuration, browser credentials
+          and session cookies, and organizational documents. Data is exfiltrated to remote C2
+          infrastructure for operator analysis.</p>
       </div>
 
       <div class="technique-card">
         <h4>Living-Off-the-Land (LotL)</h4>
         <p>Abuses legitimate Windows components including PowerShell, WMI, Task Scheduler, Registry,
-        cmd.exe, Rundll32, and Regsvr32 to blend malicious activity into normal system behavior.</p>
+          cmd.exe, Rundll32, and Regsvr32 to blend malicious activity into normal system behavior.</p>
       </div>
     </div>
 
@@ -750,7 +822,7 @@
 
         <div class="intel-card" style="margin:1rem 0;">
           <img src="../assets/apts/intel/Telegram.webp"
-               alt="Telegram channel фото-архив.apk distribution — Silver Fox 2024 campaign" />
+            alt="Telegram channel фото-архив.apk distribution — Silver Fox 2024 campaign" />
           <div class="intel-card-body">
             <div class="intel-card-label">// EVIDENCE — TELEGRAM APK DISTRIBUTION (2024)</div>
             <p class="intel-card-text">
@@ -833,7 +905,7 @@
           sideloading, and encrypted payload decryption before deploying the RAT entirely in memory.
         </p>
         <p>Capabilities: remote command execution, file upload/download, process management,
-        screen capture, credential theft, registry modification, and dynamic C2 updates.</p>
+          screen capture, credential theft, registry modification, and dynamic C2 updates.</p>
       </div>
 
       <!-- Campaign 9 -->
@@ -860,8 +932,8 @@
           without replacing the existing malware framework.
         </p>
         <p>ABCDoor capabilities: remote shell access, file upload/download, clipboard monitoring,
-        multi-monitor screen streaming, remote process execution, self-updating functionality,
-        system reconnaissance, and persistence management.</p>
+          multi-monitor screen streaming, remote process execution, self-updating functionality,
+          system reconnaissance, and persistence management.</p>
       </div>
 
       <!-- Campaign 11: Tax phishing — with ABCDoor tweet -->
@@ -886,13 +958,14 @@
         </ol>
 
         <p style="margin-top:.75rem;">Primary targets: Government · Industrial Manufacturing ·
-        Transportation · Consulting · Retail · Trade · Logistics. Researchers recorded more than
-        <strong>1,600 malicious phishing emails</strong> in the initial stages — one of the largest
-        documented Silver Fox campaigns.</p>
+          Transportation · Consulting · Retail · Trade · Logistics. Researchers recorded more than
+          <strong>1,600 malicious phishing emails</strong> in the initial stages — one of the largest
+          documented Silver Fox campaigns.
+        </p>
 
         <div class="intel-card" style="margin:1rem 0;">
           <img src="../assets/apts/intel/Screenshot_2026-07-11_201755.png"
-               alt="Tweet: Silver Fox linked to ABCDoor malware via tax-themed phishing India and Russia" />
+            alt="Tweet: Silver Fox linked to ABCDoor malware via tax-themed phishing India and Russia" />
           <div class="intel-card-body">
             <div class="intel-card-label">// INTEL — ABCDOOR TAX PHISHING (DEC 2025 – JAN 2026)</div>
             <p class="intel-card-text">
@@ -1157,8 +1230,10 @@
     </div>
 
     <!-- ── FOOTER CREDITS ── -->
-    <div style="margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.9;">
-      <p>References: ThreatBook · Trend Micro · Palo Alto Unit 42 · Hunt.io · Hacker News · Mandiant · CISA · Cyber_OSINT</p>
+    <div
+      style="margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.9;">
+      <p>References: ThreatBook · Trend Micro · Palo Alto Unit 42 · Hunt.io · Hacker News · Mandiant · CISA ·
+        Cyber_OSINT</p>
       <p style="margin-top:.5rem;">⚠ All research documented for educational and defensive purposes only. TLP: WHITE</p>
     </div>
 
@@ -1190,4 +1265,5 @@
   </script>
 
 </body>
+
 </html>

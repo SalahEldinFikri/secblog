@@ -661,7 +661,7 @@
       background: rgba(0, 255, 157, .04)
     }
 
-    .cx-arch-item.plugin {
+    .cx-arch-item.extractor {
       border-color: var(--amber);
       color: var(--amber);
       background: rgba(245, 158, 11, .04)
@@ -1167,10 +1167,9 @@
       <div class="cx-hero-text">
         <div class="cx-hero-label">OPEN-SOURCE PROJECT · MALWARE ANALYSIS TOOL</div>
         <h1 class="cx-hero-title">cfgx <em>— Malware Config Extraction Framework</em></h1>
-        <p class="cx-hero-sub">A Python framework that cleanly separates generic malware-analysis infrastructure from
-          malware-family-specific extraction logic. You bring the YARA rule, the samples, and an analyst family-specific
-          config extractor script — cfgx
-          handles the rest and returns structured JSON configuration reports. The same installation works for RedLine,
+        <p class="cx-hero-sub">A Python framework that cleanly separates common malware-analysis tools from
+          malware-family extraction logic. You bring the YARA rule, the samples, and a family extractor — cfgx
+          handles the rest and returns structured JSON config reports. The same installation works for RedLine,
           Lumma, VoidStealer, StealC, and any future family.</p>
         <div class="cx-badges">
           <span class="cx-badge cb-green">ACTIVE</span>
@@ -1185,7 +1184,7 @@
           <a href="https://github.com/SalahEldinFikri/cfgx-tool" target="_blank" class="cx-btn cx-btn-primary">⌥ View on
             GitHub</a>
           <a href="#install" class="cx-btn cx-btn-ghost">⬇ Quick Install</a>
-          <a href="#plugin" class="cx-btn cx-btn-ghost">↗ Write a family-specific config extractor script</a>
+          <a href="#extractor" class="cx-btn cx-btn-ghost">↗ Write a Family Extractor</a>
           <a href="#algorithms" class="cx-btn cx-btn-ghost">🔑 Algorithm Library</a>
         </div>
       </div>
@@ -1219,9 +1218,9 @@
           <li><a href="#yara">YARA Processing</a></li>
           <li><a href="#pe">PE & ELF Processing</a></li>
           <li><a href="#reader">SampleReader</a></li>
-          <span class="toc-group-lbl">ANALYST family-specific config extractor script</span>
-          <li><a href="#plugin">Writing a family-specific config extractor script</a></li>
-          <li><a href="#contract">family-specific config extractor script Contract</a></li>
+          <span class="toc-group-lbl">FAMILY EXTRACTOR</span>
+          <li><a href="#extractor">Writing a Family Extractor</a></li>
+          <li><a href="#contract">Extractor Contract</a></li>
           <li><a href="#algorithms">Algorithm Library</a></li>
           <span class="toc-group-lbl">REFERENCE</span>
           <li><a href="#errors">Error Handling</a></li>
@@ -1244,22 +1243,27 @@
         <div class="cx-section" id="overview">
           <div class="cx-section-title">OVERVIEW</div>
           <div class="cx-prose">
-            <p>Extracting malware configuration is repetitive work. Every family requires the same boilerplate: load the
-              sample, run YARA, locate interesting bytes, resolve PE offsets, read the data, decrypt or decode it, parse
-              the result, save a report. The only part that actually changes between families is the family-specific
-              knowledge — which YARA string matters, where the config lives, how it's encrypted, and what the fields
-              mean.</p>
-            <p><strong>cfgx handles all the boilerplate.</strong> You only write the part that's specific to the malware
+            <p>Config extraction uses the same basic steps for every malware family: run YARA, find the right data, read
+              the
+              bytes, decode or decrypt them, build the config, and save the result. The part that changes is the
+              malware-family code.</p>
+            <p><strong>cfgx handles all the common work.</strong> You only write the part that is specific to the
+              malware
               family you're analysing.</p>
+            <p>For each malware family, cfgx expects two family-specific inputs:<br> <strong>1) a YARA rule</strong>
+              that
+              identifies the family and points to the config data.<br> <strong>2) a Python family extractor</strong>
+              that
+              reads, processes, decodes, or decrypts the matched config data.</p>
             <p>The framework's core design principle is: <em>cfgx provides evidence and controlled access to the sample.
-                The analyst family-specific config extractor script decides what that evidence means.</em> The framework
-              never knows whether
+                The family extractor decides what the matches mean and what bytes to process.</em> The framework never
+              knows whether
               <code>$Config</code> means a configuration blob, a C2 address, or something else entirely — that
-              interpretation lives completely in your family-specific config extractor script.
+              interpretation lives completely in your extractor.
             </p>
             <p>This separation means you can reuse the same cfgx installation for VoidStealer, RedLine, Lumma, StealC,
-              Qardar, or any future family by simply changing the YARA rule and the analyst family-specific config
-              extractor script. The framework itself
+              Qardar, or any future family by simply changing the YARA rule and the family extractor. The framework
+              itself
               never needs to change.</p>
           </div>
 
@@ -1270,8 +1274,7 @@
               <code>.rdata</code> section at RVA <code>456992</code>, and that 16 bytes at that location read as
               <code>b"7656119987836894"</code>.
             </p>
-            <p><strong>The analyst family-specific config extractor script decides what that means.</strong> Only the
-              extractor script knows that
+            <p><strong>The family extractor decides what that means.</strong> Only the extractor knows that
               <code>$steamid</code> is a Steam ID, that those 16 bytes should be decoded as ASCII, and that the
               resulting string is a C2 identifier. cfgx never makes those decisions.
             </p>
@@ -1282,23 +1285,19 @@
         <div class="cx-section" id="philosophy">
           <div class="cx-section-title">DESIGN PHILOSOPHY</div>
           <div class="cx-prose">
-            <p>Most config-extraction tools are either too specific (hard-coded to one malware family) or too generic
-              (try every algorithm on every byte and hope something decodes). cfgx takes a third path:
-              <strong>structured separation between framework knowledge and analyst knowledge.</strong>
+            <p>Most config tools either contain code for one malware family or try to guess how every sample is encoded.
+              cfgx keeps the two parts separate: <strong>cfgx handles the common work, and the family extractor handles
+                the malware-family work.</strong>
             </p>
-            <p>The framework is deliberately malware-family agnostic. It does not try to infer what an interesting byte
-              pattern means, does not auto-try decryption algorithms, and does not impose a configuration schema. These
-              decisions require human reverse-engineering knowledge that only the analyst has.</p>
-            <p>The reusable algorithm library follows the same principle. cfgx knows <em>how</em> to perform Base64,
-              RC4, AES-CBC, and XOR — the mechanics. The analyst family-specific config extractor script knows
-              <em>which</em> algorithm this specific
-              malware uses, in what order, with which key, nonce, or IV. The framework never conflates those two kinds
-              of knowledge.</p>
-            <p>This design makes cfgx <strong>composable</strong>: an analyst can write a family-specific config
-              extractor script for a new malware
-              family in an afternoon without understanding or modifying the framework. The extractor script is just a
-              Python file
-              with one function. Everything else is provided.</p>
+            <p>cfgx is not tied to one malware family. It does not guess what a YARA match means, does not try every
+              decryption
+              method, and does not force one config format. The family extractor makes those decisions.</p>
+            <p>The algorithm library works the same way. cfgx provides Base64, RC4, AES, XOR, and the other algorithms.
+              The family extractor decides which one the malware uses, which key or IV is needed, and the order of the
+              steps.</p>
+            <p>This means you can add a new family without changing cfgx. The family extractor is just a Python file
+              with one
+              function. cfgx does the rest.</p>
           </div><br>
 
           <div class="cx-diagram">
@@ -1314,7 +1313,7 @@
                                      │                    │
                                      └─────────┬──────────┘
                                                │
-                                         Analyst family-specific config extractor script
+                                         Family Extractor
                                             extract()
                                                │
                                          Interpretation
@@ -1333,7 +1332,7 @@
           <div class="cx-prose">
             <p>Clone the repo and install in editable mode. Editable install registers the <code>cfgx</code> command
               in
-              your Python environment so you can call it from anywhere. Python 3.12+ required.</p>
+              your Python environment so you can call it from anywhere. Python 3.12+ needed.</p>
           </div>
 
           <div class="cx-install">
@@ -1351,7 +1350,7 @@
             <p><code>yara-python &gt;= 4.5.0</code> — YARA rule compilation and scanning<br>
               <code>pefile &gt;= 2024.8.26</code> — PE parsing and metadata extraction<br>
               <code>pyelftools &gt;= 0.32</code> — ELF binary parsing<br>
-              <code>pycryptodome &gt;= 3.20.0</code> — Cryptographic algorithm implementations
+              <code>pycryptodome &gt;= 3.20.0</code> — Cryptographic algorithm functions
             </p>
           </div>
 
@@ -1385,8 +1384,7 @@
               <tr>
                 <td class="cx-td-key">extractor.py</td>
                 <td class="cx-td-type">yes</td>
-                <td class="cx-td-note">Path to your analyst family-specific config extractor script. Any Python file
-                  that exports
+                <td class="cx-td-note">Path to your family extractor. Any Python file that exports
                   <code>extract(matches, reader)</code>.
                 </td>
               </tr>
@@ -1394,7 +1392,7 @@
                 <td class="cx-td-key">--output dir</td>
                 <td class="cx-td-type">no</td>
                 <td class="cx-td-note">Where to write JSON reports. Defaults to <code>output/</code>. Created
-                  automatically if it doesn't exist.</td>
+                  by itself if it doesn't exist.</td>
               </tr>
             </tbody>
           </table>
@@ -1432,7 +1430,7 @@
         <div class="cx-section" id="batch">
           <div class="cx-section-title">BATCH / FOLDER ANALYSIS</div>
           <div class="cx-prose">
-            <p>When the sample argument is a directory, cfgx processes every file inside it independently through the
+            <p>When the sample argument is a directory, cfgx processes every file inside it separately through the
               full extraction pipeline. Results from all samples are combined into a single JSON report named after
               the
               YARA rule. This means you can run cfgx against an entire malware sample collection and get one
@@ -1447,7 +1445,7 @@
             ├── sample_b <span class="cc">← 5 YARA matches, 1 config value extracted</span>
             └── sample_c <span class="cc">← 8 YARA matches, 2 config values extracted</span>
 
-            <span class="cc"># cfgx processes each independently, then combines</span>
+            <span class="cc"># cfgx processes each separately, then combines</span>
             cfgx rules/voidstealer.yar test_samples/ extractors/voidstealer.py
 
             <span class="cc"># Output — one file named after the rule</span>
@@ -1483,7 +1481,7 @@
           <div class="cx-prose">
             <p>Every sample, whether a single file or one item in a batch, passes through the same 10-step pipeline.
               Steps 1–7 and 9–10 are handled entirely by cfgx. <strong>Step 8 is yours</strong> — it is the only step
-              that contains malware-family-specific logic.</p>
+              that contains malware-family logic.</p>
           </div>
 
           <div class="cx-pipeline">
@@ -1491,17 +1489,15 @@
               <span class="cx-pipe-num">01</span>
               <div class="cx-pipe-body">
                 <span class="cx-pipe-fn">CLI Validation</span>
-                <span class="cx-pipe-note">Verify all three required paths exist and are the correct types — rule must
-                  be a file, sample can be a file or directory, family-specific config extractor script must be a .py
-                  file</span>
+                <span class="cx-pipe-note">Verify all three needed paths exist and are the correct types — rule must
+                  be a file, sample can be a file or directory, extractor must be a .py file</span>
               </div>
             </div>
             <div class="cx-pipe-step">
               <span class="cx-pipe-num">02</span>
               <div class="cx-pipe-body">
-                <span class="cx-pipe-fn">Load Family-Specific Config Extractor Script</span>
-                <span class="cx-pipe-note">Dynamically import the Python extractor script file and verify it exposes a
-                  callable
+                <span class="cx-pipe-fn">Load Family Extractor</span>
+                <span class="cx-pipe-note">Dynamically import the Python extractor file and verify it has a callable
                   <code>extract(matches, reader)</code> function — fail early with a clear error if not</span>
               </div>
             </div>
@@ -1526,7 +1522,7 @@
               <div class="cx-pipe-body">
                 <span class="cx-pipe-fn">Normalize Matches</span>
                 <span class="cx-pipe-note">Convert raw YARA objects into generic
-                  <code>{ rule, identifier, offset }</code> dicts — a stable interface the plugin can rely on
+                  <code>{ rule, identifier, offset }</code> dicts — a stable interface the extractor can rely on
                   regardless
                   of YARA version</span>
               </div>
@@ -1536,7 +1532,7 @@
               <div class="cx-pipe-body">
                 <span class="cx-pipe-fn">Resolve PE Metadata</span>
                 <span class="cx-pipe-note">Enrich each match: file offset → PE section → RVA → VA. Adds
-                  <code>section</code>, <code>rva</code>, <code>va</code> fields. These let your plugin
+                  <code>section</code>, <code>rva</code>, <code>va</code> fields. These let your extractor
                   cross-reference
                   addresses with IDA or a debugger</span>
               </div>
@@ -1546,7 +1542,7 @@
               <div class="cx-pipe-body">
                 <span class="cx-pipe-fn">Create SampleReader</span>
                 <span class="cx-pipe-note">Wrap the sample file handle in a validated reader —
-                  <code>reader.read(offset, size)</code> is the only way the plugin can access sample bytes. No raw
+                  <code>reader.read(offset, size)</code> is the only way the extractor can access sample bytes. No raw
                   file
                   handles, no path exposure</span>
               </div>
@@ -1554,7 +1550,7 @@
             <div class="cx-pipe-step cx-pipe-you">
               <span class="cx-pipe-num">08</span>
               <div class="cx-pipe-body">
-                <span class="cx-pipe-fn">plugin.extract(matches, reader)</span>
+                <span class="cx-pipe-fn">extractor.extract(matches, reader)</span>
                 <span class="cx-pipe-note"><strong>Your code runs here.</strong> Select the matches that matter, read
                   bytes at their offsets, decrypt or decode the data using cfgx algorithms, build and return a
                   structured config object</span>
@@ -1563,7 +1559,7 @@
             <div class="cx-pipe-step">
               <span class="cx-pipe-num">09</span>
               <div class="cx-pipe-body">
-                <span class="cx-pipe-fn">Validate Plugin Result</span>
+                <span class="cx-pipe-fn">Validate Extractor Result</span>
                 <span class="cx-pipe-note">Verify the returned dict contains <code>status</code> (must be a string)
                   and
                   <code>config</code> (any value). Reject malformed results with descriptive errors before any output
@@ -1591,25 +1587,25 @@
               <div class="cx-feat-icon">🎯</div>
               <div class="cx-feat-title">YARA SCANNING</div>
               <div class="cx-feat-desc">Rule compilation, scanning, and match flattening. One Match object per string
-                occurrence with file offset — ready for the plugin to consume.</div>
+                occurrence with file offset — ready for the extractor to consume.</div>
             </div>
             <div class="cx-feature">
               <div class="cx-feat-icon">🏗️</div>
               <div class="cx-feat-title">PE + ELF PARSING</div>
               <div class="cx-feat-desc">Loads PE and ELF binaries, identifies sections, resolves file offsets to RVAs
-                and virtual addresses — all transparent to the plugin.</div>
+                and virtual addresses — all transparent to the extractor.</div>
             </div>
             <div class="cx-feature">
               <div class="cx-feat-icon">📖</div>
               <div class="cx-feat-title">CONTROLLED BYTE ACCESS</div>
-              <div class="cx-feat-desc">SampleReader validates all reads — bounds checking, negative offset rejection,
-                safe EOF handling. Your plugin only sees <code>reader.read(offset, n)</code>.</div>
+              <div class="cx-feat-desc">SampleReader checks all reads — bounds checking, negative offset rejection,
+                safe EOF handling. Your extractor only sees <code>reader.read(offset, n)</code>.</div>
             </div>
             <div class="cx-feature">
               <div class="cx-feat-icon">🔌</div>
-              <div class="cx-feat-title">EXTERNAL PLUGINS</div>
+              <div class="cx-feat-title">EXTERNAL EXTRACTORS</div>
               <div class="cx-feat-desc">Drop a Python file anywhere. No framework modification, no registration, no
-                configuration. One plugin per malware family — swap the file, get a different extractor.</div>
+                configuration. One extractor per malware family — swap the file, get a different extractor.</div>
             </div>
             <div class="cx-feature">
               <div class="cx-feat-icon">📂</div>
@@ -1626,7 +1622,7 @@
             <div class="cx-feature">
               <div class="cx-feat-icon">✅</div>
               <div class="cx-feat-title">RESULT VALIDATION</div>
-              <div class="cx-feat-desc">Validates plugin output format before writing. Missing fields, wrong types,
+              <div class="cx-feat-desc">Validates extractor output format before writing. Missing fields, wrong types,
                 and
                 uncallable extract functions all produce clear, descriptive error messages.</div>
             </div>
@@ -1649,7 +1645,7 @@
             <p>The key design decision is that <strong>each string occurrence becomes its own independent Match
                 object</strong>. If your YARA rule matches <code>$steamid</code> three times in the same sample (at
               different offsets), you receive three Match objects — not one match with three occurrences. This is
-              intentional because the analyst plugin typically needs to process each offset independently.</p>
+              intentional because the family extractor typically needs to process each offset separately.</p>
           </div>
 
           <div class="cx-code"><span class="cx-code-label">NORMALIZED MATCH STRUCTURE</span>{
@@ -1681,9 +1677,9 @@
               interesting
               is, not what it means. A match says "at offset 450664 there is a pattern that matches
               <code>$steamid</code>". It does not say "the Steam ID is the 16 bytes starting at that offset". That
-              interpretation is the analyst plugin's job.
+              interpretation is the family extractor's job.
             </p>
-            <p>This is why cfgx does not automatically read bytes at match offsets. The plugin calls
+            <p>This is why cfgx does not by itself read bytes at match offsets. The extractor calls
               <code>reader.read(match["offset"], size)</code> explicitly, choosing its own size, direction (before or
               after the match), and interpretation.
             </p>
@@ -1698,7 +1694,7 @@
               and all address resolution. ELF support mirrors this for Linux/IoT samples.</p>
             <p>The most important function is <code>resolve_offset()</code>, which takes a raw file offset (the kind
               YARA reports) and returns the full address context — section name, RVA, and virtual address. This is
-              automatically applied to every YARA match before the plugin receives them.</p>
+              by itself applied to every YARA match before the extractor receives them.</p>
           </div>
 
           <div class="cx-code"><span class="cx-code-label">ADDRESS RESOLUTION CHAIN</span>file offset (YARA reports
@@ -1728,7 +1724,7 @@
             <tbody>
               <tr>
                 <td class="cx-td-key">load_pe(path)</td>
-                <td class="cx-td-note">Load sample as a <code>pefile.PE</code> object — validates the MZ/PE signature,
+                <td class="cx-td-note">Load sample as a <code>pefile.PE</code> object — checks the MZ/PE signature,
                   parses headers and sections</td>
               </tr>
               <tr>
@@ -1760,7 +1756,7 @@
           <div class="cx-prose">
             <p>ELF support in <code>formats/elf.py</code> provides the same capability for Linux and IoT malware:
               loading, section identification, virtual address resolution, and file-offset-to-virtual-address
-              conversion. The same Match structure is used for both PE and ELF samples — the plugin sees the same
+              conversion. The same Match structure is used for both PE and ELF samples — the extractor sees the same
               interface regardless of binary format.</p>
           </div>
         </div>
@@ -1770,17 +1766,18 @@
           <div class="cx-section-title">SAMPLEREADER</div>
           <div class="cx-prose">
             <p><code>cfgx/reader.py</code> provides the <code>SampleReader</code> class — the only way an analyst
-              plugin
-              can access sample bytes. The plugin never receives the sample file path or a raw file handle. All access
+              extractor
+              can access sample bytes. The extractor never receives the sample file path or a raw file handle. All
+              access
               goes through one method: <code>reader.read(offset, size)</code>.</p>
-            <p>This design keeps access controlled and auditable. The framework knows exactly which bytes the plugin
-              requested and in what order. It also means the plugin cannot accidentally overwrite the sample, seek
+            <p>This design keeps access controlled and auditable. The framework knows exactly which bytes the extractor
+              requested and in what order. It also means the extractor cannot accidentally overwrite the sample, seek
               past
               the end, or hold an open file handle.</p>
           </div>
 
           <div class="cx-code"><span class="cx-code-label">SAMPLEREADER API</span><span class="cc"># The only public
-              method your plugin should call</span>
+              method your extractor should call</span>
             data = reader.read(offset=<span class="cn">450664</span>, size=<span class="cn">16</span>)
             <span class="cc"># Returns: b"7656119987836894" (raw bytes)</span>
 
@@ -1832,26 +1829,26 @@
               <tr>
                 <td class="cx-td-key">Offset past EOF</td>
                 <td class="cx-td-type" style="color:var(--amber)">b""</td>
-                <td class="cx-td-note">Returns empty bytes — the plugin should handle this gracefully</td>
+                <td class="cx-td-note">Returns empty bytes — the extractor should handle this gracefully</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- ══ WRITING A PLUGIN ══ -->
-        <div class="cx-section" id="plugin">
-          <div class="cx-section-title">WRITING AN ANALYST PLUGIN</div>
+        <!-- ══ WRITING A EXTRACTOR ══ -->
+        <div class="cx-section" id="extractor">
+          <div class="cx-section-title">WRITING A FAMILY EXTRACTOR</div>
           <div class="cx-prose">
-            <p>A plugin is a plain Python file with a single exported function: <code>extract(matches, reader)</code>.
-              That is the entire interface — no base classes, no decorators, no imports from cfgx required (unless you
-              use the algorithm library). Drop the file anywhere, pass its path to cfgx, and it runs.</p>
-            <p>The plugin receives a list of Match objects (all YARA matches with PE metadata) and a SampleReader. It
-              decides which matches are relevant, reads whatever bytes it needs, applies whatever decryption or
-              decoding
-              the malware uses, and returns a dict with <code>status</code> and <code>config</code>.</p>
+            <p>A family extractor is a simple Python file with one function: <code>extract(matches, reader)</code>. You
+              can put
+              the file anywhere and pass its path to cfgx. If you use cfgx algorithms, you can import only the ones you
+              need.</p>
+            <p>The family extractor receives the YARA matches and a SampleReader. It chooses which matches matter, reads
+              the bytes
+              it needs, processes or decrypts them, and returns <code>status</code> and <code>config</code>.</p>
           </div>
 
-          <div class="cx-code"><span class="cx-code-label">MINIMAL PLUGIN — READS PLAIN ASCII VALUE</span><span
+          <div class="cx-code"><span class="cx-code-label">MINIMAL EXTRACTOR — READS PLAIN ASCII VALUE</span><span
               class="ck">def</span> <span class="cf">extract</span>(matches, reader):
             results = []
 
@@ -1880,7 +1877,7 @@
               class="cs">"config"</span>: results}
           </div>
 
-          <div class="cx-code"><span class="cx-code-label">REALISTIC PLUGIN — BASE64 → RC4 DECRYPTION
+          <div class="cx-code"><span class="cx-code-label">REALISTIC EXTRACTOR — BASE64 → RC4 DECRYPTION
               CHAIN</span><span class="ck">from</span> cfgx.algorithms.base64 <span class="ck">import</span> decode
             <span class="ck">as</span> b64
             <span class="ck">from</span> cfgx.algorithms.rc4 <span class="ck">import</span> rc4
@@ -1891,7 +1888,7 @@
             config_match = <span class="cn">None</span>
             key_match = <span class="cn">None</span>
 
-            <span class="cc"># Collect the specific strings we need</span>
+            <span class="cc"># Collect the exact strings we need</span>
             <span class="ck">for</span> m <span class="ck">in</span> matches:
             <span class="ck">if</span> m[<span class="cs">"identifier"</span>] == <span
               class="cs">"$config_blob"</span>: config_match = m
@@ -1916,7 +1913,7 @@
             <span class="cc"># Stage 2 — RC4 decrypt with key from the second YARA match</span>
             plaintext = rc4(decoded, raw_key)
 
-            <span class="cc"># Stage 3 — Parse the plaintext structure (analyst-specific)</span>
+            <span class="cc"># Stage 3 — Parse the plaintext structure (family-specific)</span>
             c2_host = plaintext[:<span class="cn">64</span>].rstrip(<span class="cs">b"\\x00"</span>).decode(<span
               class="cs">"ascii"</span>)
             c2_port = struct.unpack_from(<span class="cs">"&lt;H"</span>, plaintext, <span class="cn">64</span>)[<span
@@ -1932,23 +1929,25 @@
           </div>
 
           <div class="cx-box cx-box-amber">
-            <div class="cx-box-label" style="color:var(--amber)">// WHAT THE PLUGIN DECIDES — cfgx NEVER TOUCHES THESE
+            <div class="cx-box-label" style="color:var(--amber)">// WHAT THE EXTRACTOR DECIDES — cfgx NEVER TOUCHES
+              THESE
             </div>
             <p>Which YARA matches are relevant · How many bytes to read · Where the config starts relative to the
               match
               offset · Whether bytes are encrypted, encoded, or raw · Which algorithm to apply · What key, IV, nonce,
               or
-              increment is required · The order of multiple algorithm stages · How to parse the resulting plaintext ·
+              increment is needed · The order of multiple algorithm stages · How to parse the resulting plaintext ·
               What the configuration fields are named · What status string to return</p>
           </div>
         </div>
 
-        <!-- ══ PLUGIN CONTRACT ══ -->
+        <!-- ══ EXTRACTOR CONTRACT ══ -->
         <div class="cx-section" id="contract">
-          <div class="cx-section-title">PLUGIN RESULT CONTRACT</div>
+          <div class="cx-section-title">EXTRACTOR RESULT CONTRACT</div>
           <div class="cx-prose">
-            <p>Every plugin must return a Python dict with exactly two keys. cfgx validates this before writing any
-              output — an invalid return raises a clear error rather than silently writing a corrupt report.</p>
+            <p>Every family extractor returns a Python dict with two keys: <code>status</code> and <code>config</code>.
+              cfgx checks
+              this before saving the result.</p>
           </div>
 
           <table class="cx-table">
@@ -1975,7 +1974,7 @@
                 <td class="cx-td-key">config</td>
                 <td class="cx-td-type">any</td>
                 <td class="cx-td-type" style="color:var(--green)">yes</td>
-                <td class="cx-td-note">Intentionally unrestricted. Can be a list, a dict, a nested structure, or an
+                <td class="cx-td-note">Intentionally not limited. Can be a list, a dict, a nested structure, or an
                   empty collection. You define the schema — cfgx serialises it to JSON exactly as returned. The field
                   must be present even when extraction fails (return <code>[]</code> or <code>{}</code>).</td>
               </tr>
@@ -2051,7 +2050,7 @@
                 <td class="cx-td-key">rva</td>
                 <td class="cx-td-type">int | None</td>
                 <td class="cx-td-type" style="color:var(--amber)">PE/ELF only</td>
-                <td class="cx-td-note">Relative Virtual Address. Useful for cross-referencing with IDA Pro or Binary
+                <td class="cx-td-note">Relative Virtual Address. Useful for comparing with IDA Pro or Binary
                   Ninja</td>
               </tr>
               <tr>
@@ -2069,9 +2068,9 @@
         <div class="cx-section" id="algorithms">
           <div class="cx-section-title">ALGORITHM LIBRARY</div>
           <div class="cx-prose">
-            <p>cfgx ships a reusable algorithm library that analyst plugins can import directly. These are generic,
-              thoroughly tested cryptographic and encoding primitives — the analyst plugin decides which algorithm the
-              malware uses, in what order, and with what parameters. <strong>The framework never auto-tries algorithms
+            <p>cfgx ships a reusable algorithm library that family extractors can import directly. These are generic,
+              thoroughly tested cryptographic and encoding primitives — the family extractor decides which algorithm the
+              malware uses, in what order, and with what settings. <strong>The framework never auto-tries algorithms
                 against YARA matches.</strong></p>
             <p>The library exists to prevent every analyst from reimplementing the same RC4, Base64, and XOR code for
               each malware family. Import what you need, chain what the malware uses, ignore the rest.</p>
@@ -2133,7 +2132,7 @@
             <p>cfgx never runs Base64 → RC4 → AES on every match hoping something decodes. That approach produces
               false
               positives and is impossible to interpret reliably. Instead: <strong>the analyst reverse-engineers the
-                malware, identifies the exact algorithm chain, and writes a plugin that reproduces it.</strong> The
+                malware, identifies the exact algorithm chain, and writes a extractor that matchs it.</strong> The
               algorithm library provides the building blocks — the analyst provides the knowledge of how to assemble
               them.</p>
           </div>
@@ -2188,7 +2187,7 @@
               <p class="cx-algo-desc">A compact encoding using 45 characters — more efficient than Base64 for some
                 data
                 types. Originally designed for QR codes. Increasingly appears in modern malware and Python-based
-                loaders. cfgx validates malformed input and raises a descriptive error rather than silently producing
+                loaders. cfgx checks bad input and raises a descriptive error rather than silently producing
                 corrupt output, which is important when the key bytes differ between samples.</p>
               <div class="cx-code"><span class="ck">from</span> cfgx.algorithms.base45 <span class="ck">import</span>
                 decode
@@ -2223,7 +2222,7 @@
                 <span class="cx-algo-name" style="color:var(--blue)">Base64</span>
                 <span class="cx-algo-import">from cfgx.algorithms.base64 import decode</span>
               </div>
-              <p class="cx-algo-desc">The most common encoding in malware configuration extraction. Used to store
+              <p class="cx-algo-desc">The most common encoding in malware config extraction. Used to store
                 configs as printable text in the binary, to transport encrypted bytes over HTTP, and as the first
                 stage
                 before decryption. <em>Base64 is not encryption</em> — it is trivially reversible — but it hides
@@ -2275,7 +2274,7 @@
                 <span class="cx-algo-name" style="color:var(--amber)">Repeating-Key XOR</span>
                 <span class="cx-algo-import">from cfgx.algorithms.xor import xor</span>
               </div>
-              <p class="cx-algo-desc">XOR each byte of the data against the corresponding byte of the key, cycling the
+              <p class="cx-algo-desc">XOR each byte of the data against the matching byte of the key, cycling the
                 key when it is shorter than the data. <em>XOR is its own inverse</em> — applying the same key twice
                 returns the original data, so the same function both encrypts and decrypts. This is the most common
                 obfuscation primitive in malware: cheap to implement, fully reversible, and sufficient to defeat
@@ -2294,7 +2293,8 @@
                 <span class="cc"># Known-plaintext attack: if you know plaintext[0] = 'M' (MZ header)
                   # then key[0] = ciphertext[0] ^ ord('M')</span>
               </div>
-              <div class="cx-algo-note">The analyst must determine the key from the malware's decryption stub — cfgx
+              <div class="cx-algo-note">The family extractor must determine the key from the malware's decryption stub —
+                cfgx
                 does not attempt to brute-force or guess it. Look for the key as a hardcoded byte array near the
                 decryption loop, or extract it as a separate YARA match.</div>
             </div>
@@ -2583,7 +2583,7 @@
           <div class="cx-section-sub">HASH FUNCTIONS — ONE-WAY DIGESTS</div>
           <div class="cx-prose">
             <p>Hash functions are one-way — they produce a fixed-size digest and cannot be reversed. In config
-              extraction, a plugin uses hashing to <strong>reproduce a value the malware derives from a hash</strong>,
+              extraction, a extractor uses hashing to <strong>match a value the malware derives from a hash</strong>,
               not to decrypt data. Common patterns: deriving an AES key by hashing a hardcoded seed
               (<code>MD5(seed) → 16-byte key</code>), verifying a downloaded payload matches an expected hash,
               computing
@@ -2682,9 +2682,9 @@
           <!-- Algorithm chaining -->
           <div class="cx-section-sub">CHAINING ALGORITHMS</div>
           <div class="cx-prose">
-            <p>The most important use of the algorithm library is chaining multiple algorithms to reproduce the exact
+            <p>The most important use of the algorithm library is chaining multiple algorithms to match the exact
               processing sequence found during reverse engineering. <strong>The order must exactly match the malware's
-                implementation.</strong> If the malware does Base64 → XOR → RC4, the plugin must do the same —
+                implementation.</strong> If the malware does Base64 → XOR → RC4, the extractor must do the same —
               reversing
               the order or substituting one algorithm produces garbage.</p>
           </div>
@@ -2721,8 +2721,8 @@
         <div class="cx-section" id="errors">
           <div class="cx-section-title">ERROR HANDLING</div>
           <div class="cx-prose">
-            <p>cfgx validates every step of the pipeline and produces specific, descriptive error messages. All errors
-              are caught at the framework level — a plugin exception does not crash cfgx, it reports the error and
+            <p>cfgx checks every step of the pipeline and produces exact, descriptive error messages. All errors
+              are caught at the framework level — a extractor exception does not crash cfgx, it reports the error and
               continues to the next sample in batch mode.</p>
           </div>
 
@@ -2736,20 +2736,20 @@
             </thead>
             <tbody>
               <tr>
-                <td class="cx-err-cause">Plugin has no extract()</td>
-                <td class="cx-err-msg">[ERROR] Analyst plugin must define extract(matches, reader)</td>
-                <td class="cx-err-note">The plugin file was loaded but no <code>extract</code> attribute exists at
+                <td class="cx-err-cause">Extractor has no extract()</td>
+                <td class="cx-err-msg">[ERROR] Analyst extractor must define extract(matches, reader)</td>
+                <td class="cx-err-note">The extractor file was loaded but no <code>extract</code> attribute exists at
                   module level — check the function name spelling</td>
               </tr>
               <tr>
                 <td class="cx-err-cause">extract is not callable</td>
-                <td class="cx-err-msg">[ERROR] Analyst plugin 'extract' must be callable</td>
+                <td class="cx-err-msg">[ERROR] Analyst extractor 'extract' must be callable</td>
                 <td class="cx-err-note">A variable named <code>extract</code> exists but is not a function — e.g.
                   <code>extract = "not a function"</code>
                 </td>
               </tr>
               <tr>
-                <td class="cx-err-cause">Plugin raises exception</td>
+                <td class="cx-err-cause">Extractor raises exception</td>
                 <td class="cx-err-msg">[ERROR] &lt;exception message&gt;</td>
                 <td class="cx-err-note">The analyst's code raised an unhandled exception. The message from the
                   exception
@@ -2760,7 +2760,7 @@
                 <td class="cx-err-msg">[ERROR] Result must contain 'config'</td>
                 <td class="cx-err-note">Returned <code>{"status": "success"}</code> without a <code>config</code> key
                   —
-                  both fields are always required, even on failure</td>
+                  both fields are always needed, even on failure</td>
               </tr>
               <tr>
                 <td class="cx-err-cause">Result missing 'status'</td>
@@ -2799,14 +2799,14 @@
               orchestration</span><br>
             │ ├── <span class="main">main.py</span> <span class="note">← process_sample() — the 10-step
               pipeline</span><br>
-            │ ├── <span class="file">plugin.py</span> <span class="note">← dynamic plugin loader + result
+            │ ├── <span class="file">extractor.py</span> <span class="note">← dynamic extractor loader + result
               validator</span><br>
             │ ├── <span class="file">reader.py</span> <span class="note">← SampleReader — controlled byte access
               abstraction</span><br>
             │ ├── <span class="file">models.py</span> <span class="note">← TypedDict: Match, PEMatch,
               ExtractionResult</span><br>
             │ └── <span class="dir">algorithms/</span> <span class="note">← 16 reusable algorithm
-              implementations</span><br>
+              functions</span><br>
             │ ├── base16.py base32.py base45.py base58.py base64.py base85.py<br>
             │ ├── xor.py xor_rolling.py<br>
             │ ├── rc4.py aes.py des.py 3des.py blowfish.py<br>
@@ -2824,10 +2824,10 @@
             │ └── <span class="main">runner.py</span> <span class="note">← compile rule → scan sample → normalize
               matches</span><br>
             │
-            ├── <span class="file">decryptor.py</span> <span class="note">← example analyst plugin
+            ├── <span class="file">extractor.py</span> <span class="note">← example family extractor
               (VoidStealer)</span><br>
-            ├── <span class="file">test_decryptor.py</span> <span class="note">← test/validation plugin</span><br>
-            ├── <span class="file">bad_decryptor.py</span> <span class="note">← negative-test plugin (tests error
+            ├── <span class="file">test_extractor.py</span> <span class="note">← test/checks extractor</span><br>
+            ├── <span class="file">bad_extractor.py</span> <span class="note">← negative-test extractor (tests error
               handling)</span><br>
             └── <span class="file">pyproject.toml</span> <span class="note">← package config, entry point,
               dependencies</span></div><br>
@@ -2849,7 +2849,7 @@
               <tr>
                 <td class="cx-td-key">cfgx/cli.py</td>
                 <td class="cx-td-type">Entry point</td>
-                <td class="cx-td-note">Parses CLI arguments, validates all three paths, dispatches to single-file or
+                <td class="cx-td-note">Parses CLI arguments, checks all three paths, dispatches to single-file or
                   directory processing, writes JSON output, prints terminal results. The user-facing layer — no
                   extraction logic here.</td>
               </tr>
@@ -2857,12 +2857,12 @@
                 <td class="cx-td-key">cfgx/main.py</td>
                 <td class="cx-td-type">Orchestrator</td>
                 <td class="cx-td-note"><code>process_sample()</code> runs the 10-step pipeline. Connects all framework
-                  components. Contains no malware-family logic — it only wires modules together and calls the plugin.
+                  components. Contains no malware-family logic — it only wires modules together and calls the extractor.
                 </td>
               </tr>
               <tr>
-                <td class="cx-td-key">cfgx/plugin.py</td>
-                <td class="cx-td-type">Plugin manager</td>
+                <td class="cx-td-key">cfgx/extractor.py</td>
+                <td class="cx-td-type">Extractor manager</td>
                 <td class="cx-td-note">Two responsibilities: (1) dynamically load a Python file as a module, (2)
                   validate the returned result dict has the correct structure and types. The boundary between cfgx and
                   analyst code.</td>
@@ -2871,7 +2871,7 @@
                 <td class="cx-td-key">cfgx/reader.py</td>
                 <td class="cx-td-type">Byte access</td>
                 <td class="cx-td-note"><code>SampleReader</code> class with <code>read(offset, size)</code>. Validates
-                  all inputs, handles EOF gracefully. The plugin never touches the file directly.</td>
+                  all inputs, handles EOF gracefully. The extractor never touches the file directly.</td>
               </tr>
               <tr>
                 <td class="cx-td-key">cfgx/models.py</td>
@@ -2914,17 +2914,17 @@
                   functions. No dependencies between algorithm modules — import only what you need.</td>
               </tr>
               <tr>
-                <td class="cx-td-key">decryptor.py</td>
-                <td class="cx-td-type">Example plugin</td>
-                <td class="cx-td-note">Working VoidStealer analyst plugin — demonstrates match filtering,
+                <td class="cx-td-key">extractor.py</td>
+                <td class="cx-td-type">Example extractor</td>
+                <td class="cx-td-note">Working VoidStealer family extractor — demonstrates match filtering,
                   reader.read(),
                   value interpretation, and result construction. A practical starting template.</td>
               </tr>
               <tr>
-                <td class="cx-td-key">bad_decryptor.py</td>
+                <td class="cx-td-key">bad_extractor.py</td>
                 <td class="cx-td-type">Negative test</td>
-                <td class="cx-td-note">Intentionally broken plugin used to test cfgx error handling. Tests: missing
-                  extract(), non-callable extract, plugin exceptions, missing config, invalid status type.</td>
+                <td class="cx-td-note">Intentionally broken extractor used to test cfgx error handling. Tests: missing
+                  extract(), non-callable extract, extractor exceptions, missing config, invalid status type.</td>
               </tr>
               <tr>
                 <td class="cx-td-key">pyproject.toml</td>
@@ -2950,38 +2950,38 @@
             <div class="cx-arch-box">
               <div class="cx-arch-label" style="color:var(--green)">// CFGX OWNS</div>
               <div class="cx-arch-items">
-                <span class="cx-arch-item owned">CLI &amp; argument validation</span>
+                <span class="cx-arch-item owned">CLI &amp; argument checks</span>
                 <span class="cx-arch-item owned">YARA rule compilation</span>
                 <span class="cx-arch-item owned">YARA sample scanning</span>
                 <span class="cx-arch-item owned">Match normalization</span>
                 <span class="cx-arch-item owned">PE / ELF loading</span>
                 <span class="cx-arch-item owned">PE metadata enrichment</span>
                 <span class="cx-arch-item owned">Controlled byte access</span>
-                <span class="cx-arch-item owned">Plugin loading</span>
-                <span class="cx-arch-item owned">Result validation</span>
+                <span class="cx-arch-item owned">Extractor loading</span>
+                <span class="cx-arch-item owned">Result checks</span>
                 <span class="cx-arch-item owned">Terminal output</span>
                 <span class="cx-arch-item owned">JSON report writing</span>
                 <span class="cx-arch-item owned">Batch result combining</span>
-                <span class="cx-arch-item owned">Algorithm implementations</span>
+                <span class="cx-arch-item owned">Algorithm functions</span>
               </div>
             </div>
             <div class="cx-arch-box">
-              <div class="cx-arch-label" style="color:var(--amber)">// ANALYST PLUGIN OWNS</div>
+              <div class="cx-arch-label" style="color:var(--amber)">// FAMILY EXTRACTOR OWNS</div>
               <div class="cx-arch-items">
-                <span class="cx-arch-item plugin">Which matches matter</span>
-                <span class="cx-arch-item plugin">How many bytes to read</span>
-                <span class="cx-arch-item plugin">What those bytes mean</span>
-                <span class="cx-arch-item plugin">Which algorithm is required</span>
-                <span class="cx-arch-item plugin">Algorithm order and chaining</span>
-                <span class="cx-arch-item plugin">Key / IV / nonce values</span>
-                <span class="cx-arch-item plugin">Config field names</span>
-                <span class="cx-arch-item plugin">Config structure / schema</span>
-                <span class="cx-arch-item plugin">Status string meaning</span>
-                <span class="cx-arch-item plugin">Family-specific heuristics</span>
+                <span class="cx-arch-item extractor">Which matches matter</span>
+                <span class="cx-arch-item extractor">How many bytes to read</span>
+                <span class="cx-arch-item extractor">What those bytes mean</span>
+                <span class="cx-arch-item extractor">Which algorithm is needed</span>
+                <span class="cx-arch-item extractor">Algorithm order and chaining</span>
+                <span class="cx-arch-item extractor">Key / IV / nonce values</span>
+                <span class="cx-arch-item extractor">Config field names</span>
+                <span class="cx-arch-item extractor">Config structure / schema</span>
+                <span class="cx-arch-item extractor">Status string meaning</span>
+                <span class="cx-arch-item extractor">Family-exact heuristics</span>
               </div>
             </div>
             <div class="cx-arch-box">
-              <div class="cx-arch-label" style="color:var(--muted)">// EXAMPLE PLUGINS</div>
+              <div class="cx-arch-label" style="color:var(--muted)">// EXAMPLE EXTRACTORS</div>
               <div class="cx-arch-items">
                 <span class="cx-arch-item"
                   style="color:var(--muted);border-color:rgba(100,116,139,.3)">voidstealer.py</span>
@@ -3005,7 +3005,7 @@
           <div class="cx-prose">
             <p>The framework was tested incrementally against real malware samples throughout development. All
               pipeline
-              components and validation paths have been exercised.</p>
+              components and checks paths have been exercised.</p>
           </div>
 
           <div class="cx-test-grid">
@@ -3040,12 +3040,12 @@
               </div>
             </div>
             <div class="cx-test-item">
-              <div class="cx-test-label">PLUGIN VALIDATION</div>
+              <div class="cx-test-label">EXTRACTOR VALIDATION</div>
               <div class="cx-test-cases">
-                <div class="cx-test-case">Valid plugin loads and runs</div>
+                <div class="cx-test-case">Valid extractor loads and runs</div>
                 <div class="cx-test-case">Missing extract() → clear error</div>
                 <div class="cx-test-case">Non-callable extract → clear error</div>
-                <div class="cx-test-case">Plugin exception → reported, continues</div>
+                <div class="cx-test-case">Extractor exception → reported, continues</div>
                 <div class="cx-test-case">Missing config key → rejected</div>
                 <div class="cx-test-case">Missing status key → rejected</div>
                 <div class="cx-test-case">Non-string status → rejected</div>
@@ -3055,7 +3055,7 @@
             <div class="cx-test-item">
               <div class="cx-test-label">BATCH PROCESSING</div>
               <div class="cx-test-cases">
-                <div class="cx-test-case">Two samples processed independently</div>
+                <div class="cx-test-case">Two samples processed separately</div>
                 <div class="cx-test-case">Results combined into one JSON</div>
                 <div class="cx-test-case">Correct per-sample labelling</div>
                 <div class="cx-test-case">Output file named after rule</div>
@@ -3081,7 +3081,7 @@
               <div class="cx-mvp-label">CLI</div>
               <div class="cx-mvp-items">
                 <span class="cx-mvp-item">Argument parsing</span>
-                <span class="cx-mvp-item">Path validation</span>
+                <span class="cx-mvp-item">Path checks</span>
                 <span class="cx-mvp-item">Single file</span>
                 <span class="cx-mvp-item">Directory batch</span>
                 <span class="cx-mvp-item">--output flag</span>
@@ -3110,16 +3110,16 @@
               <div class="cx-mvp-label">READER</div>
               <div class="cx-mvp-items">
                 <span class="cx-mvp-item">Controlled reads</span>
-                <span class="cx-mvp-item">Offset validation</span>
-                <span class="cx-mvp-item">Size validation</span>
+                <span class="cx-mvp-item">Offset checks</span>
+                <span class="cx-mvp-item">Size checks</span>
                 <span class="cx-mvp-item">Safe EOF handling</span>
               </div>
             </div>
             <div class="cx-mvp-block">
-              <div class="cx-mvp-label">PLUGINS</div>
+              <div class="cx-mvp-label">EXTRACTORS</div>
               <div class="cx-mvp-items">
                 <span class="cx-mvp-item">Dynamic loading</span>
-                <span class="cx-mvp-item">Result validation</span>
+                <span class="cx-mvp-item">Result checks</span>
                 <span class="cx-mvp-item">Error reporting</span>
                 <span class="cx-mvp-item">External file</span>
               </div>
@@ -3159,8 +3159,8 @@
           <div class="cx-roadmap">
             <div class="cx-roadmap-item">Verbose / debug logging mode showing each pipeline step</div>
             <div class="cx-roadmap-item">Multiple YARA rule support in a single run</div>
-            <div class="cx-roadmap-item">Plugin metadata (author, version, supported families)</div>
-            <div class="cx-roadmap-item">Plugin discovery from a plugin directory</div>
+            <div class="cx-roadmap-item">Extractor metadata (author, version, supported families)</div>
+            <div class="cx-roadmap-item">Extractor discovery from a extractor directory</div>
             <div class="cx-roadmap-item">Extraction timestamps in JSON output</div>
             <div class="cx-roadmap-item">Configuration deduplication across batch results</div>
             <div class="cx-roadmap-item">Extraction statistics (match count, success rate)</div>
@@ -3169,7 +3169,7 @@
             <div class="cx-roadmap-item">JSON output schema versioning</div>
             <div class="cx-roadmap-item">Improved batch-processing controls (parallelism, filtering)</div>
             <div class="cx-roadmap-item">Structured logging (JSON log output)</div>
-            <div class="cx-roadmap-item">Additional algorithm implementations</div>
+            <div class="cx-roadmap-item">Additional algorithm functions</div>
             <div class="cx-roadmap-item">Packaging and release automation</div>
           </div>
         </div>
@@ -3183,17 +3183,17 @@
           </div>
 
           <div class="cx-code"><span class="cx-code-label">STEP 1 — INVOCATION</span>cfgx D:\rules\voidstealer.yar
-            D:\samples\voidstealer D:\plugins\voidstealer.py --output D:\results</div>
+            D:\samples\voidstealer D:\extractors\voidstealer.py --output D:\results</div>
 
           <div class="cx-code"><span class="cx-code-label">STEP 2 — cfgx INTERNAL PIPELINE (per sample)</span><span
               class="cn">1.</span> Validate paths ✓
-            <span class="cn">2.</span> Load plugin → voidstealer.extract() is callable ✓
+            <span class="cn">2.</span> Load extractor → voidstealer.extract() is callable ✓
             <span class="cn">3.</span> Load PE → sample is PE32+, ImageBase=0x140000000 ✓
             <span class="cn">4.</span> YARA scan → 10 match instances from VoidStealer rule ✓
             <span class="cn">5.</span> Normalize → 10 Match objects with rule+identifier+offset ✓
             <span class="cn">6.</span> Enrich PE → section + RVA + VA added to each match ✓
             <span class="cn">7.</span> SampleReader → reader wrapping sample file handle ✓
-            <span class="cn">8.</span> extract() → your family-specific config extractor script runs here ← analyst code
+            <span class="cn">8.</span> extract() → your extractor runs here ← analyst code
             <span class="cn">9.</span> Validate → result has status(str) + config(any) ✓
             <span class="cn">10.</span> Output → print to terminal + write JSON ✓
           </div>

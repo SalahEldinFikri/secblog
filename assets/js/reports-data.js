@@ -29,7 +29,7 @@ const REPORTS = [
   {
     slug: "stealc-stealer",
     title: "Stealc Stealer: Technical Reverse Engineering Report",
-    date: "2025-07-01",
+    date: "2026-09-15",
     tag: "MALWARE",
     severity: "HIGH",
     readTime: "12 MIN READ",

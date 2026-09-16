@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stealc Stealer — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+  <style>
+    .tag-pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      padding: 3px 10px;
+      border: 1px solid;
+      display: inline-block;
+      margin-right: 6px;
+      margin-bottom: 10px
+    }
+
+    .tag-red {
+      border-color: var(--red);
+      color: var(--red)
+    }
+
+    .tag-amber {
+      border-color: var(--amber);
+      color: var(--amber)
+    }
+
+    .tag-blue {
+      border-color: var(--blue);
+      color: var(--blue)
+    }
+
+    .tag-green {
+      border-color: var(--green);
+      color: var(--green)
+    }
+
+    .tag-purple {
+      border-color: #a78bfa;
+      color: #a78bfa
+    }
+
+    .sev {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 10px;
+      letter-spacing: 1px;
+      font-weight: 700
+    }
+
+    .sev-high {
+      background: var(--amber);
+      color: #0a0e17
+    }
+
+    .sev-crit {
+      background: var(--red);
+      color: #0a0e17
+    }
+
+    /* Callouts */
+    .callout {
+      font-size: 13px;
+      padding: .85rem 1.1rem;
+      border-left: 3px solid;
+      line-height: 1.7;
+      margin: 1rem 0
+    }
+
+    .callout-red {
+      border-color: var(--red);
+      background: rgba(255, 77, 109, .06)
+    }
+
+    .callout-amber {
+      border-color: var(--amber);
+      background: rgba(245, 158, 11, .06)
+    }
+
+    .callout-blue {
+      border-color: var(--blue);
+      background: rgba(56, 189, 248, .06)
+    }
+
+    .callout-green {
+      border-color: var(--green);
+      background: rgba(0, 255, 157, .05)
+    }
+
+    .callout strong {
+      color: #e8f4ff
+    }
+
+    /* Execution flow steps */
+    .exec-steps {
+      margin: 1.25rem 0
+    }
+
+    .exec-step {
+      display: flex;
+      gap: 1rem;
+      padding: .8rem 0;
+      border-bottom: 1px solid rgba(31, 45, 69, .4)
+    }
+
+    .exec-step:last-child {
+      border-bottom: none
+    }
+
+    .exec-num {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--green);
+      width: 24px;
+      flex-shrink: 0;
+      padding-top: 1px
+    }
+
+    .exec-body {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.7
+    }
+
+    .exec-body strong {
+      color: #e8f4ff
+    }
+
+    .exec-body code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--amber);
+      background: rgba(0, 0, 0, .3);
+      padding: 1px 5px
+    }
+
+    /* CIS block highlight */
+    .cis-block {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      background: rgba(255, 77, 109, .06);
+      border: 1px solid rgba(255, 77, 109, .2);
+      padding: .9rem 1rem;
+      margin: 1rem 0
+    }
+
+    .cis-lang {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 10px;
+      border: 1px solid rgba(255, 77, 109, .4);
+      color: var(--red)
+    }
+
+    /* Config options grid */
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      margin: 1.25rem 0
+    }
+
+    .config-cell {
+      background: var(--surface);
+      padding: .7rem .9rem
+    }
+
+    .config-key {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--green);
+      margin-bottom: .3rem
+    }
+
+    .config-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5
+    }
+
+    /* Target browser grid */
+    .target-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      margin: 1rem 0
+    }
+
+    .target-cell {
+      background: var(--surface);
+      padding: .65rem .9rem;
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .target-cell .tc-name {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text);
+      margin-bottom: .2rem
+    }
+
+    /* API table - compact, scrollable */
+    .api-wrap {
+      max-height: 440px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      margin-top: .75rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent
+    }
+
+    .api-wrap::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .api-wrap::-webkit-scrollbar-thumb {
+      background: var(--border)
+    }
+
+    .api-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      font-family: var(--mono)
+    }
+
+    .api-table th {
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 1
+    }
+
+    .api-table td {
+      padding: 4px 10px;
+      border-bottom: 1px solid rgba(31, 45, 69, .35);
+      vertical-align: top
+    }
+
+    .api-table td:first-child {
+      color: var(--amber);
+      white-space: nowrap
+    }
+
+    .api-table td:nth-child(2) {
+      color: var(--green)
+    }
+
+    .api-table td:nth-child(3) {
+      color: var(--muted);
+      font-size: 10.5px
+    }
+
+    .api-table tr:hover td {
+      background: rgba(0, 255, 157, .03)
+    }
+
+    /* IOC table */
+    .ioc-block {
+      background: var(--surface);
+      border: 1px solid var(--border)
+    }
+
+    .ioc-header {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--green);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .ioc-header .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%
+    }
+
+    .ioc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px
+    }
+
+    .ioc-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 7px 14px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .ioc-table td {
+      font-family: var(--mono);
+      padding: 6px 14px;
+      border-bottom: 1px solid rgba(31, 45, 69, .5);
+      vertical-align: top;
+      word-break: break-all
+    }
+
+    .ioc-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .ioc-table tr:hover td {
+      background: rgba(0, 255, 157, .03)
+    }
+
+    .ioc-c2 {
+      color: var(--red)
+    }
+
+    .ioc-key {
+      color: #f472b6
+    }
+
+    .ioc-file {
+      color: var(--blue)
+    }
+
+    .ioc-reg {
+      color: var(--amber)
+    }
+
+    .ioc-api {
+      color: var(--green)
+    }
+
+    .ioc-flag {
+      color: #a78bfa
+    }
+
+    .ioc-ps {
+      color: #2dd4bf
+    }
+
+    /* MITRE table */
+    .mitre-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 1rem
+    }
+
+    .mitre-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface)
+    }
+
+    .mitre-table td {
+      padding: 7px 12px;
+      border-bottom: 1px solid rgba(31, 45, 69, .5);
+      vertical-align: top;
+      line-height: 1.5;
+      color: var(--text)
+    }
+
+    .mitre-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .mitre-table tr:hover td {
+      background: rgba(0, 255, 157, .03)
+    }
+
+    .mitre-id {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--blue);
+      white-space: nowrap
+    }
+
+    .mitre-tactic {
+      font-size: 11px;
+      color: var(--amber);
+      white-space: nowrap
+    }
+
+    .mitre-unconfirmed {
+      color: var(--muted);
+      font-style: italic
+    }
+
+    /* YARA block */
+    .yara-block {
+      background: rgba(0, 0, 0, .5);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      padding: 1rem 1.1rem;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #cdd6f4;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.65;
+      margin-top: .75rem
+    }
+
+    .yara-kw {
+      color: #89b4fa
+    }
+
+    .yara-str {
+      color: #a6e3a1
+    }
+
+    .yara-com {
+      color: #585b70
+    }
+
+    .yara-hex {
+      color: var(--amber)
+    }
+
+    .yara-meta {
+      color: #f472b6
+    }
+
+    /* Fig */
+    .fig-wrap {
+      margin: 1.25rem 0
+    }
+
+    .fig-img {
+      width: 100%;
+      border: 1px solid var(--border);
+      display: block
+    }
+
+    .fig-cap {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      padding: .4rem .5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      letter-spacing: .5px
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg class="icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </button>
+    <div class="logo">&gt;_ <span>//</span> MR_MATRIX</div>
+    <div class="nav-links">
+      <a href="../index.html" class="active">Home</a>
+      <a href="../reports.html" class="active">Reports</a>
+      <a href="../APT.html" class="active">APTs</a>
+      <a href="../ioc-feed.html" class="active">IOCs</a>
+      <a href="../yara-feed.html" class="active">YARA Rules</a>
+      <a href="../siem-reference.html" class="active">SIEM Reference</a>
+      <a href="../malware-structures.html" class="active">Structures</a>
+      <a href="../achievements.html" class="active">Achievements</a>
+      <a href="../about.html" class="active">About Me</a>
+      <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta-mobile" style="text-decoration:none;">⬇ CV</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+    <div class="report-breadcrumb"><a href="../reports.html">&lt; All Reports</a></div>
+
+    <!-- ══ HEADER ══ -->
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-red">REVERSE ENGINEERING</span>
+        <span class="tag-pill tag-amber">INFOSTEALER</span>
+        <span class="tag-pill tag-blue">WINDOWS</span>
+        <span class="tag-pill tag-purple">MaaS</span>
+        <span class="tag-pill tag-green">YARA</span>
+      </div>
+      <h1 class="report-title">Stealc Stealer: Technical Reverse Engineering Report</h1>
+      <div class="report-meta">
+        <span>📅 2025</span>
+        <span>⏱ 12 MIN READ</span>
+        <span>✍ SalahEldin Kamil</span>
+        <span class="sev sev-high">HIGH</span>
+      </div>
+      <div class="report-summary">
+        Full reverse engineering of a Stealc stealer sample. The binary resolves all operational strings at runtime
+        using Base64 + RC4 decryption, then performs dynamic API resolution before conducting host fingerprinting,
+        CIS-region evasion, browser credential extraction (Chromium + Firefox), Steam/Outlook/WinSCP data theft, desktop
+        screenshot capture, and PowerShell-based loader execution — all exfiltrated to a typosquatted
+        Cloudflare-mimicking C2 domain.
+      </div>
+    </div>
+
+    <!-- ══ 1. EXECUTION OVERVIEW ══ -->
+    <div class="report-section">
+      <h2>1. Execution Flow Overview</h2>
+      <p>The sample follows a clean, sequential execution pattern across five distinct phases before exfiltration
+        begins:</p>
+
+      <div class="exec-steps">
+        <div class="exec-step">
+          <div class="exec-num">①</div>
+          <div class="exec-body"><strong>String decryption</strong> — All operational strings (API names, C2 address,
+            configuration keys, file paths) are encrypted at rest using Base64 + RC4 with the key
+            <code>ZFNBF0SzMim7hC3npM</code>. Decryption runs first, populating an in-memory string table used
+            throughout.
+          </div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">②</div>
+          <div class="exec-body"><strong>Dynamic API resolution</strong> — Using the decrypted DLL and API name strings,
+            the malware calls <code>LoadLibraryA</code> then <code>GetProcAddress</code> for each required function and
+            stores the resolved pointer in a global variable for later use. No static imports are visible for these
+            APIs.</div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">③</div>
+          <div class="exec-body"><strong>Host fingerprinting</strong> — Collects username, NetBIOS name,
+            locale/language, keyboard layouts, OS version, CPU, RAM, GPU, display resolution, timezone, running process
+            list, and installed software. Constructs a <code>system_info.txt</code> report.</div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">④</div>
+          <div class="exec-body"><strong>CIS region check</strong> — Queries <code>GetUserDefaultLangID</code> and
+            terminates via <code>ExitProcess</code> if a Russian/CIS language is detected. See Section 4.</div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">⑤</div>
+          <div class="exec-body"><strong>Data collection &amp; exfiltration</strong> — Browsers, Steam, Outlook, WinSCP,
+            screenshot, and file collection tasks are dispatched. Each output is uploaded to the C2 as an encrypted blob
+            via HTTP POST.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 2. STRING DECRYPTION ══ -->
+    <div class="report-section">
+      <h2>2. String Obfuscation — Base64 + RC4</h2>
+      <p>Every operational string is stored encrypted in the binary and decrypted at runtime before first use. The
+        decryption routine applies two transformations in sequence:</p>
+
+      <div
+        style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-left:3px solid var(--green);padding:.75rem 1rem;font-family:var(--mono);font-size:12px;color:#e8f4ff;margin:1rem 0">
+        plaintext = RC4( key=<span style="color:#f472b6">"ZFNBF0SzMim7hC3npM"</span>, data=Base64Decode( ciphertext ) )
+      </div>
+
+      <p>A secondary RC4 key <code style="font-family:var(--mono);color:var(--amber)">I9r3h5kFEzqWqq0I</code> was
+        observed in the sample, likely used for configuration or data encryption distinct from the string table key.</p>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/StealcStealer/decryption.png" alt="String decryption routine in IDA Pro" />
+        <div class="fig-cap">Figure 1 — String decryption: Base64 decode followed by RC4 with hardcoded key
+          ZFNBF0SzMim7hC3npM</div>
+      </div>
+
+      <!-- Collapsible API/string table -->
+      <p style="margin-top:1.25rem">The full decrypted string table spans API names, DLL names, configuration keys,
+        browser artifact paths, system info field labels, and C2 communication strings. Key categories:</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin:1rem 0">
+        <div
+          style="background:var(--surface);border:1px solid var(--border);padding:.6rem .8rem;font-family:var(--mono);font-size:10px;color:var(--green)">
+          DLLs loaded<br /><span style="color:var(--muted);font-size:9px">13 libraries</span></div>
+        <div
+          style="background:var(--surface);border:1px solid var(--border);padding:.6rem .8rem;font-family:var(--mono);font-size:10px;color:var(--amber)">
+          API names<br /><span style="color:var(--muted);font-size:9px">90+ functions</span></div>
+        <div
+          style="background:var(--surface);border:1px solid var(--border);padding:.6rem .8rem;font-family:var(--mono);font-size:10px;color:var(--blue)">
+          Browser artifacts<br /><span style="color:var(--muted);font-size:9px">Cookies, logins, history…</span></div>
+        <div
+          style="background:var(--surface);border:1px solid var(--border);padding:.6rem .8rem;font-family:var(--mono);font-size:10px;color:#f472b6">
+          Config fields<br /><span style="color:var(--muted);font-size:9px">~40 JSON keys</span></div>
+        <div
+          style="background:var(--surface);border:1px solid var(--border);padding:.6rem .8rem;font-family:var(--mono);font-size:10px;color:#a78bfa">
+          System info labels<br /><span style="color:var(--muted);font-size:9px">IP, HWID, OS, CPU…</span></div>
+        <div
+          style="background:var(--surface);border:1px solid var(--border);padding:.6rem .8rem;font-family:var(--mono);font-size:10px;color:var(--red)">
+          C2 endpoint<br /><span style="color:var(--muted);font-size:9px">cloud-flare-authenticator.link</span></div>
+      </div>
+
+      <div class="api-wrap">
+        <table class="api-table">
+          <thead>
+            <tr>
+              <th>CATEGORY</th>
+              <th>STRING / API</th>
+              <th>PURPOSE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>C2</td>
+              <td>https://cloud-flare-authenticator.link</td>
+              <td>Primary C2 endpoint</td>
+            </tr>
+            <tr>
+              <td>RC4 Key</td>
+              <td>I9r3h5kFEzqWqq0I</td>
+              <td>Data / config encryption key</td>
+            </tr>
+            <tr>
+              <td>DLL</td>
+              <td>kernel32.dll</td>
+              <td>Core Windows API</td>
+            </tr>
+            <tr>
+              <td>DLL</td>
+              <td>ntdll.dll</td>
+              <td>Native Windows API</td>
+            </tr>
+            <tr>
+              <td>DLL</td>
+              <td>advapi32.dll</td>
+              <td>Security/registry APIs</td>
+            </tr>
+            <tr>
+              <td>DLL</td>
+              <td>winhttp.dll</td>
+              <td>HTTP communication</td>
+            </tr>
+            <tr>
+              <td>DLL</td>
+              <td>gdiplus.dll</td>
+              <td>GDI+ screenshot capture</td>
+            </tr>
+            <tr>
+              <td>DLL</td>
+              <td>crypt32.dll</td>
+              <td>DPAPI / crypto functions</td>
+            </tr>
+            <tr>
+              <td>DLL</td>
+              <td>ole32.dll</td>
+              <td>COM / OLE</td>
+            </tr>
+            <tr>
+              <td>DLL</td>
+              <td>rstrtmgr.dll</td>
+              <td>Restart Manager (locked file bypass)</td>
+            </tr>
+            <tr>
+              <td>DLL</td>
+              <td>user32.dll / gdi32.dll / shlwapi.dll / shell32.dll</td>
+              <td>UI, graphics, shell utilities</td>
+            </tr>
+            <tr>
+              <td>Dynamic API</td>
+              <td>LoadLibraryA / GetProcAddress</td>
+              <td>Runtime API resolution</td>
+            </tr>
+            <tr>
+              <td>Crypto API</td>
+              <td>CryptUnprotectData</td>
+              <td>DPAPI — Chrome key decryption</td>
+            </tr>
+            <tr>
+              <td>Crypto API</td>
+              <td>CryptStringToBinaryA / CryptBinaryToStringA</td>
+              <td>Base64 encode/decode</td>
+            </tr>
+            <tr>
+              <td>Graphics API</td>
+              <td>GdiplusStartup / GdipCreateBitmapFromHBITMAP / GdipSaveImageToStream</td>
+              <td>GDI+ screenshot pipeline</td>
+            </tr>
+            <tr>
+              <td>Screen Capture</td>
+              <td>CreateCompatibleDC / CreateCompatibleBitmap / BitBlt / DeleteDC</td>
+              <td>GDI desktop capture</td>
+            </tr>
+            <tr>
+              <td>Registry API</td>
+              <td>RegOpenKeyExW/A / RegQueryValueExW/A / RegEnumKeyExA / RegCloseKey</td>
+              <td>Registry access for Steam, CPU, software</td>
+            </tr>
+            <tr>
+              <td>Restart Manager</td>
+              <td>RmStartSession / RmRegisterResources / RmGetList / RmEndSession</td>
+              <td>Unlock locked browser DB files</td>
+            </tr>
+            <tr>
+              <td>Process Injection</td>
+              <td>VirtualAllocEx / WriteProcessMemory / QueueUserAPC / ResumeThread</td>
+              <td>APC-based code injection capability</td>
+            </tr>
+            <tr>
+              <td>Filesystem</td>
+              <td>FindFirstFileA / FindNextFileA / CopyFileA / DeleteFileA / WriteFile / ReadFile</td>
+              <td>File enumeration and collection</td>
+            </tr>
+            <tr>
+              <td>Firefox NSS</td>
+              <td>NSS_Init / PK11_Authenticate / PK11SDR_Decrypt / NSS_Shutdown</td>
+              <td>Firefox credential decryption via nss3.dll</td>
+            </tr>
+            <tr>
+              <td>PowerShell</td>
+              <td>C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe</td>
+              <td>Loader execution path</td>
+            </tr>
+            <tr>
+              <td>PowerShell</td>
+              <td>iex(New-Object Net.WebClient).DownloadString('</td>
+              <td>Download-and-execute command</td>
+            </tr>
+            <tr>
+              <td>Installer</td>
+              <td>C:\Windows\system32\msiexec.exe /passive</td>
+              <td>Silent MSI payload installation</td>
+            </tr>
+            <tr>
+              <td>Steam</td>
+              <td>Software\Valve\Steam → SteamPath → \config\</td>
+              <td>Steam path resolution</td>
+            </tr>
+            <tr>
+              <td>Steam files</td>
+              <td>ssfn*, config.vdf, loginusers.vdf, libraryfolders.vdf</td>
+              <td>Steam session files targeted</td>
+            </tr>
+            <tr>
+              <td>Browser</td>
+              <td>Login Data / Cookies / Web Data / History / Local State</td>
+              <td>Chromium database files</td>
+            </tr>
+            <tr>
+              <td>Browser Crypto</td>
+              <td>os_crypt → encrypted_key</td>
+              <td>Chromium master key extraction</td>
+            </tr>
+            <tr>
+              <td>Browser</td>
+              <td>Local Extension Settings / Sync Extension Settings / IndexedDB</td>
+              <td>Chrome extension / wallet storage</td>
+            </tr>
+            <tr>
+              <td>Firefox</td>
+              <td>logins.json / cookies.sqlite / formhistory.sqlite / places.sqlite / profiles.ini</td>
+              <td>Firefox data targets</td>
+            </tr>
+            <tr>
+              <td>Config</td>
+              <td>self_delete / take_screenshot / steal_steam / steal_outlook</td>
+              <td>Operator-controlled capability flags</td>
+            </tr>
+            <tr>
+              <td>Config</td>
+              <td>run_as_admin / blocked / loader / use_v20</td>
+              <td>Execution and collection options</td>
+            </tr>
+            <tr>
+              <td>HTTP</td>
+              <td>POST / Content-Type: application/json / opcode / data / upload_file</td>
+              <td>C2 communication protocol fields</td>
+            </tr>
+            <tr>
+              <td>Output</td>
+              <td>system_info.txt / passwords.txt / screenshot.jpg</td>
+              <td>Exfiltrated output filenames</td>
+            </tr>
+            <tr>
+              <td>CPU</td>
+              <td>HARDWARE\DESCRIPTION\System\CentralProcessor\0 → ProcessorNameString</td>
+              <td>CPU model fingerprinting</td>
+            </tr>
+            <tr>
+              <td>Software</td>
+              <td>SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall → DisplayName / DisplayVersion</td>
+              <td>Installed software enumeration</td>
+            </tr>
+            <tr>
+              <td>Build path</td>
+              <td>C:\builder_v3\build\json.h</td>
+              <td>Embedded builder artefact — hard IOC</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ 3. API RESOLVER ══ -->
+    <div class="report-section">
+      <h2>3. Dynamic API Resolution</h2>
+      <p>After string decryption, the malware builds its API table entirely at runtime. For each required function it
+        calls <code style="font-family:var(--mono);color:var(--amber)">LoadLibraryA</code> with the decrypted DLL name,
+        then <code style="font-family:var(--mono);color:var(--amber)">GetProcAddress</code> with the decrypted function
+        name, and stores the resolved pointer in a global variable. Static import analysis reveals only the bootstrap
+        functions — all 90+ operational APIs are invisible to standard IAT inspection.</p>
+
+      <div class="callout callout-amber">
+        <strong>Analysis note:</strong> To enumerate all resolved APIs, hook <code
+          style="font-family:var(--mono)">GetProcAddress</code> at the debugger entry point and log all calls before the
+        malware's main logic begins. Alternatively, dump the global pointer table after the API resolver returns — all
+        function pointers are populated contiguously.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/StealcStealer/ApiResolver.png" alt="API resolver in IDA Pro" />
+        <div class="fig-cap">Figure 2 — Dynamic API resolver: LoadLibraryA + GetProcAddress loop storing pointers in
+          global variable table</div>
+      </div>
+    </div>
+
+    <!-- ══ 4. FINGERPRINTING + CIS CHECK ══ -->
+    <div class="report-section">
+      <h2>4. Host Fingerprinting &amp; CIS Region Evasion</h2>
+      <p>Following API resolution, the malware collects a detailed victim profile before performing any data theft. This
+        profile is assembled into <code style="font-family:var(--mono);color:var(--amber)">system_info.txt</code> and
+        uploaded to C2 as the first exfiltrated object.</p>
+
+      <p>Fields collected:</p>
+      <ul class="report-list">
+        <li>Network: external IP, country (ISO code)</li>
+        <li>Identity: HWID (volume serial), username, computer name, OS version + build, architecture</li>
+        <li>Hardware: CPU model + core/thread count, RAM total, GPU model, display resolution + color depth per monitor
+        </li>
+        <li>Locale: local time, UTC time, timezone, keyboard layouts, system language</li>
+        <li>Software: full installed application list from <code
+            style="font-family:var(--mono);color:var(--amber)">SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall</code>
+        </li>
+        <li>Processes: running process list via <code
+            style="font-family:var(--mono);color:var(--amber)">CreateToolhelp32Snapshot</code> + <code
+            style="font-family:var(--mono);color:var(--amber)">Process32FirstW/NextW</code></li>
+        <li>Power: battery/power status via <code
+            style="font-family:var(--mono);color:var(--amber)">GetSystemPowerStatus</code> (laptop detection)</li>
+      </ul>
+
+      <p>Immediately after fingerprinting, the malware queries <code
+          style="font-family:var(--mono);color:var(--amber)">GetUserDefaultLangID</code> and compares the result against
+        the following language IDs:</p>
+
+      <div class="cis-block">
+        <span class="cis-lang">Russian — 1049</span>
+        <span class="cis-lang">Ukrainian — 9</span>
+        <span class="cis-lang">Belarusian — 1</span>
+        <span class="cis-lang">Kazakh — 28</span>
+        <span class="cis-lang">Uzbek — 4</span>
+      </div>
+
+      <p>If any of these languages is detected, the malware immediately calls <code
+          style="font-family:var(--mono);color:var(--amber)">ExitProcess</code> — a standard CIS operator protection
+        clause common to most Russian-developed MaaS stealers.</p>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/StealcStealer/main.png" alt="Main function in IDA Pro" />
+        <div class="fig-cap">Figure 3 — Main function: host info collection, CIS language check, then sequential data
+          theft dispatch</div>
+      </div>
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/StealcStealer/region.png" alt="CIS language check" />
+        <div class="fig-cap">Figure 4 — CIS region check: GetUserDefaultLangID compared against Russian/CIS language
+          IDs; ExitProcess if matched</div>
+      </div>
+    </div>
+
+    <!-- ══ 5. DATA COLLECTION ══ -->
+    <div class="report-section">
+      <h2>5. Data Collection Modules</h2>
+
+      <!-- 5.1 Browsers -->
+      <h3 style="font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:1px;margin:1.25rem 0 .75rem">
+        5.1 Browser Credential &amp; Cookie Theft</h3>
+      <p>The browser module iterates a task list dispatching each entry to the appropriate collection routine based on
+        task type: browser data (SQLite), browser-specific info, or cookie extraction. Chromium-based browsers are
+        handled via DPAPI (<code style="font-family:var(--mono);color:var(--amber)">CryptUnprotectData</code>) for v10
+        keys and direct <code style="font-family:var(--mono);color:var(--amber)">os_crypt / encrypted_key</code>
+        extraction for v20. Firefox credentials are decrypted via <code
+          style="font-family:var(--mono);color:var(--amber)">PK11SDR_Decrypt</code> from the dynamically loaded <code
+          style="font-family:var(--mono);color:var(--amber)">nss3.dll</code>.</p>
+
+      <p>Locked database files are handled by the Restart Manager (<code
+          style="font-family:var(--mono);color:var(--amber)">rstrtmgr.dll</code>) — the malware registers the locked
+        file as a resource, uses RmGetList to identify the locking process, terminates it, then accesses the file.</p>
+
+      <p>Targeted browsers and data types:</p>
+      <div class="target-grid">
+        <div class="target-cell">
+          <div class="tc-name">Chrome / Chromium</div>Login Data, Cookies, Web Data, History, Bookmarks
+        </div>
+        <div class="target-cell">
+          <div class="tc-name">Microsoft Edge</div>Login Data, Cookies, History
+        </div>
+        <div class="target-cell">
+          <div class="tc-name">Firefox</div>logins.json, cookies.sqlite, formhistory.sqlite, places.sqlite
+        </div>
+        <div class="target-cell">
+          <div class="tc-name">Opera / Opera GX</div>Login Data, Cookies
+        </div>
+        <div class="target-cell">
+          <div class="tc-name">Brave</div>Login Data, Cookies, Web Data
+        </div>
+        <div class="target-cell">
+          <div class="tc-name">Yandex</div>Login Data, Cookies
+        </div>
+        <div class="target-cell">
+          <div class="tc-name">Extensions</div>Local Extension Settings, Sync Extension Settings, IndexedDB (crypto
+          wallets)
+        </div>
+        <div class="target-cell">
+          <div class="tc-name">Plugins</div>Browser plugin data
+        </div>
+      </div>
+
+      <p>Credential output format written to <code
+          style="font-family:var(--mono);color:var(--amber)">passwords.txt</code>:</p>
+      <div
+        style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-left:3px solid var(--blue);padding:.7rem 1rem;font-family:var(--mono);font-size:11px;color:#cdd6f4;white-space:pre;overflow-x:auto;margin:.75rem 0">
+        browser: Chrome
+        profile: Default
+        url: https://example.com
+        login: user@example.com
+        password: hunter2</div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/StealcStealer/browser.png" alt="Browser collection dispatcher" />
+        <div class="fig-cap">Figure 5 — Browser task dispatcher: iterates task list and routes to browser data, browser
+          info, or cookie collection routines</div>
+      </div>
+
+      <!-- 5.2 Steam -->
+      <h3 style="font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:1px;margin:1.5rem 0 .75rem">
+        5.2 Steam Session Theft</h3>
+      <p>The Steam module reads the installation path from <code
+          style="font-family:var(--mono);color:var(--amber)">HKCU\Software\Valve\Steam → SteamPath</code>, constructs
+        the config directory path, then collects the following files:</p>
+      <ul class="report-list">
+        <li><code style="font-family:var(--mono)">ssfn*</code> — Steam Guard session tokens</li>
+        <li><code style="font-family:var(--mono)">config.vdf</code> — Account configuration</li>
+        <li><code style="font-family:var(--mono)">loginusers.vdf</code> — Remembered login accounts</li>
+        <li><code style="font-family:var(--mono)">DialogConfig.vdf / DialogConfigOverlay*.vdf</code> — UI configuration
+        </li>
+        <li><code style="font-family:var(--mono)">libraryfolders.vdf</code> — Library path configuration</li>
+      </ul>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/StealcStealer/steam.png" alt="Steam collection routine" />
+        <div class="fig-cap">Figure 6 — Steam module: registry path resolution and targeted Steam config file collection
+        </div>
+      </div>
+
+      <!-- 5.3 Outlook -->
+      <h3 style="font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:1px;margin:1.5rem 0 .75rem">
+        5.3 Outlook Data Collection</h3>
+      <p>Iterates Outlook-related registry entries, extracts account strings and profile information, combines them into
+        a buffer, and uploads via <code style="font-family:var(--mono);color:var(--amber)">UploadEncryptedData</code>.
+        Output stored remotely as <code
+          style="font-family:var(--mono);color:var(--amber)">soft\Outlook\outlook.txt</code>. Controlled by the <code
+          style="font-family:var(--mono);color:var(--amber)">steal_outlook</code> configuration flag.</p>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/StealcStealer/outlook.png" alt="Outlook collection routine" />
+        <div class="fig-cap">Figure 7 — Outlook module: registry entry iteration and encrypted upload to
+          soft\Outlook\outlook.txt</div>
+      </div>
+
+      <!-- 5.4 WinSCP -->
+      <h3 style="font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:1px;margin:1.5rem 0 .75rem">
+        5.4 WinSCP Session Harvesting</h3>
+      <p>Enumerates all WinSCP stored sessions from <code
+          style="font-family:var(--mono);color:var(--amber)">Software\Martin Prikryl\WinSCP 2\Sessions</code>. For each
+        session it extracts: session name, host, port, username, and password. If a session is password-protected with a
+        master password or is empty, that status is recorded instead. Output formatted as a text report and uploaded as
+        <code style="font-family:var(--mono);color:var(--amber)">soft\WinSCP\winscp.txt</code>.
+      </p>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/StealcStealer/winscp.png" alt="WinSCP session harvesting" />
+        <div class="fig-cap">Figure 8 — WinSCP module: session enumeration from registry, credential extraction with
+          master-password handling</div>
+      </div>
+
+      <!-- 5.5 Screenshot -->
+      <h3 style="font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:1px;margin:1.5rem 0 .75rem">
+        5.5 Desktop Screenshot</h3>
+      <p>When the <code style="font-family:var(--mono);color:var(--amber)">take_screenshot</code> config flag is set,
+        the malware captures the full desktop using a standard GDI → GDI+ pipeline: <code
+          style="font-family:var(--mono);color:var(--amber)">GetDC → CreateCompatibleDC → CreateCompatibleBitmap → BitBlt</code>
+        to capture pixels, then <code
+          style="font-family:var(--mono);color:var(--amber)">GdipCreateBitmapFromHBITMAP → GdipSaveImageToStream → CreateStreamOnHGlobal</code>
+        to encode as JPEG into an in-memory stream. Output: <code
+          style="font-family:var(--mono);color:var(--amber)">screenshot.jpg</code>.</p>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/StealcStealer/screenshot.png" alt="Screenshot capture routine" />
+        <div class="fig-cap">Figure 9 — Screenshot module: GDI desktop capture into memory stream via GDI+, saved as
+          screenshot.jpg</div>
+      </div>
+
+      <!-- 5.6 PowerShell Loader -->
+      <h3 style="font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:1px;margin:1.5rem 0 .75rem">
+        5.6 PowerShell Loader Execution</h3>
+      <p>Constructs a PowerShell one-liner using <code style="font-family:var(--mono);color:var(--amber)">iwr</code> /
+        <code style="font-family:var(--mono);color:var(--amber)">iex</code> to download and execute a secondary payload
+        from C2. Launched via <code style="font-family:var(--mono);color:var(--amber)">ShellExecuteExA</code>,
+        optionally with the <code style="font-family:var(--mono);color:var(--amber)">runas</code> verb for elevated
+        execution. The loader retries up to <strong>10 times</strong> if execution fails. MSI packages can also be
+        silently installed via <code style="font-family:var(--mono);color:var(--amber)">msiexec.exe /passive</code>.
+      </p>
+
+      <div class="callout callout-red">
+        <strong>Detection note:</strong> PowerShell spawned by a non-standard parent (not explorer.exe, not cmd.exe)
+        with <code style="font-family:var(--mono)">-nop -c iex(New-Object Net.WebClient).DownloadString</code> arguments
+        from <code style="font-family:var(--mono)">SysWOW64\...</code> is a high-fidelity alert. Sysmon EID 1, parent
+        process = malware binary.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/StealcStealer/powershell.png" alt="PowerShell loader execution" />
+        <div class="fig-cap">Figure 10 — PowerShell loader: iex DownloadString one-liner via ShellExecuteExA with
+          optional runas, 10 retry attempts</div>
+      </div>
+    </div>
+
+    <!-- ══ 6. OPERATOR CONFIG ══ -->
+    <div class="report-section">
+      <h2>6. Operator Configuration Schema</h2>
+      <p>Stealc receives a JSON configuration from C2 at runtime that controls which capabilities are active. The
+        following fields were recovered from the decrypted string table:</p>
+
+      <div class="config-grid">
+        <div class="config-cell">
+          <div class="config-key">self_delete</div>
+          <div class="config-desc">Delete the binary after execution completes</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">take_screenshot</div>
+          <div class="config-desc">Capture desktop and include screenshot.jpg</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">steal_steam</div>
+          <div class="config-desc">Enable Steam session file collection</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">steal_outlook</div>
+          <div class="config-desc">Enable Outlook credential collection</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">run_as_admin</div>
+          <div class="config-desc">Attempt UAC elevation via runas verb</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">loader</div>
+          <div class="config-desc">Enable secondary payload download/execution</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">blocked</div>
+          <div class="config-desc">Blocked country/region list</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">use_v20</div>
+          <div class="config-desc">Use v20 browser data extraction path</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">parse_cookies</div>
+          <div class="config-desc">Enable browser cookie extraction</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">parse_logins</div>
+          <div class="config-desc">Enable saved credential extraction</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">parse_history</div>
+          <div class="config-desc">Enable browsing history collection</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">parse_webdata</div>
+          <div class="config-desc">Enable web data (autofill, cards) extraction</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">recursive</div>
+          <div class="config-desc">Recursive file collection</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">max_size</div>
+          <div class="config-desc">Maximum file size for collection</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">masks</div>
+          <div class="config-desc">File extension masks for collection</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">from_local / from_sync / from_IndexedDB</div>
+          <div class="config-desc">Extension storage source selection</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">build / hwid / access_token</div>
+          <div class="config-desc">Build ID, victim HWID, operator auth token</div>
+        </div>
+        <div class="config-cell">
+          <div class="config-key">url</div>
+          <div class="config-desc">C2 endpoint override</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 7. IOCs ══ -->
+    <div class="report-section">
+      <h2>7. Indicators of Compromise</h2>
+      <div class="ioc-block" style="margin-top:1rem">
+        <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>TYPE</th>
+              <th>INDICATOR</th>
+              <th>DESCRIPTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ioc-c2">C2 Domain</td>
+              <td>https://cloud-flare-authenticator.link</td>
+              <td style="color:var(--muted)">Primary C2 — typosquats "cloudflare" to appear legitimate</td>
+            </tr>
+            <tr>
+              <td class="ioc-key">RC4 Key</td>
+              <td>ZFNBF0SzMim7hC3npM</td>
+              <td style="color:var(--muted)">String table decryption key</td>
+            </tr>
+            <tr>
+              <td class="ioc-key">RC4 Key</td>
+              <td>I9r3h5kFEzqWqq0I</td>
+              <td style="color:var(--muted)">Configuration / data encryption key</td>
+            </tr>
+            <tr>
+              <td class="ioc-file">Build artefact</td>
+              <td>C:\builder_v3\build\json.h</td>
+              <td style="color:var(--muted)">Embedded builder path — hard family IOC across Stealc builds</td>
+            </tr>
+            <tr>
+              <td class="ioc-reg">Registry</td>
+              <td>Software\Valve\Steam → SteamPath</td>
+              <td style="color:var(--muted)">Steam path resolution for session theft</td>
+            </tr>
+            <tr>
+              <td class="ioc-reg">Registry</td>
+              <td>Software\Martin Prikryl\WinSCP 2\Sessions</td>
+              <td style="color:var(--muted)">WinSCP stored session enumeration</td>
+            </tr>
+            <tr>
+              <td class="ioc-reg">Registry</td>
+              <td>HARDWARE\DESCRIPTION\System\CentralProcessor\0</td>
+              <td style="color:var(--muted)">CPU fingerprinting</td>
+            </tr>
+            <tr>
+              <td class="ioc-reg">Registry</td>
+              <td>SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall</td>
+              <td style="color:var(--muted)">Installed software enumeration</td>
+            </tr>
+            <tr>
+              <td class="ioc-file">File</td>
+              <td>system_info.txt</td>
+              <td style="color:var(--muted)">Victim profile — first exfiltrated object</td>
+            </tr>
+            <tr>
+              <td class="ioc-file">File</td>
+              <td>passwords.txt</td>
+              <td style="color:var(--muted)">Extracted browser credentials</td>
+            </tr>
+            <tr>
+              <td class="ioc-file">File</td>
+              <td>screenshot.jpg</td>
+              <td style="color:var(--muted)">Desktop screenshot output</td>
+            </tr>
+            <tr>
+              <td class="ioc-file">Remote path</td>
+              <td>soft\Outlook\outlook.txt</td>
+              <td style="color:var(--muted)">Outlook data upload path on C2</td>
+            </tr>
+            <tr>
+              <td class="ioc-file">Remote path</td>
+              <td>soft\WinSCP\winscp.txt</td>
+              <td style="color:var(--muted)">WinSCP data upload path on C2</td>
+            </tr>
+            <tr>
+              <td class="ioc-file">Working dir</td>
+              <td>C:\ProgramData\</td>
+              <td style="color:var(--muted)">Primary working and staging directory</td>
+            </tr>
+            <tr>
+              <td class="ioc-ps">PowerShell</td>
+              <td>C:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe</td>
+              <td style="color:var(--muted)">32-bit PowerShell used for loader execution</td>
+            </tr>
+            <tr>
+              <td class="ioc-ps">PowerShell</td>
+              <td>iex(New-Object Net.WebClient).DownloadString('</td>
+              <td style="color:var(--muted)">Download-and-execute command string</td>
+            </tr>
+            <tr>
+              <td class="ioc-ps">Installer</td>
+              <td>C:\Windows\system32\msiexec.exe /passive</td>
+              <td style="color:var(--muted)">Silent MSI payload installation</td>
+            </tr>
+            <tr>
+              <td class="ioc-api">API</td>
+              <td>CryptUnprotectData</td>
+              <td style="color:var(--muted)">DPAPI decryption for Chromium key extraction</td>
+            </tr>
+            <tr>
+              <td class="ioc-api">API</td>
+              <td>PK11SDR_Decrypt (nss3.dll)</td>
+              <td style="color:var(--muted)">Firefox credential decryption</td>
+            </tr>
+            <tr>
+              <td class="ioc-flag">Config flag</td>
+              <td>steal_outlook / steal_steam / take_screenshot / self_delete / run_as_admin</td>
+              <td style="color:var(--muted)">Operator-configurable capability flags in C2 JSON response</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ 8. MITRE ══ -->
+    <div class="report-section">
+      <h2>8. MITRE ATT&amp;CK Mapping</h2>
+      <table class="mitre-table">
+        <thead>
+          <tr>
+            <th>TACTIC</th>
+            <th>ID</th>
+            <th>TECHNIQUE</th>
+            <th>EVIDENCE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1027</td>
+            <td>Obfuscated Files or Information</td>
+            <td style="color:var(--muted)">Base64 + RC4 string encryption with per-key decryption at runtime</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1027.007</td>
+            <td>Dynamic API Resolution</td>
+            <td style="color:var(--muted)">LoadLibraryA + GetProcAddress for all 90+ operational APIs — IAT clean</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1070.004</td>
+            <td>File Deletion</td>
+            <td style="color:var(--muted)">self_delete config flag; DeleteFileA used in collection cleanup</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1614.001</td>
+            <td>System Language Discovery (evasion)</td>
+            <td style="color:var(--muted)">GetUserDefaultLangID → ExitProcess for Russian/CIS locales</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Privilege Escalation</td>
+            <td class="mitre-id">T1548</td>
+            <td>Abuse Elevation Control Mechanism</td>
+            <td style="color:var(--muted)">run_as_admin flag; ShellExecuteExA with runas verb for UAC bypass</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Execution</td>
+            <td class="mitre-id">T1059.001</td>
+            <td>PowerShell</td>
+            <td style="color:var(--muted)">SysWOW64 powershell.exe with -nop -c iex DownloadString; 10 retries</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Credential Access</td>
+            <td class="mitre-id">T1555.003</td>
+            <td>Credentials from Web Browsers</td>
+            <td style="color:var(--muted)">Chromium Login Data via DPAPI; Firefox logins.json via nss3.dll
+              PK11SDR_Decrypt</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Credential Access</td>
+            <td class="mitre-id">T1555</td>
+            <td>Credentials from Password Stores</td>
+            <td style="color:var(--muted)">CryptUnprotectData (DPAPI) for Chromium; NSS for Firefox; WinSCP registry
+            </td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Collection</td>
+            <td class="mitre-id">T1539</td>
+            <td>Steal Web Session Cookie</td>
+            <td style="color:var(--muted)">Browser Cookies database extracted; parse_cookies config flag</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Collection</td>
+            <td class="mitre-id">T1113</td>
+            <td>Screen Capture</td>
+            <td style="color:var(--muted)">GDI + GDI+ pipeline capturing full desktop to screenshot.jpg</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Collection</td>
+            <td class="mitre-id">T1005</td>
+            <td>Data from Local System</td>
+            <td style="color:var(--muted)">Browser DBs, Steam files, Outlook registry, WinSCP sessions, system profile
+            </td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Collection</td>
+            <td class="mitre-id">T1213</td>
+            <td>Data from Information Repositories</td>
+            <td style="color:var(--muted)">Steam config/session files; browser extension IndexedDB (crypto wallets)</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1082</td>
+            <td>System Information Discovery</td>
+            <td style="color:var(--muted)">CPU, RAM, GPU, OS, architecture, display resolution via Win32 APIs and
+              registry</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1016</td>
+            <td>System Network Configuration Discovery</td>
+            <td style="color:var(--muted)">External IP and country collection for system_info.txt</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1033</td>
+            <td>System Owner/User Discovery</td>
+            <td style="color:var(--muted)">GetUserNameW, GetComputerNameW, NetBIOS name</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1057</td>
+            <td>Process Discovery</td>
+            <td style="color:var(--muted)">CreateToolhelp32Snapshot + Process32FirstW/NextW → Process List output</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1518.001</td>
+            <td>Security Software Discovery</td>
+            <td style="color:var(--muted)">Installed application enumeration from Uninstall registry key</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1083</td>
+            <td>File and Directory Discovery</td>
+            <td style="color:var(--muted)">FindFirstFileA/FindNextFileA recursive browser profile enumeration</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1217</td>
+            <td>Browser Information Discovery</td>
+            <td style="color:var(--muted)">Browser profiles, cookies, history, extension storage</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1124</td>
+            <td>System Time Discovery</td>
+            <td style="color:var(--muted)">GetLocalTime, GetSystemTime, GetTimeZoneInformation</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">C2</td>
+            <td class="mitre-id">T1071.001</td>
+            <td>Web Protocols</td>
+            <td style="color:var(--muted)">HTTP POST to cloud-flare-authenticator.link with JSON payload</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">C2</td>
+            <td class="mitre-id">T1573.001</td>
+            <td>Encrypted Channel: Symmetric Cryptography</td>
+            <td style="color:var(--muted)">RC4 encryption of uploaded data via UploadEncryptedData function</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">C2</td>
+            <td class="mitre-id">T1041</td>
+            <td>Exfiltration Over C2 Channel</td>
+            <td style="color:var(--muted)">All collected data uploaded via upload_file HTTP POST to C2</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ══ 9. YARA ══ -->
+    <div class="report-section">
+      <h2>9. YARA Detection Rule</h2>
+      <p>The rule targets both PE32 (x86) and PE64 (x64) Stealc builds by matching the RC4 initialisation pattern and
+        the Base64-decode call pattern unique to the string decryption routine, combined with the embedded JSON build
+        path or GUID format string.</p>
+
+      <div class="yara-block"><span class="yara-kw">rule</span> StealcStealer
+        {
+        <span class="yara-kw">meta:</span>
+        <span class="yara-meta">description</span> = <span class="yara-str">"Detect Stealc Stealer Family"</span>
+        <span class="yara-meta">author</span> = <span class="yara-str">"SalahEldin Kamil (Mr_MaTriX)"</span>
+
+        <span class="yara-kw">strings:</span>
+        <span class="yara-com">// Builder path artefacts (strong family IOC)</span>
+        $s1 = <span class="yara-str">"C:\\builder_v2\\stealc\\json.h"</span> ascii wide
+        $s2 = <span class="yara-str">"C:\\builder_v3\\build\\json.h"</span> ascii wide
+
+        <span class="yara-com">// GUID format string present in all builds</span>
+        $m1 = <span class="yara-str">"%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX"</span> ascii
+        wide
+
+        <span class="yara-com">// PE32 (x86): RC4 init stub</span>
+        $rc4_32 = {
+        <span class="yara-hex">6A 12</span> <span class="yara-com">// push 12h (key length)</span>
+        <span class="yara-hex">68 ?? ?? ?? ??</span> <span class="yara-com">// push offset key_string</span>
+        <span class="yara-hex">B9 ?? ?? ?? ??</span> <span class="yara-com">// mov ecx, offset rc4_state</span>
+        <span class="yara-hex">E8 ?? ?? ?? ??</span> <span class="yara-com">// call rc4_init</span>
+        }
+
+        <span class="yara-com">// PE32 (x86): Base64+RC4 decrypt call pair</span>
+        $data_32 = {
+        <span class="yara-hex">68 ?? ?? ?? ??</span> <span class="yara-com">// push offset ciphertext_b64</span>
+        <span class="yara-hex">8D 4? ??</span> <span class="yara-com">// lea ecx, [ebp+local_buf]</span>
+        <span class="yara-hex">E8 ?? ?? ?? ??</span> <span class="yara-com">// call base64_decode</span>
+        <span class="yara-hex">8D 5? ??</span> <span class="yara-com">// lea edx, [ebp+decoded]</span>
+        <span class="yara-hex">8D 4? ??</span> <span class="yara-com">// lea ecx, [ebp+output]</span>
+        <span class="yara-hex">E8 ?? ?? ?? ??</span> <span class="yara-com">// call rc4_decrypt</span>
+        }
+
+        <span class="yara-com">// PE64 (x64): RC4 init stub</span>
+        $RC4_64 = {
+        <span class="yara-hex">4C 8D 3D ?? ?? ?? ??</span> <span class="yara-com">// lea r15, key_string</span>
+        <span class="yara-hex">49 8? ??</span> <span class="yara-com">// mov rcx, r15</span>
+        <span class="yara-hex">E8 ?? ?? ?? ??</span> <span class="yara-com">// call rc4_init</span>
+        <span class="yara-hex">33 ??</span> <span class="yara-com">// xor reg, reg (zero out)</span>
+        }
+
+        <span class="yara-com">// PE64 (x64): Base64+RC4 decrypt call pair</span>
+        $data_64 = {
+        <span class="yara-hex">48 8D 0D ?? ?? ?? ??</span> <span class="yara-com">// lea rcx, ciphertext_b64</span>
+        [0-20]
+        <span class="yara-hex">E8 ?? ?? ?? ??</span> <span class="yara-com">// call base64_decode</span>
+        [0-20]
+        <span class="yara-hex">48 8D 15 ?? ?? ?? ??</span> <span class="yara-com">// lea rdx, ciphertext_b64</span>
+        <span class="yara-hex">48 ?? ?? ??</span> <span class="yara-com">// lea rcx, [rbp+output]</span>
+        <span class="yara-hex">E8 ?? ?? ?? ??</span> <span class="yara-com">// call rc4_decrypt</span>
+        }
+
+        <span class="yara-kw">condition:</span>
+        uint16(0) == <span class="yara-hex">0x5A4D</span> <span class="yara-com">// MZ header</span>
+        <span class="yara-kw">and</span> filesize &lt; 5MB
+        <span class="yara-kw">and</span> (($RC4_64 <span class="yara-kw">and</span> $data_64) <span
+          class="yara-kw">or</span> ($rc4_32 <span class="yara-kw">and</span> $data_32))
+        <span class="yara-kw">and</span> (all of ($m*) <span class="yara-kw">or</span> 1 of ($s*))
+        }
+      </div>
+    </div>
+
+  </div><!-- /report-container -->
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="../assets/js/config.js"></script>
+  <script>
+    (function () {
+      const fl = document.getElementById('footer-links');
+      const l = SITE_CONFIG.links;
+      if (l.github) fl.innerHTML += `<a href="${l.github}"   target="_blank">GitHub</a>`;
+      if (l.linkedin) fl.innerHTML += `<a href="${l.linkedin}" target="_blank">LinkedIn</a>`;
+      if (l.email) fl.innerHTML += `<a href="${l.email}">Email</a>`;
+    })();
+  </script>
+
+</body>
+
+</html>

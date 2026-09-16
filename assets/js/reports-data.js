@@ -21,10 +21,225 @@ const REPORTS = [
   //   severity: "HIGH",                         // CRITICAL | HIGH | MEDIUM | LOW
   //   readTime: "12 MIN READ",
   //   excerpt:  "A new AgentTesla sample with a custom XOR encryption layer over its C2 channel.",
+  //   iocs: []
+  //   yara: []
   // },
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
+  {
+    slug: "stealc-stealer",
+    title: "Stealc Stealer: Technical Reverse Engineering Report",
+    date: "2025-07-01",
+    tag: "MALWARE",
+    severity: "HIGH",
+    readTime: "12 MIN READ",
+    excerpt: "Full reverse engineering of a Stealc MaaS infostealer. Covers Base64+RC4 string decryption, dynamic API resolution, CIS region evasion, browser credential theft (Chromium + Firefox), Steam/Outlook/WinSCP collection, screenshot capture, and PowerShell loader execution — all exfiltrated to a typosquatted Cloudflare-mimicking C2.",
+    iocs: [
+      // ── Network ─────────────────────────────────────────────
+      {
+        type: "DOMAIN",
+        indicator: "cloud-flare-authenticator[.]link",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
 
+      // ── Cryptographic Material ─────────────────────────────
+      {
+        type: "RC4_KEY",
+        indicator: "ZFNBF0SzMim7hC3npM",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+      {
+        type: "RC4_KEY",
+        indicator: "I9r3h5kFEzqWqq0I",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+
+      // ── Build / Debug Artifacts ─────────────────────────────
+      {
+        type: "PATH",
+        indicator: "C:\\builder_v3\\build\\json.h",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "C:\\builder_v2\\stealc\\json.h",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+
+      // ── Malware Output / Collection Artifacts ───────────────
+      {
+        type: "PATH",
+        indicator: "C:\\ProgramData\\",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "system_info.txt",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "soft\\Outlook\\outlook.txt",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+      {
+        type: "FILE",
+        indicator: "soft\\WinSCP\\winscp.txt",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+
+      // ── Windows Registry ───────────────────────────────────
+      {
+        type: "REGISTRY",
+        indicator: "HKCU\\Software\\Valve\\Steam",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+      {
+        type: "REGISTRY",
+        indicator: "HKCU\\Software\\Martin Prikryl\\WinSCP 2\\Sessions",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+      {
+        type: "REGISTRY",
+        indicator: "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "REGISTRY",
+        indicator: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+
+      // ── Execution / Payload Indicators ─────────────────────
+      {
+        type: "PATH",
+        indicator: "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+      {
+        type: "PATH",
+        indicator: "C:\\Windows\\system32\\msiexec.exe",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "DLL",
+        indicator: "nss3.dll",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+
+      // ── Browser / Application Artifacts ─────────────────────
+      {
+        type: "FILE",
+        indicator: "Local State",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "Login Data",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "Cookies",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "Web Data",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "History",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "cookies.sqlite",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "formhistory.sqlite",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "places.sqlite",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "FILE",
+        indicator: "logins.json",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+
+      // ── Configuration / Capability Indicators ──────────────
+      {
+        type: "CONFIG",
+        indicator: "self_delete",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      },
+      {
+        type: "CONFIG",
+        indicator: "take_screenshot",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+      {
+        type: "CONFIG",
+        indicator: "steal_steam",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+      {
+        type: "CONFIG",
+        indicator: "steal_outlook",
+        family: "Stealc",
+        confidence: "HIGH"
+      },
+      {
+        type: "CONFIG",
+        indicator: "run_as_admin",
+        family: "Stealc",
+        confidence: "MEDIUM"
+      }
+    ],
+    yara: [
+      {
+        name: "StealcStealer",
+        description: "Detects Stealc Stealer Family — PE32 and PE64 builds",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule StealcStealer\n{\n    meta:\n        description = \"Detect Stealc Stealer Family\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $s1 = \"C:\\\\builder_v2\\\\stealc\\\\json.h\" ascii wide\n        $s2 = \"C:\\\\builder_v3\\\\build\\\\json.h\"  ascii wide\n\n        $m1 = \"%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX\" ascii wide\n\n        $rc4_32 = {\n            6A 12\n            68 ?? ?? ?? ??\n            B9 ?? ?? ?? ??\n            E8 ?? ?? ?? ??\n        }\n        $data_32 = {\n            68 ?? ?? ?? ??\n            8D 4? ??\n            E8 ?? ?? ?? ??\n            8D 5? ??\n            8D 4? ??\n            E8 ?? ?? ?? ??\n        }\n        $RC4_64 = {\n            4C 8D 3D ?? ?? ?? ??\n            49 8? ??\n            E8 ?? ?? ?? ??\n            33 ??\n        }\n        $data_64 = {\n            48 8D 0D ?? ?? ?? ??\n            [0-20]\n            E8 ?? ?? ?? ??\n            [0-20]\n            48 8D 15 ?? ?? ?? ??\n            48 ?? ?? ??\n            E8 ?? ?? ?? ??\n        }\n    condition:\n        uint16(0) == 0x5A4D and\n        filesize < 5MB and\n        (($RC4_64 and $data_64) or ($rc4_32 and $data_32)) and\n        (all of ($m*) or 1 of ($s*))\n}",
+      },
+    ],
+  },
   {
     slug: "VoidStealer",
     title: "VoidStealer: A New Generation of Browser Information Stealer",

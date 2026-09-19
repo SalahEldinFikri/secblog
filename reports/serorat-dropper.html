@@ -519,7 +519,7 @@
       </div>
 
       <div class="fig-wrap">
-        <img class="fig-img" src="images/serorat/main.png" alt="Dropper main function in IDA Pro" />
+        <img class="fig-img" src="images/SeroRat/main.png" alt="Dropper main function in IDA Pro" />
         <div class="fig-cap">Figure 1 — Main function: GetTickCount delay → BCrypt API resolution → AES decrypt → drop →
           PPID-spoofed spawn</div>
       </div>
@@ -572,7 +572,7 @@
       </div>
 
       <div class="fig-wrap">
-        <img class="fig-img" src="images/serorat/decrypt.png" alt="BCrypt API resolution via XOR decode" />
+        <img class="fig-img" src="images/SeroRat/decrypt.png" alt="BCrypt API resolution via XOR decode" />
         <div class="fig-cap">Figure 2 — XOR decode loop (key 0xAA) decoding BCrypt API names, followed by LoadLibrary +
           GetProcAddress resolution</div>
       </div>
@@ -623,7 +623,7 @@
       </ul>
 
       <div class="fig-wrap">
-        <img class="fig-img" src="images/serorat/aes.png" alt="AES-256-CBC decryption routine" />
+        <img class="fig-img" src="images/SeroRat/aes.png" alt="AES-256-CBC decryption routine" />
         <div class="fig-cap">Figure 3 — AES-256-CBC decryption: BCryptGenerateSymmetricKey with hardcoded key/IV and
           two-pass BCryptDecrypt</div>
       </div>
@@ -656,7 +656,7 @@
       </div>
 
       <div class="fig-wrap">
-        <img class="fig-img" src="images/serorat/msedge.png" alt="Drop path construction" />
+        <img class="fig-img" src="images/SeroRat/msedge.png" alt="Drop path construction" />
         <div class="fig-cap">Figure 4 — Path construction: LOCALAPPDATA → \Temp\MicroSoft\Windows\msedge_08X.exe,
           CreateFile + WriteFile</div>
       </div>
@@ -713,7 +713,7 @@
       </div>
 
       <div class="fig-wrap">
-        <img class="fig-img" src="images/serorat/explorer.png" alt="PPID spoofing via explorer.exe" />
+        <img class="fig-img" src="images/SeroRat/explorer.png" alt="PPID spoofing via explorer.exe" />
         <div class="fig-cap">Figure 5 — PPID spoofing: Process32First/Next finds explorer.exe PID →
           InitializeProcThreadAttributeList → UpdateProcThreadAttribute → CreateProcess with spoofed parent</div>
       </div>

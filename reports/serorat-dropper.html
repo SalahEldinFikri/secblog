@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SeroRAT Dropper Analysis — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+  <style>
+    .tag-pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      padding: 3px 10px;
+      border: 1px solid;
+      display: inline-block;
+      margin-right: 6px;
+      margin-bottom: 10px
+    }
+
+    .tag-red {
+      border-color: var(--red);
+      color: var(--red)
+    }
+
+    .tag-amber {
+      border-color: var(--amber);
+      color: var(--amber)
+    }
+
+    .tag-blue {
+      border-color: var(--blue);
+      color: var(--blue)
+    }
+
+    .tag-green {
+      border-color: var(--green);
+      color: var(--green)
+    }
+
+    .tag-purple {
+      border-color: #a78bfa;
+      color: #a78bfa
+    }
+
+    .sev {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 10px;
+      letter-spacing: 1px;
+      font-weight: 700
+    }
+
+    .sev-high {
+      background: var(--amber);
+      color: #0a0e17
+    }
+
+    /* Callouts */
+    .callout {
+      font-size: 13px;
+      padding: .85rem 1.1rem;
+      border-left: 3px solid;
+      line-height: 1.7;
+      margin: 1rem 0
+    }
+
+    .callout-red {
+      border-color: var(--red);
+      background: rgba(255, 77, 109, .06)
+    }
+
+    .callout-amber {
+      border-color: var(--amber);
+      background: rgba(245, 158, 11, .06)
+    }
+
+    .callout-blue {
+      border-color: var(--blue);
+      background: rgba(56, 189, 248, .06)
+    }
+
+    .callout-green {
+      border-color: var(--green);
+      background: rgba(0, 255, 157, .05)
+    }
+
+    .callout strong {
+      color: #e8f4ff
+    }
+
+    /* Execution steps */
+    .exec-steps {
+      margin: 1.25rem 0
+    }
+
+    .exec-step {
+      display: flex;
+      gap: 1rem;
+      padding: .8rem 0;
+      border-bottom: 1px solid rgba(31, 45, 69, .4)
+    }
+
+    .exec-step:last-child {
+      border-bottom: none
+    }
+
+    .exec-num {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--green);
+      width: 24px;
+      flex-shrink: 0;
+      padding-top: 1px
+    }
+
+    .exec-body {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.7
+    }
+
+    .exec-body strong {
+      color: #e8f4ff
+    }
+
+    .exec-body code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--amber);
+      background: rgba(0, 0, 0, .3);
+      padding: 1px 5px
+    }
+
+    /* Flow chain */
+    .flow-chain {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      margin: 1.25rem 0;
+      font-family: var(--mono);
+      font-size: 11px
+    }
+
+    .flow-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: .5rem .9rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative
+    }
+
+    .flow-step::after {
+      content: '▶';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--green);
+      z-index: 1;
+      font-size: 9px
+    }
+
+    .flow-step:last-child::after {
+      display: none
+    }
+
+    .flow-step .fs-num {
+      color: var(--green);
+      font-size: 9px;
+      opacity: .7
+    }
+
+    .flow-step.alert {
+      border-color: var(--red);
+      background: rgba(255, 77, 109, .06)
+    }
+
+    /* Crypto box */
+    .crypto-box {
+      background: rgba(0, 0, 0, .4);
+      border: 1px solid var(--border);
+      border-left: 3px solid #a78bfa;
+      padding: .85rem 1rem;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      line-height: 1.8;
+      margin: 1rem 0
+    }
+
+    .crypto-label {
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 1px;
+      margin-bottom: .2rem
+    }
+
+    .crypto-val {
+      color: #a78bfa;
+      word-break: break-all
+    }
+
+    .crypto-val.green {
+      color: var(--green)
+    }
+
+    .crypto-val.amber {
+      color: var(--amber)
+    }
+
+    /* API list */
+    .api-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      margin: 1rem 0
+    }
+
+    .api-item {
+      background: var(--surface);
+      padding: .6rem .9rem;
+      font-family: var(--mono);
+      font-size: 11px
+    }
+
+    .api-item .api-name {
+      color: var(--green);
+      margin-bottom: .2rem
+    }
+
+    .api-item .api-desc {
+      color: var(--muted);
+      font-size: 10px
+    }
+
+    /* IOC table */
+    .ioc-block {
+      background: var(--surface);
+      border: 1px solid var(--border)
+    }
+
+    .ioc-header {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--green);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .ioc-header .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%
+    }
+
+    .ioc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px
+    }
+
+    .ioc-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 7px 14px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .ioc-table td {
+      font-family: var(--mono);
+      padding: 6px 14px;
+      border-bottom: 1px solid rgba(31, 45, 69, .5);
+      vertical-align: top;
+      word-break: break-all
+    }
+
+    .ioc-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .ioc-table tr:hover td {
+      background: rgba(0, 255, 157, .03)
+    }
+
+    .t-md5 {
+      color: var(--red)
+    }
+
+    .t-file {
+      color: var(--blue)
+    }
+
+    .t-crypto {
+      color: #a78bfa
+    }
+
+    .t-api {
+      color: var(--green)
+    }
+
+    .t-behav {
+      color: var(--amber)
+    }
+
+    .t-env {
+      color: #2dd4bf
+    }
+
+    /* MITRE */
+    .mitre-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 1rem
+    }
+
+    .mitre-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface)
+    }
+
+    .mitre-table td {
+      padding: 7px 12px;
+      border-bottom: 1px solid rgba(31, 45, 69, .5);
+      vertical-align: top;
+      line-height: 1.5;
+      color: var(--text)
+    }
+
+    .mitre-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .mitre-table tr:hover td {
+      background: rgba(0, 255, 157, .03)
+    }
+
+    .mitre-id {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--blue);
+      white-space: nowrap
+    }
+
+    .mitre-tactic {
+      font-size: 11px;
+      color: var(--amber);
+      white-space: nowrap
+    }
+
+    /* Fig */
+    .fig-wrap {
+      margin: 1.25rem 0
+    }
+
+    .fig-img {
+      width: 100%;
+      border: 1px solid var(--border);
+      display: block
+    }
+
+    .fig-cap {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      padding: .4rem .5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      letter-spacing: .5px
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">🦇 <span>//</span> Mr_MaTriX</div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../reports.html">Reports</a>
+      <a href="../ioc-feed.html">IOC Feed</a>
+      <a href="../yara-feed.html">YARA Feed</a>
+      <a href="../siem-reference.html">SIEM Ref</a>
+      <a href="../malware-structures.html">Structures</a>
+      <a href="../ida-scripting.html">IDA Scripting</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../winapi-reference.html">Win API</a>
+      <a href="../achievements.html">Achievements</a>
+      <a href="../about.html">About</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+    <div class="report-breadcrumb"><a href="../reports.html">&lt; All Reports</a></div>
+
+    <!-- ══ HEADER ══ -->
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-red">MALWARE ANALYSIS</span>
+        <span class="tag-pill tag-amber">DROPPER</span>
+        <span class="tag-pill tag-blue">WINDOWS</span>
+        <span class="tag-pill tag-purple">AES-256-CBC</span>
+        <span class="tag-pill tag-green">PPID SPOOFING</span>
+      </div>
+      <h1 class="report-title">SeroRAT: Analysis of an AES-256-CBC Dropper with PPID Spoofing</h1>
+      <div class="report-meta">
+        <span>📅 2026</span>
+        <span>⏱ 10 MIN READ</span>
+        <span>✍ SalahEldin Kamil</span>
+        <span class="sev sev-high">HIGH</span>
+      </div>
+      <div class="report-summary">
+        Analysis of a dropper (<code
+          style="font-family:var(--mono);color:var(--amber)">MD5: cfaa9eead8f27ecc01803a5eb9fc463c</code>) that resolves
+        BCrypt APIs via XOR obfuscation, decrypts a 9MB AES-256-CBC payload, drops it as <code
+          style="font-family:var(--mono);color:var(--amber)">msedge_08X.exe</code> under a Microsoft Edge-mimicking
+        path, then spawns it with <code style="font-family:var(--mono);color:var(--amber)">explorer.exe</code> as the
+        spoofed parent process.
+      </div>
+    </div>
+
+    <!-- ══ 1. EXECUTION OVERVIEW ══ -->
+    <div class="report-section">
+      <h2>1. Execution Flow Overview</h2>
+      <p>The dropper executes in four distinct phases before handing off to the SeroRAT payload:</p>
+
+      <div class="flow-chain">
+        <div class="flow-step"><span class="fs-num">①</span>GetTickCount<br /><span
+            style="font-size:9px;color:var(--muted)">timing delay</span></div>
+        <div class="flow-step"><span class="fs-num">②</span>XOR resolve<br /><span
+            style="font-size:9px;color:var(--muted)">BCrypt APIs</span></div>
+        <div class="flow-step"><span class="fs-num">③</span>AES-256-CBC<br /><span
+            style="font-size:9px;color:var(--muted)">decrypt payload</span></div>
+        <div class="flow-step"><span class="fs-num">④</span>Drop to disk<br /><span
+            style="font-size:9px;color:var(--muted)">msedge_08X.exe</span></div>
+        <div class="flow-step"><span class="fs-num">⑤</span>Find explorer.exe<br /><span
+            style="font-size:9px;color:var(--muted)">PID enumeration</span></div>
+        <div class="flow-step alert"><span class="fs-num">⑥</span>PPID spoof<br /><span
+            style="font-size:9px;color:var(--red)">spawn as child</span></div>
+      </div>
+
+      <div class="exec-steps">
+        <div class="exec-step">
+          <div class="exec-num">①</div>
+          <div class="exec-body"><strong>Timing delay</strong> — Immediately calls <code>GetTickCount</code> and
+            computes <code>Sleep((GetTickCount() &amp; 0x7F) + 1400)</code>, introducing a ~1.4–1.5 second delay before
+            any payload processing. A lightweight sandbox-evasion technique — automated sandboxes with short execution
+            windows miss the detonation entirely.</div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">②</div>
+          <div class="exec-body"><strong>XOR-obfuscated API resolution</strong> — Embedded API name strings are
+            XOR-encoded with <code>0xAA</code>. The dropper decodes them at runtime, then resolves
+            <code>bcrypt.dll</code> and all required BCrypt function pointers via <code>LoadLibrary</code> +
+            <code>GetProcAddress</code>. No BCrypt imports appear in the static IAT.
+          </div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">③</div>
+          <div class="exec-body"><strong>AES-256-CBC payload decryption</strong> — Initialises the BCrypt AES provider
+            in CBC mode, imports the hardcoded 256-bit key and 16-byte IV, and decrypts the 9,020,432-byte embedded
+            payload into a heap buffer. Two-pass BCryptDecrypt: first call calculates output size, second performs
+            actual decryption with block padding.</div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">④</div>
+          <div class="exec-body"><strong>Payload drop</strong> — Constructs the drop path:
+            <code>%LOCALAPPDATA%\Temp\MicroSoft\Windows\msedge_08X.exe</code>. The filename mimics a legitimate
+            Microsoft Edge executable to blend with normal process listings. Creates the file and writes the decrypted
+            payload.
+          </div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">⑤</div>
+          <div class="exec-body"><strong>Process enumeration</strong> — Iterates the running process list via
+            <code>CreateToolhelp32Snapshot</code> + <code>Process32First</code> / <code>Process32Next</code> to locate
+            <code>explorer.exe</code> and extract its PID.
+          </div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">⑥</div>
+          <div class="exec-body"><strong>PPID spoofing &amp; launch</strong> — Calls
+            <code>InitializeProcThreadAttributeList</code> then
+            <code>UpdateProcThreadAttribute(PROC_THREAD_ATTRIBUTE_PARENT_PROCESS)</code> with the
+            <code>explorer.exe</code> handle. Spawns <code>msedge_08X.exe</code> via <code>CreateProcess</code> — the
+            resulting process appears in Task Manager and Sysmon as a child of <code>explorer.exe</code>, not the
+            dropper.
+          </div>
+        </div>
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/serorat/main.png" alt="Dropper main function in IDA Pro" />
+        <div class="fig-cap">Figure 1 — Main function: GetTickCount delay → BCrypt API resolution → AES decrypt → drop →
+          PPID-spoofed spawn</div>
+      </div>
+    </div>
+
+    <!-- ══ 2. XOR + BCRYPT ══ -->
+    <div class="report-section">
+      <h2>2. XOR Obfuscation &amp; BCrypt API Resolution</h2>
+      <p>All BCrypt-related strings are stored XOR-encoded in the binary with the key <code
+          style="font-family:var(--mono);color:var(--amber)">0xAA</code>. At runtime the dropper decodes them and
+        resolves the following functions from <code
+          style="font-family:var(--mono);color:var(--amber)">bcrypt.dll</code>:</p>
+
+      <div class="api-list">
+        <div class="api-item">
+          <div class="api-name">BCryptOpenAlgorithmProvider</div>
+          <div class="api-desc">Opens the AES algorithm provider</div>
+        </div>
+        <div class="api-item">
+          <div class="api-name">BCryptSetProperty</div>
+          <div class="api-desc">Sets CBC chaining mode on the provider</div>
+        </div>
+        <div class="api-item">
+          <div class="api-name">BCryptGetProperty</div>
+          <div class="api-desc">Queries key object size before allocation</div>
+        </div>
+        <div class="api-item">
+          <div class="api-name">BCryptGenerateSymmetricKey</div>
+          <div class="api-desc">Imports the 256-bit AES key</div>
+        </div>
+        <div class="api-item">
+          <div class="api-name">BCryptDecrypt</div>
+          <div class="api-desc">Two-pass: size query then actual decryption</div>
+        </div>
+        <div class="api-item">
+          <div class="api-name">BCryptDestroyKey</div>
+          <div class="api-desc">Cleans up the key handle post-decrypt</div>
+        </div>
+        <div class="api-item">
+          <div class="api-name">BCryptCloseAlgorithmProvider</div>
+          <div class="api-desc">Releases the algorithm provider handle</div>
+        </div>
+      </div>
+
+      <div class="callout callout-amber">
+        <strong>Detection note:</strong> No BCrypt imports in the IAT. Static analysis will not reveal the crypto
+        capability. Hook <code style="font-family:var(--mono)">GetProcAddress</code> at entry or place a breakpoint on
+        the XOR decode loop (look for the <code style="font-family:var(--mono)">xor byte ptr [reg], 0AAh</code> pattern)
+        to recover all decoded strings before the API resolver runs.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/serorat/decrypt.png" alt="BCrypt API resolution via XOR decode" />
+        <div class="fig-cap">Figure 2 — XOR decode loop (key 0xAA) decoding BCrypt API names, followed by LoadLibrary +
+          GetProcAddress resolution</div>
+      </div>
+    </div>
+
+    <!-- ══ 3. AES DECRYPTION ══ -->
+    <div class="report-section">
+      <h2>3. AES-256-CBC Payload Decryption</h2>
+      <p>After the BCrypt handles are initialised, the dropper decrypts its embedded 9,020,432-byte payload using
+        AES-256-CBC with the following hardcoded key material:</p>
+
+      <div class="crypto-box">
+        <div class="crypto-label">ALGORITHM</div>
+        <div class="crypto-val green">AES-256-CBC</div>
+        <br />
+        <div class="crypto-label">AES KEY (256-bit)</div>
+        <div class="crypto-val">CC442BA34699E2342DCB48E1BBCFA62B44E8706D25387AE2FCD997946B0AC150</div>
+        <br />
+        <div class="crypto-label">AES IV (128-bit)</div>
+        <div class="crypto-val amber">9BAE3B2C37D9527BC1B66D864F5A8BE2</div>
+        <br />
+        <div class="crypto-label">ENCRYPTED PAYLOAD SIZE</div>
+        <div class="crypto-val green">9,020,432 bytes (~8.6 MB)</div>
+        <br />
+        <div class="crypto-label">XOR OBFUSCATION KEY</div>
+        <div class="crypto-val amber">0xAA</div>
+      </div>
+
+      <p>The decryption procedure:</p>
+      <ul class="report-list">
+        <li><strong>Provider init</strong> — <code
+            style="font-family:var(--mono);color:var(--amber)">BCryptOpenAlgorithmProvider</code> opens the AES
+          provider; <code style="font-family:var(--mono);color:var(--amber)">BCryptSetProperty</code> sets the chaining
+          mode to <code style="font-family:var(--mono);color:var(--amber)">BCRYPT_CHAIN_MODE_CBC</code>.</li>
+        <li><strong>Key import</strong> — <code
+            style="font-family:var(--mono);color:var(--amber)">BCryptGetProperty</code> queries the required key object
+          size; a heap buffer is allocated; <code
+            style="font-family:var(--mono);color:var(--amber)">BCryptGenerateSymmetricKey</code> imports the 32-byte AES
+          key into the provider.</li>
+        <li><strong>Two-pass decrypt</strong> — First <code
+            style="font-family:var(--mono);color:var(--amber)">BCryptDecrypt</code> call with <code
+            style="font-family:var(--mono);color:var(--amber)">NULL</code> output buffer calculates the required
+          plaintext size. Second call decrypts into the allocated <code
+            style="font-family:var(--mono);color:var(--amber)">Decrypted_Data</code> buffer using BCRYPT block padding
+          and the 16-byte IV.</li>
+        <li><strong>Cleanup</strong> — Key handle, algorithm provider, allocated buffers, and the bcrypt.dll handle are
+          all released before the function returns the decrypted payload pointer.</li>
+      </ul>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/serorat/aes.png" alt="AES-256-CBC decryption routine" />
+        <div class="fig-cap">Figure 3 — AES-256-CBC decryption: BCryptGenerateSymmetricKey with hardcoded key/IV and
+          two-pass BCryptDecrypt</div>
+      </div>
+    </div>
+
+    <!-- ══ 4. DROP PATH ══ -->
+    <div class="report-section">
+      <h2>4. Payload Drop &amp; Path Construction</h2>
+      <p>The dropper constructs the payload path programmatically rather than hardcoding it, making it slightly more
+        resilient to simple string searches:</p>
+
+      <div class="flow-chain">
+        <div class="flow-step"><code style="font-size:10px">%LOCALAPPDATA%</code></div>
+        <div class="flow-step"><code style="font-size:10px">\Temp</code></div>
+        <div class="flow-step"><code style="font-size:10px">\MicroSoft\Windows</code></div>
+        <div class="flow-step alert"><code style="font-size:10px">msedge_08X.exe</code></div>
+      </div>
+
+      <p>Full resolved path: <code
+          style="font-family:var(--mono);color:var(--red)">%LOCALAPPDATA%\Temp\MicroSoft\Windows\msedge_08X.exe</code>
+      </p>
+
+      <div class="callout callout-red">
+        <strong>Masquerading:</strong> The filename <code style="font-family:var(--mono)">msedge_08X.exe</code> is
+        chosen to resemble a legitimate Microsoft Edge browser component. The intermediate directory <code
+          style="font-family:var(--mono)">MicroSoft\Windows</code> (note the capital S) further mimics Microsoft system
+        paths. Defenders should alert on PE file creation in <code
+          style="font-family:var(--mono)">%LOCALAPPDATA%\Temp\</code> with names containing <code
+          style="font-family:var(--mono)">msedge</code> outside the official Edge install path.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/serorat/msedge.png" alt="Drop path construction" />
+        <div class="fig-cap">Figure 4 — Path construction: LOCALAPPDATA → \Temp\MicroSoft\Windows\msedge_08X.exe,
+          CreateFile + WriteFile</div>
+      </div>
+    </div>
+
+    <!-- ══ 5. PPID SPOOFING ══ -->
+    <div class="report-section">
+      <h2>5. PPID Spoofing via explorer.exe</h2>
+      <p>After writing the payload to disk, the dropper performs parent process ID (PPID) spoofing to disguise the
+        spawned SeroRAT process as a legitimate child of <code
+          style="font-family:var(--mono);color:var(--amber)">explorer.exe</code>.</p>
+
+      <div class="exec-steps">
+        <div class="exec-step">
+          <div class="exec-num">①</div>
+          <div class="exec-body"><strong>Process enumeration</strong> —
+            <code>CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS)</code> + <code>Process32First</code> /
+            <code>Process32Next</code> iterates all running processes until <code>explorer.exe</code> is found. Records
+            its PID.
+          </div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">②</div>
+          <div class="exec-body"><strong>Handle acquisition</strong> —
+            <code>OpenProcess(PROCESS_ALL_ACCESS, explorer_PID)</code> obtains a handle to the <code>explorer.exe</code>
+            process with full access rights.
+          </div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">③</div>
+          <div class="exec-body"><strong>Attribute list setup</strong> — <code>InitializeProcThreadAttributeList</code>
+            allocates an extended attribute list for process creation.
+            <code>UpdateProcThreadAttribute(PROC_THREAD_ATTRIBUTE_PARENT_PROCESS)</code> sets the
+            <code>explorer.exe</code> handle as the designated parent.
+          </div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">④</div>
+          <div class="exec-body"><strong>Spoofed launch</strong> — <code>CreateProcess</code> with
+            <code>EXTENDED_STARTUPINFO_PRESENT</code> and the prepared attribute list spawns
+            <code>msedge_08X.exe</code>. The OS registers <code>explorer.exe</code>'s PID as the parent — Sysmon EID 1
+            and Task Manager will show the SeroRAT process as a child of <code>explorer.exe</code>, not the dropper.
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-blue">
+        <strong>Detection:</strong> Despite PPID spoofing, Sysmon EID 1 records both the <em>nominal</em> parent
+        (explorer.exe) and the <em>actual creating process</em>. The <code>ParentProcessId</code> field will show
+        explorer.exe's PID, but the <code>ParentImage</code> hash will not match any expected explorer.exe child. Alert
+        on <code>msedge_08X.exe</code> or any Edge-named binary spawning from <code>%LOCALAPPDATA%\Temp\</code>.
+        Additionally, <code>GetProcessAffinityMask</code> is called — possibly to verify the explorer.exe handle is
+        valid before proceeding.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/serorat/explorer.png" alt="PPID spoofing via explorer.exe" />
+        <div class="fig-cap">Figure 5 — PPID spoofing: Process32First/Next finds explorer.exe PID →
+          InitializeProcThreadAttributeList → UpdateProcThreadAttribute → CreateProcess with spoofed parent</div>
+      </div>
+    </div>
+
+    <!-- ══ 6. IOCs ══ -->
+    <div class="report-section">
+      <h2>6. Indicators of Compromise</h2>
+      <div class="ioc-block" style="margin-top:1rem">
+        <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>TYPE</th>
+              <th>INDICATOR</th>
+              <th>DESCRIPTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="t-md5">MD5</td>
+              <td>cfaa9eead8f27ecc01803a5eb9fc463c</td>
+              <td style="color:var(--muted)">Dropper sample hash</td>
+            </tr>
+            <tr>
+              <td class="t-file">FILE</td>
+              <td>msedge_08X.exe</td>
+              <td style="color:var(--muted)">Dropped SeroRAT payload — name mimics Microsoft Edge component</td>
+            </tr>
+            <tr>
+              <td class="t-file">PATH</td>
+              <td>%LOCALAPPDATA%\Temp\MicroSoft\Windows\msedge_08X.exe</td>
+              <td style="color:var(--muted)">Full drop path — note capital S in MicroSoft</td>
+            </tr>
+            <tr>
+              <td class="t-crypto">AES KEY</td>
+              <td>CC442BA34699E2342DCB48E1BBCFA62B44E8706D25387AE2FCD997946B0AC150</td>
+              <td style="color:var(--muted)">256-bit AES key for payload decryption</td>
+            </tr>
+            <tr>
+              <td class="t-crypto">AES IV</td>
+              <td>9BAE3B2C37D9527BC1B66D864F5A8BE2</td>
+              <td style="color:var(--muted)">128-bit IV for AES-CBC decryption</td>
+            </tr>
+            <tr>
+              <td class="t-crypto">XOR KEY</td>
+              <td>0xAA</td>
+              <td style="color:var(--muted)">XOR key used to obfuscate BCrypt API name strings</td>
+            </tr>
+            <tr>
+              <td class="t-crypto">CRYPTO</td>
+              <td>AES-256-CBC</td>
+              <td style="color:var(--muted)">Encryption algorithm used for embedded payload</td>
+            </tr>
+            <tr>
+              <td class="t-file">SIZE</td>
+              <td>9,020,432 bytes</td>
+              <td style="color:var(--muted)">Encrypted payload size embedded in dropper</td>
+            </tr>
+            <tr>
+              <td class="t-behav">BEHAVIOR</td>
+              <td>Sleep((GetTickCount() &amp; 0x7F) + 1400)</td>
+              <td style="color:var(--muted)">~1.4–1.5 s delay before payload processing — sandbox evasion</td>
+            </tr>
+            <tr>
+              <td class="t-behav">BEHAVIOR</td>
+              <td>PROC_THREAD_ATTRIBUTE_PARENT_PROCESS = explorer.exe</td>
+              <td style="color:var(--muted)">PPID spoofing — payload appears as explorer.exe child</td>
+            </tr>
+            <tr>
+              <td class="t-api">API</td>
+              <td>BCryptOpenAlgorithmProvider / BCryptGenerateSymmetricKey / BCryptDecrypt</td>
+              <td style="color:var(--muted)">BCrypt APIs resolved dynamically — not in static IAT</td>
+            </tr>
+            <tr>
+              <td class="t-api">API</td>
+              <td>InitializeProcThreadAttributeList / UpdateProcThreadAttribute</td>
+              <td style="color:var(--muted)">PPID spoofing attribute setup</td>
+            </tr>
+            <tr>
+              <td class="t-api">API</td>
+              <td>Process32First / Process32Next</td>
+              <td style="color:var(--muted)">Process enumeration to locate explorer.exe PID</td>
+            </tr>
+            <tr>
+              <td class="t-api">API</td>
+              <td>GetProcessAffinityMask / AddVectoredExceptionHandler</td>
+              <td style="color:var(--muted)">System queries and VEH registration</td>
+            </tr>
+            <tr>
+              <td class="t-env">ENV</td>
+              <td>LOCALAPPDATA</td>
+              <td style="color:var(--muted)">Environment variable queried for drop path construction</td>
+            </tr>
+            <tr>
+              <td class="t-env">ENV</td>
+              <td>PROCESSOR_COUNT</td>
+              <td style="color:var(--muted)">Processor count queried — possible sandbox detection</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ 7. MITRE ══ -->
+    <div class="report-section">
+      <h2>7. MITRE ATT&amp;CK Mapping</h2>
+      <table class="mitre-table">
+        <thead>
+          <tr>
+            <th>TACTIC</th>
+            <th>ID</th>
+            <th>TECHNIQUE</th>
+            <th>EVIDENCE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1027</td>
+            <td>Obfuscated Files or Information</td>
+            <td style="color:var(--muted)">Embedded payload encrypted with AES-256-CBC; BCrypt API strings XOR-encoded
+              with 0xAA</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1140</td>
+            <td>Deobfuscate/Decode Files or Information</td>
+            <td style="color:var(--muted)">Runtime XOR decode of API strings + BCryptDecrypt of 9MB embedded payload
+            </td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1036.005</td>
+            <td>Masquerading: Match Legitimate Name or Location</td>
+            <td style="color:var(--muted)">Payload dropped as msedge_08X.exe under a path mimicking Microsoft system
+              directories</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1134.004</td>
+            <td>Access Token Manipulation: Parent PID Spoofing</td>
+            <td style="color:var(--muted)">InitializeProcThreadAttributeList + UpdateProcThreadAttribute sets
+              explorer.exe as parent</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1497.003</td>
+            <td>Time Based Evasion</td>
+            <td style="color:var(--muted)">Sleep((GetTickCount() &amp; 0x7F) + 1400) delays execution ~1.4–1.5 s before
+              payload processing</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1027.007</td>
+            <td>Dynamic API Resolution</td>
+            <td style="color:var(--muted)">BCrypt API names XOR-decoded at runtime; resolved via LoadLibrary +
+              GetProcAddress — absent from IAT</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1057</td>
+            <td>Process Discovery</td>
+            <td style="color:var(--muted)">CreateToolhelp32Snapshot + Process32First/Next searches for explorer.exe PID
+            </td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1082</td>
+            <td>System Information Discovery</td>
+            <td style="color:var(--muted)">PROCESSOR_COUNT environment query and GetProcessAffinityMask called</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Execution</td>
+            <td class="mitre-id">T1106</td>
+            <td>Native API</td>
+            <td style="color:var(--muted)">Extensive use of Windows native APIs for process management, attribute lists,
+              and crypto</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Persistence</td>
+            <td class="mitre-id">T1543</td>
+            <td>Create or Modify System Process</td>
+            <td style="color:var(--muted)">Not confirmed from dropper code analyzed</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1055</td>
+            <td>Process Injection</td>
+            <td style="color:var(--muted)">Not confirmed from dropper code analyzed — payload is spawned as a new
+              process, not injected</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /report-container -->
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="../assets/js/config.js"></script>
+  <script>
+    (function () {
+      const fl = document.getElementById('footer-links');
+      const l = SITE_CONFIG.links;
+      if (l.github) fl.innerHTML += `<a href="${l.github}"   target="_blank">GitHub</a>`;
+      if (l.linkedin) fl.innerHTML += `<a href="${l.linkedin}" target="_blank">LinkedIn</a>`;
+      if (l.email) fl.innerHTML += `<a href="${l.email}">Email</a>`;
+    })();
+  </script>
+
+</body>
+
+</html>

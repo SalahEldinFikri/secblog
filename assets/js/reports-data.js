@@ -27,6 +27,32 @@ const REPORTS = [
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
   {
+    slug: "serorat-dropper",
+    title: "SeroRAT: Analysis of an AES-256-CBC Dropper with PPID Spoofing",
+    date: "2026-09-18",
+    tag: "MALWARE",
+    severity: "HIGH",
+    readTime: "10 MIN READ",
+    excerpt: "Analysis of a dropper (MD5: cfaa9eead8f27ecc01803a5eb9fc463c) that decrypts a 9MB AES-256-CBC payload using XOR-resolved BCrypt APIs, drops it as msedge_08X.exe under %LOCALAPPDATA%\\Temp\\MicroSoft\\Windows\\, then spawns it with explorer.exe as the spoofed parent process.",
+    iocs: [
+      { type: "MD5", indicator: "cfaa9eead8f27ecc01803a5eb9fc463c", family: "SeroRAT Dropper", confidence: "HIGH" },
+      { type: "FILE", indicator: "msedge_08X.exe", family: "SeroRAT", confidence: "HIGH" },
+      { type: "PATH", indicator: "%LOCALAPPDATA%\\Temp\\MicroSoft\\Windows\\msedge_08X.exe", family: "SeroRAT", confidence: "HIGH" },
+      { type: "AES_KEY", indicator: "CC442BA34699E2342DCB48E1BBCFA62B44E8706D25387AE2FCD997946B0AC150", family: "SeroRAT Dropper", confidence: "HIGH" },
+      { type: "AES_IV", indicator: "9BAE3B2C37D9527BC1B66D864F5A8BE2", family: "SeroRAT Dropper", confidence: "HIGH" },
+      { type: "XOR_KEY", indicator: "0xAA", family: "SeroRAT Dropper", confidence: "HIGH" },
+      { type: "CRYPTO", indicator: "AES-256-CBC", family: "SeroRAT Dropper", confidence: "HIGH" },
+      { type: "SIZE", indicator: "9020432 bytes (encrypted payload)", family: "SeroRAT Dropper", confidence: "HIGH" },
+      { type: "BEHAVIOR", indicator: "Sleep((GetTickCount() & 0x7F) + 1400)", family: "SeroRAT Dropper", confidence: "HIGH" },
+      { type: "BEHAVIOR", indicator: "PPID spoofing via PROC_THREAD_ATTRIBUTE_PARENT_PROCESS", family: "SeroRAT Dropper", confidence: "HIGH" },
+      { type: "API", indicator: "BCryptOpenAlgorithmProvider / BCryptDecrypt", family: "SeroRAT Dropper", confidence: "MEDIUM" },
+      { type: "API", indicator: "InitializeProcThreadAttributeList / UpdateProcThreadAttribute", family: "SeroRAT Dropper", confidence: "MEDIUM" },
+      { type: "API", indicator: "Process32First / Process32Next", family: "SeroRAT Dropper", confidence: "MEDIUM" },
+      { type: "ENV", indicator: "LOCALAPPDATA", family: "SeroRAT Dropper", confidence: "MEDIUM" },
+    ],
+    yara: null,
+  },
+  {
     slug: "stealc-stealer",
     title: "Stealc Stealer: Technical Reverse Engineering Report",
     date: "2026-09-15",

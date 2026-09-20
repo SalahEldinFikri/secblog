@@ -1417,12 +1417,12 @@
 
         <span class="yara-kw">strings:</span>
         <span class="yara-com">// Builder path artefacts (strong family IOC)</span>
-        $s1 = <span class="yara-str">"C:\\builder_v2\\stealc\\json.h"</span> ascii wide
-        $s2 = <span class="yara-str">"C:\\builder_v3\\build\\json.h"</span> ascii wide
+        $m1 = <span class="yara-str">"C:\\builder_v2\\stealc\\json.h"</span> ascii wide
+        $m2 = <span class="yara-str">"C:\\builder_v3\\build\\json.h"</span> ascii wide
 
         <span class="yara-com">// GUID format string present in all builds</span>
-        $m1 = <span class="yara-str">"%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX"</span> ascii
-        wide
+        $s1 = <span class="yara-str">"steal_foxmail"</span> ascii wide
+        $s2 = <span class="yara-str">"steal_winscp"</span> ascii wide
 
         <span class="yara-com">// PE32 (x86): RC4 init stub</span>
         $rc4_32 = {
@@ -1466,7 +1466,7 @@
         <span class="yara-kw">and</span> filesize &lt; 5MB
         <span class="yara-kw">and</span> (($RC4_64 <span class="yara-kw">and</span> $data_64) <span
           class="yara-kw">or</span> ($rc4_32 <span class="yara-kw">and</span> $data_32))
-        <span class="yara-kw">and</span> (all of ($m*) <span class="yara-kw">or</span> 1 of ($s*))
+        <span class="yara-kw">and</span> (1 of ($m*) <span class="yara-kw">and</span> 1 of ($s*))
         }
       </div>
     </div>

@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moriya Rootkit — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/report.css" />
+  <style>
+    .tag-pill {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      padding: 3px 10px;
+      border: 1px solid;
+      display: inline-block;
+      margin-right: 6px;
+      margin-bottom: 10px
+    }
+
+    .tag-red {
+      border-color: var(--red);
+      color: var(--red)
+    }
+
+    .tag-amber {
+      border-color: var(--amber);
+      color: var(--amber)
+    }
+
+    .tag-blue {
+      border-color: var(--blue);
+      color: var(--blue)
+    }
+
+    .tag-green {
+      border-color: var(--green);
+      color: var(--green)
+    }
+
+    .tag-purple {
+      border-color: #a78bfa;
+      color: #a78bfa
+    }
+
+    .tag-pink {
+      border-color: #f472b6;
+      color: #f472b6
+    }
+
+    .sev {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 10px;
+      letter-spacing: 1px;
+      font-weight: 700
+    }
+
+    .sev-crit {
+      background: var(--red);
+      color: #0a0e17
+    }
+
+    /* Callouts */
+    .callout {
+      font-size: 13px;
+      padding: .85rem 1.1rem;
+      border-left: 3px solid;
+      line-height: 1.7;
+      margin: 1rem 0
+    }
+
+    .callout-red {
+      border-color: var(--red);
+      background: rgba(255, 77, 109, .06)
+    }
+
+    .callout-amber {
+      border-color: var(--amber);
+      background: rgba(245, 158, 11, .06)
+    }
+
+    .callout-blue {
+      border-color: var(--blue);
+      background: rgba(56, 189, 248, .06)
+    }
+
+    .callout-green {
+      border-color: var(--green);
+      background: rgba(0, 255, 157, .05)
+    }
+
+    .callout strong {
+      color: #e8f4ff
+    }
+
+    /* Stage overview */
+    .stage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      margin: 1.25rem 0
+    }
+
+    .stage-cell {
+      background: var(--surface);
+      padding: .85rem 1rem
+    }
+
+    .stage-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      margin-bottom: .35rem
+    }
+
+    .stage-title {
+      font-size: 13px;
+      color: #e8f4ff;
+      font-weight: 600;
+      margin-bottom: .25rem
+    }
+
+    .stage-desc {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.5
+    }
+
+    /* Exec steps */
+    .exec-steps {
+      margin: 1.25rem 0
+    }
+
+    .exec-step {
+      display: flex;
+      gap: 1rem;
+      padding: .8rem 0;
+      border-bottom: 1px solid rgba(31, 45, 69, .4)
+    }
+
+    .exec-step:last-child {
+      border-bottom: none
+    }
+
+    .exec-num {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--green);
+      width: 24px;
+      flex-shrink: 0;
+      padding-top: 1px
+    }
+
+    .exec-body {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.7
+    }
+
+    .exec-body strong {
+      color: #e8f4ff
+    }
+
+    .exec-body code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--amber);
+      background: rgba(0, 0, 0, .3);
+      padding: 1px 5px
+    }
+
+    /* Code block */
+    .code-block {
+      background: rgba(0, 0, 0, .45);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      padding: .75rem 1rem;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #cdd6f4;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.6;
+      margin: .75rem 0
+    }
+
+    /* Registry table */
+    .reg-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: .75rem 0
+    }
+
+    .reg-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface)
+    }
+
+    .reg-table td {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      padding: 6px 12px;
+      border-bottom: 1px solid rgba(31, 45, 69, .4);
+      vertical-align: top;
+      word-break: break-all
+    }
+
+    .reg-table td:first-child {
+      color: var(--amber);
+      white-space: nowrap
+    }
+
+    .reg-table td:nth-child(2) {
+      color: var(--green)
+    }
+
+    .reg-table td:nth-child(3) {
+      color: var(--muted)
+    }
+
+    .reg-table tr:last-child td {
+      border-bottom: none
+    }
+
+    /* Flow chain */
+    .flow-chain {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      margin: 1.25rem 0;
+      font-family: var(--mono);
+      font-size: 11px
+    }
+
+    .flow-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: .5rem .9rem;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      position: relative;
+      min-width: 120px
+    }
+
+    .flow-step::after {
+      content: '▶';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--green);
+      z-index: 1;
+      font-size: 9px
+    }
+
+    .flow-step:last-child::after {
+      display: none
+    }
+
+    .flow-step .fs-label {
+      font-size: 10px;
+      color: var(--text)
+    }
+
+    .flow-step .fs-sub {
+      font-size: 9px;
+      color: var(--muted)
+    }
+
+    .flow-step.alert {
+      border-color: var(--red);
+      background: rgba(255, 77, 109, .06)
+    }
+
+    .flow-step.warn {
+      border-color: var(--amber);
+      background: rgba(245, 158, 11, .05)
+    }
+
+    .flow-step.ok {
+      border-color: var(--green);
+      background: rgba(0, 255, 157, .04)
+    }
+
+    /* Thread cards */
+    .thread-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      margin: 1.25rem 0
+    }
+
+    .thread-card {
+      background: var(--surface);
+      padding: 1rem 1.1rem
+    }
+
+    .thread-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      margin-bottom: .6rem;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .thread-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .thread-body {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.65
+    }
+
+    .thread-body strong {
+      color: var(--text)
+    }
+
+    /* IOC table */
+    .ioc-block {
+      background: var(--surface);
+      border: 1px solid var(--border)
+    }
+
+    .ioc-header {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--green);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .ioc-header .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%
+    }
+
+    .ioc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px
+    }
+
+    .ioc-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 7px 14px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .ioc-table td {
+      font-family: var(--mono);
+      padding: 6px 14px;
+      border-bottom: 1px solid rgba(31, 45, 69, .5);
+      vertical-align: top;
+      word-break: break-all
+    }
+
+    .ioc-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .ioc-table tr:hover td {
+      background: rgba(0, 255, 157, .03)
+    }
+
+    .t-sha {
+      color: var(--red)
+    }
+
+    .t-ip {
+      color: var(--red)
+    }
+
+    .t-file {
+      color: var(--blue)
+    }
+
+    .t-svc {
+      color: #a78bfa
+    }
+
+    .t-reg {
+      color: var(--amber)
+    }
+
+    .t-ioctl {
+      color: #f472b6
+    }
+
+    .t-str {
+      color: #2dd4bf
+    }
+
+    .t-cmd {
+      color: var(--green)
+    }
+
+    /* MITRE */
+    .mitre-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 1rem
+    }
+
+    .mitre-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-align: left;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface)
+    }
+
+    .mitre-table td {
+      padding: 7px 12px;
+      border-bottom: 1px solid rgba(31, 45, 69, .5);
+      vertical-align: top;
+      line-height: 1.5;
+      color: var(--text)
+    }
+
+    .mitre-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .mitre-table tr:hover td {
+      background: rgba(0, 255, 157, .03)
+    }
+
+    .mitre-id {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--blue);
+      white-space: nowrap
+    }
+
+    .mitre-tactic {
+      font-size: 11px;
+      color: var(--amber);
+      white-space: nowrap
+    }
+
+    .unconfirmed {
+      color: var(--muted);
+      font-style: italic
+    }
+
+    /* YARA */
+    .yara-block {
+      background: rgba(0, 0, 0, .5);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      padding: 1rem 1.1rem;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #cdd6f4;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.65;
+      margin-top: .75rem
+    }
+
+    .yara-kw {
+      color: #89b4fa
+    }
+
+    .yara-str {
+      color: #a6e3a1
+    }
+
+    .yara-com {
+      color: #585b70
+    }
+
+    .yara-meta {
+      color: #f472b6
+    }
+
+    /* Fig */
+    .fig-wrap {
+      margin: 1.25rem 0
+    }
+
+    .fig-img {
+      width: 100%;
+      border: 1px solid var(--border);
+      display: block
+    }
+
+    .fig-cap {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      padding: .4rem .5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      letter-spacing: .5px
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <div class="logo">🦇 <span>//</span> Mr_MaTriX</div>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../reports.html">Reports</a>
+      <a href="../ioc-feed.html">IOC Feed</a>
+      <a href="../yara-feed.html">YARA Feed</a>
+      <a href="../siem-reference.html">SIEM Ref</a>
+      <a href="../malware-structures.html">Structures</a>
+      <a href="../ida-scripting.html">IDA Scripting</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../winapi-reference.html">Win API</a>
+      <a href="../achievements.html">Achievements</a>
+      <a href="../about.html">About</a>
+    </div>
+    <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+  </nav>
+
+  <div class="report-container">
+
+    <div class="report-breadcrumb"><a href="../reports.html">&lt; All Reports</a></div>
+
+    <!-- ══ HEADER ══ -->
+    <div class="report-header">
+      <div class="report-tags">
+        <span class="tag-pill tag-red">MALWARE ANALYSIS</span>
+        <span class="tag-pill tag-amber">KERNEL ROOTKIT</span>
+        <span class="tag-pill tag-blue">WINDOWS</span>
+        <span class="tag-pill tag-purple">APT</span>
+        <span class="tag-pill tag-pink">OPERATION TUNNELSNAKE</span>
+      </div>
+      <h1 class="report-title">Moriya: Kernel-Mode Rootkit Analysis — Operation TunnelSnake</h1>
+      <div class="report-meta">
+        <span>📅 2025</span>
+        <span>⏱ 14 MIN READ</span>
+        <span>✍ SalahEldin Kamil</span>
+        <span class="sev sev-crit">CRITICAL</span>
+      </div>
+      <div class="report-summary">
+        Technical analysis of Moriya — a sophisticated kernel-mode rootkit first documented as part of Operation
+        TunnelSnake (2021). The malware establishes persistence as an <code
+          style="font-family:var(--mono);color:var(--amber)">svchost.exe</code> service, drops a kernel driver (<code
+          style="font-family:var(--mono);color:var(--amber)">MoriyaStreamWatchmen.sys</code>), bypasses Driver Signature
+        Enforcement via a hijacked <code style="font-family:var(--mono);color:var(--amber)">VBoxDrv.sys</code>, and
+        maintains a passive TCP reverse shell over pseudo-random ports 50000–50099. Commands flow through named pipes to
+        a spawned <code style="font-family:var(--mono);color:var(--amber)">cmd.exe</code>, while a second thread
+        forcibly kills <code style="font-family:var(--mono);color:var(--amber)">taskhostw.exe</code> and <code
+          style="font-family:var(--mono);color:var(--amber)">taskhost.exe</code>.
+      </div>
+    </div>
+
+    <!-- ══ 1. ARCHITECTURE OVERVIEW ══ -->
+    <div class="report-section">
+      <h2>1. Architecture &amp; Execution Overview</h2>
+      <p>Moriya is implemented as a Windows DLL with three exported functions. The <code
+          style="font-family:var(--mono);color:var(--amber)">DllMain</code> entry point performs no meaningful action —
+        all malicious functionality is split between <code
+          style="font-family:var(--mono);color:var(--amber)">Install</code> (persistence setup) and <code
+          style="font-family:var(--mono);color:var(--amber)">ServiceMain</code> (runtime operation).</p>
+
+      <div class="stage-grid">
+        <div class="stage-cell">
+          <div class="stage-num" style="color:var(--green)">EXPORT 1</div>
+          <div class="stage-title">DllMain</div>
+          <div class="stage-desc">No-op — does nothing on attach. All logic deferred to the two explicit exports.</div>
+        </div>
+        <div class="stage-cell">
+          <div class="stage-num" style="color:var(--amber)">EXPORT 2</div>
+          <div class="stage-title">Install</div>
+          <div class="stage-desc">One-time persistence: creates NsmSvc service, sets registry values, injects into
+            netsvcs group.</div>
+        </div>
+        <div class="stage-cell">
+          <div class="stage-num" style="color:var(--red)">EXPORT 3</div>
+          <div class="stage-title">ServiceMain</div>
+          <div class="stage-desc">Runtime: spawns two threads — Thread 1 drops the kernel driver and runs the C2
+            channel; Thread 2 kills host processes.</div>
+        </div>
+        <div class="stage-cell">
+          <div class="stage-num" style="color:#a78bfa">KERNEL</div>
+          <div class="stage-title">MoriyaStreamWatchmen.sys</div>
+          <div class="stage-desc">Kernel-mode rootkit component — network packet interception via WFP callout driver,
+            device + named pipe for IPC.</div>
+        </div>
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/moriya/dllmain.png" alt="DllMain and exports" />
+        <div class="fig-cap">Figure 1 — DllMain performs no action; all functionality resides in Install and ServiceMain
+          exports</div>
+      </div>
+    </div>
+
+    <!-- ══ 2. PERSISTENCE ══ -->
+    <div class="report-section">
+      <h2>2. Persistence — netsvcs Service Injection</h2>
+      <p>The <code style="font-family:var(--mono);color:var(--amber)">Install</code> export establishes long-term
+        persistence by registering Moriya as a Windows service that loads its DLL through the legitimate <code
+          style="font-family:var(--mono);color:var(--amber)">svchost.exe -k netsvcs</code> hosting process.</p>
+
+      <div class="exec-steps">
+        <div class="exec-step">
+          <div class="exec-num">①</div>
+          <div class="exec-body"><strong>SCM connection &amp; service creation</strong> — Opens the Service Control
+            Manager and creates a new service with the following configuration:</div>
+        </div>
+      </div>
+
+      <table class="reg-table">
+        <thead>
+          <tr>
+            <th>FIELD</th>
+            <th>VALUE</th>
+            <th>NOTE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Service Name</td>
+            <td>NsmSvc</td>
+            <td style="color:var(--muted)">Short name — registered in SCM and registry</td>
+          </tr>
+          <tr>
+            <td>Display Name</td>
+            <td>Network Services Manager</td>
+            <td style="color:var(--muted)">Blends with legitimate service names</td>
+          </tr>
+          <tr>
+            <td>Access Rights</td>
+            <td>SERVICE_ALL_ACCESS</td>
+            <td style="color:var(--muted)">Full control granted to the service</td>
+          </tr>
+          <tr>
+            <td>Service Type</td>
+            <td>SERVICE_WIN32_OWN_PROCESS</td>
+            <td style="color:var(--muted)">Runs in its own svchost instance</td>
+          </tr>
+          <tr>
+            <td>Start Type</td>
+            <td>SERVICE_AUTO_START</td>
+            <td style="color:var(--muted)">Automatically starts on every boot</td>
+          </tr>
+          <tr>
+            <td>Binary Path</td>
+            <td>C:\Windows\System32\svchost.exe -k netsvcs</td>
+            <td style="color:var(--muted)">Legitimate host — masks malicious DLL</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="exec-steps">
+        <div class="exec-step">
+          <div class="exec-num">②</div>
+          <div class="exec-body"><strong>ServiceDll &amp; ServiceMain registry values</strong> — Opens
+            <code>HKLM\SYSTEM\CurrentControlSet\Services\NsmSvc\Parameters</code> and writes two values that instruct
+            svchost how to load Moriya:
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block">HKLM\SYSTEM\CurrentControlSet\Services\NsmSvc\Parameters
+        ServiceDll = &lt;path to Moriya DLL&gt;
+        ServiceMain = "ServiceMain"</div>
+
+      <div class="exec-steps">
+        <div class="exec-step">
+          <div class="exec-num">③</div>
+          <div class="exec-body"><strong>netsvcs group injection</strong> — Opens
+            <code>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Svchost</code>, reads the existing
+            <code>REG_MULTI_SZ</code> value for <code>netsvcs</code>, appends <code>NsmSvc</code> to the list, and
+            writes it back. This causes Windows to recognise <code>NsmSvc</code> as a member of the <code>netsvcs</code>
+            service group and load it inside <code>svchost.exe -k netsvcs</code> on the next boot.
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-red">
+        <strong>Detection:</strong> Sysmon EID 4697 / Windows Security EID 7045 on <code
+          style="font-family:var(--mono)">NsmSvc</code> installation. Alert on writes to <code
+          style="font-family:var(--mono)">HKLM\...\Svchost\netsvcs</code> from non-Windows-Update processes — appending
+        to this list is a classic svchost hijacking pattern. The service binary path pointing to <code
+          style="font-family:var(--mono)">svchost.exe -k netsvcs</code> with a <code
+          style="font-family:var(--mono)">ServiceDll</code> pointing to a non-Microsoft DLL is the key anomaly.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/moriya/install.png" alt="Install export — persistence setup" />
+        <div class="fig-cap">Figure 2 — Install function: SCM service creation → ServiceDll registry values → netsvcs
+          group injection</div>
+      </div>
+    </div>
+
+    <!-- ══ 3. SERVICEMAIN — THREADS ══ -->
+    <div class="report-section">
+      <h2>3. ServiceMain — Two-Thread Architecture</h2>
+      <p>When Windows starts the <code style="font-family:var(--mono);color:var(--amber)">NsmSvc</code> service, it
+        calls <code style="font-family:var(--mono);color:var(--amber)">ServiceMain</code>. The function updates the
+        service status with the SCM, then immediately spawns two concurrent threads with distinct responsibilities.</p>
+
+      <div class="thread-grid">
+        <div class="thread-card">
+          <div class="thread-label"><span class="thread-dot" style="background:var(--green)"></span><span
+              style="color:var(--green)">THREAD 1 — DRIVER &amp; C2</span></div>
+          <div class="thread-body">Sleeps 60 seconds, then drops <strong>MoriyaStreamWatchmen.sys</strong> from embedded
+            resources. Bypasses DSE via <strong>VBoxDrv</strong>. Establishes TCP connection to C2. Processes commands
+            via named pipe to <strong>cmd.exe</strong>.</div>
+        </div>
+        <div class="thread-card">
+          <div class="thread-label"><span class="thread-dot" style="background:var(--red)"></span><span
+              style="color:var(--red)">THREAD 2 — PROCESS KILLER</span></div>
+          <div class="thread-body">Enumerates running processes. Forcibly terminates <strong>taskhostw.exe</strong> and
+            <strong>taskhost.exe</strong>. Likely a defence evasion mechanism targeting task scheduling host processes.
+          </div>
+        </div>
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/moriya/servicemain.png" alt="ServiceMain spawning two threads" />
+        <div class="fig-cap">Figure 3 — ServiceMain: SCM status update then CreateThread × 2 — driver+C2 thread and
+          process-killer thread</div>
+      </div>
+    </div>
+
+    <!-- ══ 4. DRIVER DROP + DSE ══ -->
+    <div class="report-section">
+      <h2>4. Thread 1 — Kernel Driver Drop &amp; DSE Bypass</h2>
+      <p>After the initial 60-second sleep, Thread 1 performs the kernel-level setup in sequence:</p>
+
+      <div class="exec-steps">
+        <div class="exec-step">
+          <div class="exec-num">①</div>
+          <div class="exec-body"><strong>Sleep(60 000 ms)</strong> — A 60-second delay before any kernel activity
+            begins. Sandbox environments with short execution windows will not observe the driver drop or C2 activity.
+          </div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">②</div>
+          <div class="exec-body"><strong>MoriyaStreamWatchmen.sys drop</strong> — Loads the kernel driver from an
+            embedded resource and writes it to <code>C:\Windows\System32\drivers\MoriyaStreamWatchmen.sys</code>.
+            Creates and starts a service for it under the name <code>MoriyaStreamWatchmen</code>.</div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">③</div>
+          <div class="exec-body"><strong>DSE bypass via VBoxDrv</strong> — Locates a vulnerable VirtualBox driver
+            (<code>VBoxDrv.sys</code>) on the system. Renames the original to <code>VBoxDrv.backup</code>, then drops a
+            second embedded file in its place. Creates and starts a new <code>VBoxDrv</code> service from this file. The
+            VirtualBox driver is known to be abusable for disabling Driver Signature Enforcement (DSE) — a common BYOVD
+            (Bring Your Own Vulnerable Driver) technique.</div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">④</div>
+          <div class="exec-body"><strong>IOCTL communication</strong> — Issues IOCTL <code>0x222004</code> to the
+            <code>MoriyaStreamWatchmen</code> device to configure the driver's network monitoring behaviour.
+          </div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">⑤</div>
+          <div class="exec-body"><strong>Driver self-deletion</strong> — Deletes <code>MoriyaStreamWatchmen.sys</code>
+            from disk after loading the driver into the kernel. The driver remains active in memory; the on-disk
+            artefact is removed to hinder forensic analysis.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-amber">
+        <strong>BYOVD / DSE bypass:</strong> Using <code style="font-family:var(--mono)">VBoxDrv.sys</code> to disable
+        Driver Signature Enforcement is a known technique (CVE-2008-3431 and variants). The malware exploits the
+        kernel-level access granted by the vulnerable driver to load its own unsigned <code
+          style="font-family:var(--mono)">MoriyaStreamWatchmen.sys</code> without triggering DSE checks. Detection:
+        alert on <code style="font-family:var(--mono)">VBoxDrv</code> service creation outside VirtualBox installation
+        paths, especially when accompanied by a backup file creation.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/moriya/driver.png" alt="Driver drop and DSE bypass" />
+        <div class="fig-cap">Figure 4 — Thread 1: MoriyaStreamWatchmen.sys drop to System32\drivers, VBoxDrv.sys
+          manipulation for DSE bypass, service creation</div>
+      </div>
+    </div>
+
+    <!-- ══ 5. TCP C2 ══ -->
+    <div class="report-section">
+      <h2>5. TCP Reverse Shell &amp; C2 Channel</h2>
+      <p>After the kernel driver is established, Thread 1 sets up the command-and-control communication channel via a
+        direct TCP reverse shell.</p>
+
+      <div class="flow-chain">
+        <div class="flow-step ok"><span class="fs-label">socket()</span><span class="fs-sub">AF_INET, SOCK_STREAM</span>
+        </div>
+        <div class="flow-step ok"><span class="fs-label">bind()</span><span class="fs-sub">port 50000–50099
+            (random)</span></div>
+        <div class="flow-step warn"><span class="fs-label">DnsQuery_A</span><span class="fs-sub">resolve C2
+            hostname</span></div>
+        <div class="flow-step alert"><span class="fs-label">WSAConnect()</span><span
+            class="fs-sub">192.168.152.1:80</span></div>
+        <div class="flow-step alert"><span class="fs-label">Redirect stdio</span><span
+            class="fs-sub">stdin/stdout/stderr → socket</span></div>
+        <div class="flow-step alert"><span class="fs-label">CreateProcess</span><span class="fs-sub">cmd.exe
+            (interactive shell)</span></div>
+      </div>
+
+      <ul class="report-list">
+        <li><strong>Socket creation</strong> — Creates an IPv4 TCP socket and binds to a pseudo-random local port in the
+          <strong>50000–50099</strong> range.
+        </li>
+        <li><strong>C2 resolution</strong> — When a hostname is supplied via the <code
+            style="font-family:var(--mono);color:var(--amber)">connect</code> command, the malware resolves it using
+          <code style="font-family:var(--mono);color:var(--amber)">DnsQuery_A</code>. The observed hardcoded endpoint is
+          <code style="font-family:var(--mono);color:var(--red)">192.168.152.1:80</code>.
+        </li>
+        <li><strong>WSAConnect</strong> — Establishes the TCP connection to the resolved C2 endpoint.</li>
+        <li><strong>stdio redirect</strong> — Redirects the spawned process's standard input, output, and error streams
+          directly to the C2 socket via <code style="font-family:var(--mono);color:var(--amber)">STARTUPINFO</code>
+          handle inheritance.</li>
+        <li><strong>Interactive shell</strong> — Launches <code
+            style="font-family:var(--mono);color:var(--amber)">C:\Windows\System32\cmd.exe</code> with stdio bound to
+          the socket, giving the operator a fully interactive remote command shell.</li>
+      </ul>
+
+      <div class="callout callout-blue">
+        <strong>Detection:</strong> <code style="font-family:var(--mono)">cmd.exe</code> spawned by <code
+          style="font-family:var(--mono)">svchost.exe</code> with inherited socket handles is anomalous — Sysmon EID 1
+        with ParentImage = svchost.exe and CommandLine = cmd.exe and no console window. Alert on outbound connections
+        from <code style="font-family:var(--mono)">svchost.exe</code> on port 80 to non-Microsoft IP addresses. The
+        local port range 50000–50099 is also a network-layer signature.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/moriya/tcp.png" alt="TCP reverse shell setup" />
+        <div class="fig-cap">Figure 5 — TCP reverse shell: random bind port 50000–50099, WSAConnect to 192.168.152.1:80,
+          cmd.exe stdio redirected to socket</div>
+      </div>
+    </div>
+
+    <!-- ══ 6. NAMED PIPE C2 ══ -->
+    <div class="report-section">
+      <h2>6. Named Pipe Command Processing</h2>
+      <p>Beyond the direct TCP shell, Moriya uses the <code
+          style="font-family:var(--mono);color:var(--amber)">MoriyaStreamWatchmen</code> driver as a communication
+        bridge via named pipes and a device object.</p>
+
+      <div class="exec-steps">
+        <div class="exec-step">
+          <div class="exec-num">①</div>
+          <div class="exec-body"><strong>Device creation</strong> — The kernel driver creates a device object
+            (<code>\\Device\\MoriyaStreamWatchmen</code>) and a symbolic link
+            (<code>\\DosDevices\\MoriyaStreamWatchmen</code>). The user-mode component opens this device for IPC.</div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">②</div>
+          <div class="exec-body"><strong>Pipe creation</strong> — <code>CreatePipe</code> establishes the read/write
+            pipe pair used to relay commands to and output from the <code>cmd.exe</code> shell process.</div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">③</div>
+          <div class="exec-body"><strong>Command deobfuscation</strong> — Commands received through the Moriya
+            communication stream are deobfuscated before being passed to <code>cmd.exe</code> via the pipe write handle.
+          </div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">④</div>
+          <div class="exec-body"><strong>Output polling</strong> — <code>PeekNamedPipe</code> + <code>ReadFile</code>
+            poll the pipe read handle for shell output. The malware waits for the <code>&gt;</code> prompt character to
+            appear, using it as the signal that command processing is complete.</div>
+        </div>
+        <div class="exec-step">
+          <div class="exec-num">⑤</div>
+          <div class="exec-body"><strong>Output obfuscation &amp; relay</strong> — The collected shell output is
+            processed through the obfuscation routine and transmitted back through the Moriya communication channel to
+            the operator.</div>
+        </div>
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/moriya/readbytes.png" alt="Named pipe command processing" />
+        <div class="fig-cap">Figure 6 — Named pipe IPC: CreatePipe, deobfuscate command → WriteFile to cmd.exe,
+          PeekNamedPipe/ReadFile poll for &gt; prompt, obfuscate output, relay to C2</div>
+      </div>
+    </div>
+
+    <!-- ══ 7. PROCESS KILLER ══ -->
+    <div class="report-section">
+      <h2>7. Thread 2 — Process Termination</h2>
+      <p>The second thread runs concurrently with Thread 1 and focuses solely on locating and killing specific host
+        processes.</p>
+      <ul class="report-list">
+        <li>Calls <code
+            style="font-family:var(--mono);color:var(--amber)">CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS)</code> and
+          iterates with <code style="font-family:var(--mono);color:var(--amber)">Process32FirstW</code> / <code
+            style="font-family:var(--mono);color:var(--amber)">Process32NextW</code>.</li>
+        <li>Targets <code style="font-family:var(--mono);color:var(--amber)">taskhostw.exe</code> and <code
+            style="font-family:var(--mono);color:var(--amber)">taskhost.exe</code> — the Windows Task Host processes
+          responsible for running scheduled tasks and DLL-based services.</li>
+        <li>Opens each match with <code
+            style="font-family:var(--mono);color:var(--amber)">OpenProcess(PROCESS_TERMINATE)</code> and calls <code
+            style="font-family:var(--mono);color:var(--amber)">TerminateProcess</code>.</li>
+      </ul>
+
+      <div class="callout callout-amber">
+        <strong>Likely intent:</strong> Killing <code style="font-family:var(--mono)">taskhostw.exe</code> / <code
+          style="font-family:var(--mono)">taskhost.exe</code> prevents scheduled tasks — including security product
+        maintenance tasks, update checks, and log rotation — from running during the infection. It may also be used to
+        disrupt task-based detection or remediation mechanisms. Impact on service disruption is not fully confirmed from
+        the analysed code alone.
+      </div>
+
+      <div class="fig-wrap">
+        <img class="fig-img" src="images/moriya/thread2.png" alt="Process killer thread" />
+        <div class="fig-cap">Figure 7 — Thread 2: CreateToolhelp32Snapshot → Process32FirstW/NextW → TerminateProcess on
+          taskhostw.exe and taskhost.exe</div>
+      </div>
+    </div>
+
+    <!-- ══ 8. IOCs ══ -->
+    <div class="report-section">
+      <h2>8. Indicators of Compromise</h2>
+      <div class="ioc-block" style="margin-top:1rem">
+        <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>
+        <table class="ioc-table">
+          <thead>
+            <tr>
+              <th>TYPE</th>
+              <th>INDICATOR</th>
+              <th>DESCRIPTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="t-sha">SHA256</td>
+              <td>d620f9c32adc39b0632f22ec6a0503bf906fd1357f4435463fbb4b422634a536</td>
+              <td style="color:var(--muted)">Moriya agent DLL sample hash</td>
+            </tr>
+            <tr>
+              <td class="t-ip">IP</td>
+              <td>192.168.152.1</td>
+              <td style="color:var(--muted)">Observed C2 endpoint</td>
+            </tr>
+            <tr>
+              <td class="t-ip">PORT</td>
+              <td>80/TCP</td>
+              <td style="color:var(--muted)">Observed C2 destination port</td>
+            </tr>
+            <tr>
+              <td class="t-ip">PORT RANGE</td>
+              <td>50000–50099/TCP</td>
+              <td style="color:var(--muted)">Pseudo-random local ports used for TCP communication</td>
+            </tr>
+            <tr>
+              <td class="t-file">FILE</td>
+              <td>MoriyaStreamWatchmen.sys</td>
+              <td style="color:var(--muted)">Kernel driver dropped to System32\drivers\ then deleted from disk</td>
+            </tr>
+            <tr>
+              <td class="t-file">FILE</td>
+              <td>VBoxDrv.sys</td>
+              <td style="color:var(--muted)">Vulnerable VirtualBox driver replaced for DSE bypass</td>
+            </tr>
+            <tr>
+              <td class="t-file">FILE</td>
+              <td>VBoxDrv.backup</td>
+              <td style="color:var(--muted)">Original VBoxDrv.sys renamed to this before replacement</td>
+            </tr>
+            <tr>
+              <td class="t-svc">SERVICE</td>
+              <td>NsmSvc</td>
+              <td style="color:var(--muted)">Moriya user-mode persistence service (Display: Network Services Manager)
+              </td>
+            </tr>
+            <tr>
+              <td class="t-svc">SERVICE</td>
+              <td>MoriyaStreamWatchmen</td>
+              <td style="color:var(--muted)">Kernel driver service created and started by the malware</td>
+            </tr>
+            <tr>
+              <td class="t-svc">SERVICE</td>
+              <td>VBoxDrv</td>
+              <td style="color:var(--muted)">Service created for the DSE bypass vulnerable driver</td>
+            </tr>
+            <tr>
+              <td class="t-reg">REGISTRY</td>
+              <td>HKLM\SYSTEM\CurrentControlSet\Services\NsmSvc\Parameters</td>
+              <td style="color:var(--muted)">ServiceDll and ServiceMain values written for svchost loading</td>
+            </tr>
+            <tr>
+              <td class="t-reg">REGISTRY</td>
+              <td>HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Svchost → netsvcs</td>
+              <td style="color:var(--muted)">NsmSvc appended to the netsvcs REG_MULTI_SZ service group</td>
+            </tr>
+            <tr>
+              <td class="t-ioctl">IOCTL</td>
+              <td>0x222004</td>
+              <td style="color:var(--muted)">IOCTL code issued to MoriyaStreamWatchmen driver for configuration</td>
+            </tr>
+            <tr>
+              <td class="t-str">DEBUG STR</td>
+              <td>[DF]&nbsp;</td>
+              <td style="color:var(--muted)">Prefix used by the malware's internal debug logging routine</td>
+            </tr>
+            <tr>
+              <td class="t-cmd">COMMAND</td>
+              <td>connect &lt;address&gt; &lt;port&gt;</td>
+              <td style="color:var(--muted)">Operator command to establish TCP connection to a specified endpoint</td>
+            </tr>
+            <tr>
+              <td class="t-str">DEVICE</td>
+              <td>\\Device\\MoriyaStreamWatchmen</td>
+              <td style="color:var(--muted)">Kernel device object created by the driver for user-mode IPC</td>
+            </tr>
+            <tr>
+              <td class="t-str">SYMLINK</td>
+              <td>\\DosDevices\\MoriyaStreamWatchmen</td>
+              <td style="color:var(--muted)">DOS device symlink for user-mode access to the driver device</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ 9. MITRE ══ -->
+    <div class="report-section">
+      <h2>9. MITRE ATT&amp;CK Mapping</h2>
+      <table class="mitre-table">
+        <thead>
+          <tr>
+            <th>TACTIC</th>
+            <th>ID</th>
+            <th>TECHNIQUE</th>
+            <th>EVIDENCE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mitre-tactic">Persistence</td>
+            <td class="mitre-id">T1543.003</td>
+            <td>Windows Service</td>
+            <td style="color:var(--muted)">NsmSvc created as SERVICE_AUTO_START, loaded via svchost.exe -k netsvcs with
+              ServiceDll pointing to Moriya</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Persistence</td>
+            <td class="mitre-id">T1543.003</td>
+            <td>Windows Service — Kernel Driver</td>
+            <td style="color:var(--muted)">MoriyaStreamWatchmen.sys installed as kernel driver service; VBoxDrv service
+              created for DSE bypass driver</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1014</td>
+            <td>Rootkit</td>
+            <td style="color:var(--muted)">MoriyaStreamWatchmen.sys operates at kernel level, intercepting and
+              processing network traffic below user-mode monitoring</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1562.001</td>
+            <td>Impair Defenses: DSE</td>
+            <td style="color:var(--muted)">Driver Signature Enforcement disabled via vulnerable VBoxDrv.sys before
+              loading unsigned MoriyaStreamWatchmen.sys; restored afterward</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1070.004</td>
+            <td>Indicator Removal: File Deletion</td>
+            <td style="color:var(--muted)">MoriyaStreamWatchmen.sys deleted from disk after the driver is loaded into
+              the kernel</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1036</td>
+            <td>Masquerading <span class="unconfirmed">(possible)</span></td>
+            <td style="color:var(--muted)">VBoxDrv service/driver naming mimics legitimate VirtualBox components; exact
+              masquerading intent not fully established</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Defense Evasion</td>
+            <td class="mitre-id">T1497</td>
+            <td>Sandbox Evasion <span class="unconfirmed">(possible)</span></td>
+            <td style="color:var(--muted)">60-second initial sleep in Thread 1 before kernel activity; VBoxDrv
+              manipulation may also indicate VM-awareness</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Discovery</td>
+            <td class="mitre-id">T1057</td>
+            <td>Process Discovery</td>
+            <td style="color:var(--muted)">CreateToolhelp32Snapshot + Process32FirstW/NextW used in both threads —
+              Thread 1 for C2 setup, Thread 2 to find kill targets</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Execution</td>
+            <td class="mitre-id">T1059.003</td>
+            <td>Windows Command Shell</td>
+            <td style="color:var(--muted)">C:\Windows\System32\cmd.exe spawned with stdio redirected to the C2 socket
+              for interactive remote command execution</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Execution</td>
+            <td class="mitre-id">T1106</td>
+            <td>Native API</td>
+            <td style="color:var(--muted)">Extensive use of CreateProcessW, CreateServiceW, StartServiceW,
+              DeviceIoControl, CreateToolhelp32Snapshot, Winsock APIs</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">C2</td>
+            <td class="mitre-id">T1095</td>
+            <td>Non-Application Layer Protocol</td>
+            <td style="color:var(--muted)">Direct TCP socket connection via Winsock; cmd.exe stdio bound to socket — raw
+              TCP, not HTTP</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">C2</td>
+            <td class="mitre-id">T1071.001</td>
+            <td>Web Protocols <span class="unconfirmed">(not confirmed)</span></td>
+            <td style="color:var(--muted)">Connection targets port 80 but code establishes raw TCP — no HTTP protocol
+              confirmed from analysed code</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">C2</td>
+            <td class="mitre-id">T1090</td>
+            <td>Proxy <span class="unconfirmed">(possible)</span></td>
+            <td style="color:var(--muted)">connect command allows operator-directed TCP connections; proxy functionality
+              not fully established</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Impact</td>
+            <td class="mitre-id">T1489</td>
+            <td>Service Stop / Process Termination</td>
+            <td style="color:var(--muted)">Thread 2 forcibly terminates taskhostw.exe and taskhost.exe;
+              service-disruption impact not confirmed from code alone</td>
+          </tr>
+          <tr>
+            <td class="mitre-tactic">Privilege Escalation</td>
+            <td class="mitre-id">T1068</td>
+            <td>Exploitation for Privilege Escalation <span class="unconfirmed">(not confirmed)</span></td>
+            <td style="color:var(--muted)">Kernel driver loading and DSE manipulation provide privileged execution; no
+              specific CVE exploitation confirmed in analysed code</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ══ 10. YARA ══ -->
+    <div class="report-section">
+      <h2>10. YARA Detection Rule</h2>
+      <p>The rule targets both the user-mode DLL and the kernel driver by matching on unique Moriya-specific string
+        constants present across all observed components. Any 5 of the 10 strings is sufficient for a high-confidence
+        match.</p>
+      <div class="yara-block"><span class="yara-kw">rule</span> Moriya
+        {
+        <span class="yara-kw">meta:</span>
+        <span class="yara-meta">description</span> = <span class="yara-str">"Detects Moriya kernel-mode rootkit —
+          Operation TunnelSnake"</span>
+        <span class="yara-meta">author</span> = <span class="yara-str">"SalahEldin Kamil (Mr_MaTriX)"</span>
+
+        <span class="yara-kw">strings:</span>
+        $m1 = <span class="yara-str">"MoriyaStreamWatchmen"</span> ascii wide
+        $m2 = <span class="yara-str">"MoriyaServiceX64.dll"</span> ascii wide
+        $m3 = <span class="yara-str">"Moriya"</span> ascii wide
+        $m4 = <span class="yara-str">"Moriya start"</span> ascii wide
+        $m5 = <span class="yara-str">"Moriya Callout"</span> ascii wide
+        $m6 = <span class="yara-str">"Moriya Filter"</span> ascii wide
+        $m7 = <span class="yara-str">"\\Device\\MoriyaStreamWatchmen"</span> ascii wide
+        $m8 = <span class="yara-str">"\\DosDevices\\MoriyaStreamWatchmen"</span> ascii wide
+        $m9 = <span class="yara-str">"Moriya : Waiting..."</span> ascii wide
+        $m10 = <span class="yara-str">"Moriya : NotifyFunction"</span> ascii wide
+
+        <span class="yara-kw">condition:</span>
+        uint16(0) == <span class="yara-str">0x5A4D</span> <span class="yara-com">// MZ header</span>
+        <span class="yara-kw">and</span> filesize &lt; 5MB
+        <span class="yara-kw">and</span> 5 of ($m*)
+        }
+      </div>
+    </div>
+
+  </div><!-- /report-container -->
+
+  <footer>
+    <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+    <div class="footer-links" id="footer-links"></div>
+  </footer>
+
+  <script src="../assets/js/config.js"></script>
+  <script>
+    (function () {
+      const fl = document.getElementById('footer-links');
+      const l = SITE_CONFIG.links;
+      if (l.github) fl.innerHTML += `<a href="${l.github}"   target="_blank">GitHub</a>`;
+      if (l.linkedin) fl.innerHTML += `<a href="${l.linkedin}" target="_blank">LinkedIn</a>`;
+      if (l.email) fl.innerHTML += `<a href="${l.email}">Email</a>`;
+    })();
+  </script>
+
+</body>
+
+</html>

@@ -27,6 +27,40 @@ const REPORTS = [
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
   {
+    slug: "moriya-rootkit",
+    title: "Moriya: Kernel-Mode Rootkit Analysis — Operation TunnelSnake",
+    date: "2025-08-01",
+    tag: "MALWARE",
+    severity: "CRITICAL",
+    readTime: "14 MIN READ",
+    excerpt: "Technical analysis of Moriya, a kernel-mode rootkit from Operation TunnelSnake. Covers svchost/netsvcs persistence, MoriyaStreamWatchmen.sys driver drop, DSE bypass via vulnerable VBoxDrv, TCP reverse shell over ports 50000–50099, named-pipe C2 command processing, and forced termination of taskhostw.exe.",
+    iocs: [
+      { type: "SHA256", indicator: "d620f9c32adc39b0632f22ec6a0503bf906fd1357f4435463fbb4b422634a536", family: "Moriya Agent", confidence: "HIGH" },
+      { type: "IP", indicator: "192.168.152.1", family: "Moriya C2", confidence: "HIGH" },
+      { type: "PORT", indicator: "80/TCP", family: "Moriya C2", confidence: "HIGH" },
+      { type: "PORT", indicator: "50000–50099/TCP", family: "Moriya", confidence: "HIGH" },
+      { type: "FILE", indicator: "MoriyaStreamWatchmen.sys", family: "Moriya Rootkit", confidence: "HIGH" },
+      { type: "FILE", indicator: "VBoxDrv.sys", family: "Moriya DSE Bypass", confidence: "HIGH" },
+      { type: "FILE", indicator: "VBoxDrv.backup", family: "Moriya DSE Bypass", confidence: "HIGH" },
+      { type: "SERVICE", indicator: "MoriyaStreamWatchmen", family: "Moriya Rootkit", confidence: "HIGH" },
+      { type: "SERVICE", indicator: "VBoxDrv", family: "Moriya DSE Bypass", confidence: "HIGH" },
+      { type: "SERVICE", indicator: "NsmSvc", family: "Moriya Persistence", confidence: "HIGH" },
+      { type: "REGISTRY", indicator: "HKLM\\SYSTEM\\CurrentControlSet\\Services\\NsmSvc\\Parameters", family: "Moriya Persistence", confidence: "HIGH" },
+      { type: "REGISTRY", indicator: "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Svchost", family: "Moriya Persistence", confidence: "HIGH" },
+      { type: "IOCTL", indicator: "0x222004", family: "MoriyaStreamWatchmen.sys", confidence: "HIGH" },
+      { type: "CMD", indicator: "connect <address> <port>", family: "Moriya C2 Command", confidence: "HIGH" },
+      { type: "PROCESS", indicator: "cmd.exe", family: "Moriya Shell", confidence: "MEDIUM" },
+    ],
+    yara: [
+      {
+        name: "Moriya",
+        description: "Detects Moriya kernel-mode rootkit — Operation TunnelSnake",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Moriya\n{\n    meta:\n        description = \"Detects Moriya kernel-mode rootkit — Operation TunnelSnake\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $m1  = \"MoriyaStreamWatchmen\" ascii wide\n        $m2  = \"MoriyaServiceX64.dll\" ascii wide\n        $m3  = \"Moriya\" ascii wide\n        $m4  = \"Moriya start\" ascii wide\n        $m5  = \"Moriya Callout\" ascii wide\n        $m6  = \"Moriya Filter\" ascii wide\n        $m7  = \"\\\\Device\\\\MoriyaStreamWatchmen\" ascii wide\n        $m8  = \"\\\\DosDevices\\\\MoriyaStreamWatchmen\" ascii wide\n        $m9  = \"Moriya : Waiting...\" ascii wide\n        $m10 = \"Moriya : NotifyFunction\" ascii wide\n    condition:\n        uint16(0) == 0x5A4D and\n        filesize < 5MB and\n        5 of ($m*)\n}",
+      },
+    ],
+  },
+  {
     slug: "serorat-dropper",
     title: "SeroRAT: Analysis of an AES-256-CBC Dropper with PPID Spoofing",
     date: "2026-09-18",

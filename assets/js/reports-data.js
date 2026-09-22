@@ -29,7 +29,7 @@ const REPORTS = [
   {
     slug: "moriya-rootkit",
     title: "Moriya: Kernel-Mode Rootkit Analysis — Operation TunnelSnake",
-    date: "2025-08-01",
+    date: "2026-09-20",
     tag: "MALWARE",
     severity: "CRITICAL",
     readTime: "14 MIN READ",

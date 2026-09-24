@@ -27,6 +27,38 @@ const REPORTS = [
 
   // ── YOUR REPORTS ────────────────────────────────────────────────
   {
+    slug: "vortex-stealer",
+    title: "Vortex: Go-Based Infostealer with Telegram C2 and AV Evasion",
+    date: "2025-09-01",
+    tag: "MALWARE",
+    severity: "HIGH",
+    readTime: "12 MIN READ",
+    excerpt: "Analysis of Vortex, a Go-based infostealer with Telegram bot C2. Covers dump directory setup, public IP fingerprinting, UAC/Defender/driver service disabling via registry and PowerShell, process termination, Base64+AES encryption, and Run key persistence. Targets browsers, crypto wallets, VPNs, Discord, Telegram, Steam and more.",
+    iocs: [
+      { type: "URL", indicator: "https://ipapi.co/json", family: "Vortex", confidence: "HIGH" },
+      { type: "DIR", indicator: "7900020458", family: "Vortex", confidence: "HIGH" },
+      { type: "FILE", indicator: "CrashHandler.log", family: "Vortex", confidence: "HIGH" },
+      { type: "STRING", indicator: "ERB1-7C", family: "Vortex", confidence: "HIGH" },
+      { type: "UA", indicator: "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 Safari/537.36", family: "Vortex", confidence: "HIGH" },
+      { type: "REGISTRY", indicator: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", family: "Vortex", confidence: "HIGH" },
+      { type: "REGISTRY", indicator: "HKLM\\SOFTWARE\\Microsoft\\Windows Defender", family: "Vortex", confidence: "HIGH" },
+      { type: "REGISTRY", indicator: "HKLM\\SYSTEM\\CurrentControlSet\\Services", family: "Vortex", confidence: "HIGH" },
+      { type: "REGISTRY", indicator: "Software\\Microsoft\\Windows\\CurrentVersion\\Run", family: "Vortex", confidence: "HIGH" },
+      { type: "CMD", indicator: "Set-MpPreference -ModerateThreatDefaultAction 6 -Force -ErrorAction SilentlyContinue", family: "Vortex", confidence: "HIGH" },
+      { type: "CRYPTO", indicator: "Base64 → AES-CBC", family: "Vortex", confidence: "HIGH" },
+      { type: "AES_KEY", indicator: "D503E6E063527CB624FE0363FFF9B3BD20941CAF708492B6905F66434DCA7277", family: "Vortex", confidence: "HIGH" },
+      { type: "AES_IV", indicator: "27D8B1F0DB3CAB3E202021 56BA1B3713", family: "Vortex", confidence: "HIGH" },
+    ],
+    yara: [
+      {
+        name: "Vortex",
+        description: "Detects Vortex Stealer — Go-based infostealer with Telegram C2",
+        author: "SalahEldin Kamil (Mr_MaTriX)",
+        rule: "rule Vortex\n{\n    meta:\n        description = \"Detects Vortex Stealer\"\n        author      = \"SalahEldin Kamil (Mr_MaTriX)\"\n    strings:\n        $m1  = \"vortex\" ascii wide\n        $m2  = \"vortex/messenger.DiscordDataDump\" ascii wide\n        $m3  = \"vortex/hutil.mergeBrowserData\" ascii wide\n        $m4  = \"vortex/hutil.archiveDataFiles\" ascii wide\n        $m5  = \"vortex/hutil.CompressDataFiles\" ascii wide\n        $m6  = \"vortex/hutil.archiveFiles\" ascii wide\n        $m7  = \"vortex/hutil.ZipFolder\" ascii wide\n        $m8  = \"vortex/antiav.DisableUAC\" ascii wide\n        $m9  = \"vortex/antiav.disableWinDefendRegs\" ascii wide\n        $m10 = \"vortex/browser.RecursiveChromiumBrowserDump\" ascii wide\n    condition:\n        uint16(0) == 0x5A4D and\n        filesize < 10MB and\n        5 of them\n}",
+      },
+    ],
+  },
+  {
     slug: "moriya-rootkit",
     title: "Moriya: Kernel-Mode Rootkit Analysis — Operation TunnelSnake",
     date: "2026-09-20",

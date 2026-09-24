@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vortex Stealer Analysis — SecBlog</title>
+  <link rel="stylesheet" href="../assets/css/style.css"/>
+  <link rel="stylesheet" href="../assets/css/report.css"/>
+  <style>
+    .tag-pill{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;padding:3px 10px;border:1px solid;display:inline-block;margin-right:6px;margin-bottom:10px}
+    .tag-red   {border-color:var(--red);  color:var(--red)}
+    .tag-amber {border-color:var(--amber);color:var(--amber)}
+    .tag-blue  {border-color:var(--blue); color:var(--blue)}
+    .tag-green {border-color:var(--green);color:var(--green)}
+    .tag-purple{border-color:#a78bfa;     color:#a78bfa}
+    .tag-teal  {border-color:#2dd4bf;     color:#2dd4bf}
+
+    .sev{font-family:var(--mono);font-size:10px;padding:2px 10px;letter-spacing:1px;font-weight:700}
+    .sev-high{background:var(--amber);color:#0a0e17}
+
+    .callout{font-size:13px;padding:.85rem 1.1rem;border-left:3px solid;line-height:1.7;margin:1rem 0}
+    .callout-red   {border-color:var(--red);  background:rgba(255,77,109,.06)}
+    .callout-amber {border-color:var(--amber);background:rgba(245,158,11,.06)}
+    .callout-blue  {border-color:var(--blue); background:rgba(56,189,248,.06)}
+    .callout-green {border-color:var(--green);background:rgba(0,255,157,.05)}
+    .callout strong{color:#e8f4ff}
+
+    /* Stage overview */
+    .stage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:1px;background:var(--border);margin:1.25rem 0}
+    .stage-cell{background:var(--surface);padding:.8rem .9rem}
+    .stage-num{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;margin-bottom:.3rem}
+    .stage-title{font-size:13px;color:#e8f4ff;font-weight:600;margin-bottom:.2rem}
+    .stage-desc{font-size:11px;color:var(--muted);line-height:1.5}
+
+    /* Exec steps */
+    .exec-steps{margin:1.25rem 0}
+    .exec-step{display:flex;gap:1rem;padding:.75rem 0;border-bottom:1px solid rgba(31,45,69,.4)}
+    .exec-step:last-child{border-bottom:none}
+    .exec-num{font-family:var(--mono);font-size:13px;color:var(--green);width:24px;flex-shrink:0;padding-top:1px}
+    .exec-body{font-size:13px;color:var(--text);line-height:1.7}
+    .exec-body strong{color:#e8f4ff}
+    .exec-body code{font-family:var(--mono);font-size:11px;color:var(--amber);background:rgba(0,0,0,.3);padding:1px 5px}
+
+    /* Target capability grid */
+    .cap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:1px;background:var(--border);margin:1rem 0}
+    .cap-cell{background:var(--surface);padding:.65rem .85rem}
+    .cap-label{font-family:var(--mono);font-size:9px;letter-spacing:1px;margin-bottom:.35rem}
+    .cap-items{font-size:11px;color:var(--muted);line-height:1.6}
+
+    /* Scrollable target table */
+    .target-wrap{max-height:380px;overflow-y:auto;border:1px solid var(--border);margin-top:.75rem;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+    .target-wrap::-webkit-scrollbar{width:3px}
+    .target-wrap::-webkit-scrollbar-thumb{background:var(--border)}
+    .target-table{width:100%;border-collapse:collapse;font-size:11px;font-family:var(--mono)}
+    .target-table th{font-size:9px;letter-spacing:1px;color:var(--muted);text-align:left;padding:5px 10px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:1}
+    .target-table td{padding:4px 10px;border-bottom:1px solid rgba(31,45,69,.35);vertical-align:top;color:var(--muted)}
+    .target-table td:first-child{color:var(--green)}
+    .target-table tr:hover td{background:rgba(0,255,157,.03)}
+
+    /* Telegram commands table */
+    .tg-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:.75rem}
+    .tg-table th{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);text-align:left;padding:6px 12px;border-bottom:1px solid var(--border);background:var(--surface)}
+    .tg-table td{padding:6px 12px;border-bottom:1px solid rgba(31,45,69,.4);vertical-align:top;line-height:1.5}
+    .tg-table td:first-child{font-family:var(--mono);font-size:11px;color:var(--green);white-space:nowrap}
+    .tg-table td:nth-child(2){color:var(--muted);font-size:12px}
+    .tg-table tr:last-child td{border-bottom:none}
+    .tg-table tr:hover td{background:rgba(0,255,157,.03)}
+
+    /* Crypto box */
+    .crypto-box{background:rgba(0,0,0,.4);border:1px solid var(--border);border-left:3px solid #a78bfa;padding:.85rem 1rem;font-family:var(--mono);font-size:11.5px;line-height:1.8;margin:1rem 0}
+    .crypto-label{color:var(--muted);font-size:10px;letter-spacing:1px;margin-bottom:.2rem}
+    .crypto-val{color:#a78bfa;word-break:break-all}
+    .crypto-val.green{color:var(--green)}
+    .crypto-val.amber{color:var(--amber)}
+
+    /* PS command block */
+    .cmd-block{background:rgba(0,0,0,.45);border:1px solid var(--border);border-left:3px solid var(--red);padding:.7rem 1rem;font-family:var(--mono);font-size:11px;color:#cdd6f4;overflow-x:auto;white-space:pre;line-height:1.6;margin:.6rem 0}
+
+    /* IOC table */
+    .ioc-block{background:var(--surface);border:1px solid var(--border)}
+    .ioc-header{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--green);padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+    .ioc-header .dot{width:6px;height:6px;background:var(--green);border-radius:50%}
+    .ioc-table{width:100%;border-collapse:collapse;font-size:12px}
+    .ioc-table th{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);text-align:left;padding:7px 14px;border-bottom:1px solid var(--border)}
+    .ioc-table td{font-family:var(--mono);padding:6px 14px;border-bottom:1px solid rgba(31,45,69,.5);vertical-align:top;word-break:break-all}
+    .ioc-table tr:last-child td{border-bottom:none}
+    .ioc-table tr:hover td{background:rgba(0,255,157,.03)}
+    .t-url  {color:var(--red)}
+    .t-reg  {color:var(--amber)}
+    .t-file {color:var(--blue)}
+    .t-str  {color:#2dd4bf}
+    .t-ua   {color:var(--green)}
+    .t-cmd  {color:#f472b6}
+    .t-cry  {color:#a78bfa}
+
+    /* MITRE */
+    .mitre-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:1rem}
+    .mitre-table th{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);text-align:left;padding:7px 12px;border-bottom:1px solid var(--border);background:var(--surface)}
+    .mitre-table td{padding:7px 12px;border-bottom:1px solid rgba(31,45,69,.5);vertical-align:top;line-height:1.5;color:var(--text)}
+    .mitre-table tr:last-child td{border-bottom:none}
+    .mitre-table tr:hover td{background:rgba(0,255,157,.03)}
+    .mitre-id{font-family:var(--mono);font-size:11px;color:var(--blue);white-space:nowrap}
+    .mitre-tactic{font-size:11px;color:var(--amber);white-space:nowrap}
+
+    /* YARA */
+    .yara-block{background:rgba(0,0,0,.5);border:1px solid var(--border);border-left:3px solid var(--green);padding:1rem 1.1rem;font-family:var(--mono);font-size:11px;color:#cdd6f4;overflow-x:auto;white-space:pre;line-height:1.65;margin-top:.75rem}
+    .yara-kw  {color:#89b4fa}
+    .yara-str {color:#a6e3a1}
+    .yara-com {color:#585b70}
+    .yara-meta{color:#f472b6}
+
+    /* Fig */
+    .fig-wrap{margin:1.25rem 0}
+    .fig-img{width:100%;border:1px solid var(--border);display:block}
+    .fig-cap{font-family:var(--mono);font-size:10px;color:var(--muted);padding:.4rem .5rem;background:var(--surface);border:1px solid var(--border);border-top:none;letter-spacing:.5px}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🦇 <span>//</span> Mr_MaTriX</div>
+  <div class="nav-links">
+    <a href="../index.html">Home</a>
+    <a href="../reports.html">Reports</a>
+    <a href="../ioc-feed.html">IOC Feed</a>
+    <a href="../yara-feed.html">YARA Feed</a>
+    <a href="../siem-reference.html">SIEM Ref</a>
+    <a href="../malware-structures.html">Structures</a>
+    <a href="../ida-scripting.html">IDA Scripting</a>
+    <a href="../projects.html">Projects</a>
+    <a href="../winapi-reference.html">Win API</a>
+    <a href="../achievements.html">Achievements</a>
+    <a href="../about.html">About</a>
+  </div>
+  <a href="../assets/SalahEldin_Kamil_CV.pdf" download class="nav-cta" style="text-decoration:none;">⬇ CV</a>
+</nav>
+
+<div class="report-container">
+
+  <div class="report-breadcrumb"><a href="../reports.html">&lt; All Reports</a></div>
+
+  <!-- ══ HEADER ══ -->
+  <div class="report-header">
+    <div class="report-tags">
+      <span class="tag-pill tag-red">MALWARE ANALYSIS</span>
+      <span class="tag-pill tag-amber">INFOSTEALER</span>
+      <span class="tag-pill tag-blue">WINDOWS</span>
+      <span class="tag-pill tag-teal">GOLANG</span>
+      <span class="tag-pill tag-purple">TELEGRAM C2</span>
+      <span class="tag-pill tag-green">AV EVASION</span>
+    </div>
+    <h1 class="report-title">Vortex: Go-Based Infostealer with Telegram C2 and AV Evasion</h1>
+    <div class="report-meta">
+      <span>📅 2025</span>
+      <span>⏱ 12 MIN READ</span>
+      <span>✍ SalahEldin Kamil</span>
+      <span class="sev sev-high">HIGH</span>
+    </div>
+    <div class="report-summary">
+      Analysis of Vortex — a Windows-focused infostealer written in Go that operates as both a data exfiltration tool and a flexible backdoor. The implant fingerprints the victim, aggressively disables defences via registry manipulation and PowerShell, then collects browser credentials, crypto wallets, VPN configs, messenger sessions, and more — exfiltrating everything through an AES-encrypted Telegram bot C2 channel.
+    </div>
+  </div>
+
+  <!-- ══ 1. OVERVIEW ══ -->
+  <div class="report-section">
+    <h2>1. Execution Flow Overview</h2>
+    <p>Vortex executes in a strict sequential order before beginning data collection. Each stage is a dependency for the next — defences must be down before stealing, and persistence is set last.</p>
+
+    <div class="stage-grid">
+      <div class="stage-cell">
+        <div class="stage-num" style="color:var(--green)">STAGE 1</div>
+        <div class="stage-title">Dump Directory</div>
+        <div class="stage-desc">Create collection dir named <code style="font-family:var(--mono);font-size:10px">7900020458</code></div>
+      </div>
+      <div class="stage-cell">
+        <div class="stage-num" style="color:var(--blue)">STAGE 2</div>
+        <div class="stage-title">IP Fingerprinting</div>
+        <div class="stage-desc">HTTP GET to ipapi.co/json — public IP, country, ISP, timezone</div>
+      </div>
+      <div class="stage-cell">
+        <div class="stage-num" style="color:var(--blue)">STAGE 3</div>
+        <div class="stage-title">Host Fingerprinting</div>
+        <div class="stage-desc">OS, RAM, CPU, logged-in user, hostname</div>
+      </div>
+      <div class="stage-cell">
+        <div class="stage-num" style="color:var(--amber)">STAGE 4</div>
+        <div class="stage-title">Log File Setup</div>
+        <div class="stage-desc">Encrypt + drop CrashHandler.log; redirect logging</div>
+      </div>
+      <div class="stage-cell">
+        <div class="stage-num" style="color:var(--red)">STAGE 5</div>
+        <div class="stage-title">Defence Disabling</div>
+        <div class="stage-desc">UAC off, Defender regs, driver services, PS commands, C:\ exclusion</div>
+      </div>
+      <div class="stage-cell">
+        <div class="stage-num" style="color:var(--red)">STAGE 6</div>
+        <div class="stage-title">Process Termination</div>
+        <div class="stage-desc">Enumerate and kill targeted security processes</div>
+      </div>
+      <div class="stage-cell">
+        <div class="stage-num" style="color:#f472b6)">STAGE 7</div>
+        <div class="stage-title">Data Collection</div>
+        <div class="stage-desc">Browsers, wallets, VPN, messengers, Steam, WiFi, screenshots</div>
+      </div>
+      <div class="stage-cell">
+        <div class="stage-num" style="color:#a78bfa">STAGE 8</div>
+        <div class="stage-title">C2 Exfiltration</div>
+        <div class="stage-desc">AES+Base64 encrypted upload via Telegram Bot API</div>
+      </div>
+      <div class="stage-cell">
+        <div class="stage-num" style="color:var(--amber)">STAGE 9</div>
+        <div class="stage-title">Persistence</div>
+        <div class="stage-desc">Self-copy + Run registry key</div>
+      </div>
+    </div>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/dumblocation.png" alt="Dump directory creation"/>
+      <div class="fig-cap">Figure 1 — Dump directory creation: hardcoded name 7900020458 used as the collection staging area</div>
+    </div>
+  </div>
+
+  <!-- ══ 2. FINGERPRINTING ══ -->
+  <div class="report-section">
+    <h2>2. Victim Fingerprinting</h2>
+
+    <h3 style="font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:1px;margin:1.25rem 0 .75rem">2.1 Public IP &amp; Geolocation</h3>
+    <p>The malware performs an HTTP GET request to <code style="font-family:var(--mono);color:var(--red)">https://ipapi.co/json</code> using <code style="font-family:var(--mono);color:var(--amber)">net_http_NewRequestWithContext</code>. The request header includes a hardcoded Chrome-mimicking User-Agent:</p>
+
+    <div style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-left:3px solid var(--blue);padding:.65rem 1rem;font-family:var(--mono);font-size:11px;color:var(--green);margin:.75rem 0;word-break:break-all">
+      Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 Safari/537.36
+    </div>
+
+    <p>The JSON response is unmarshalled into the <code style="font-family:var(--mono);color:var(--amber)">opsysinfo.IpInfo</code> structure, capturing: public IP address, country, region, city, ISP/org, timezone, and currency. This data is included in the victim profile sent to the Telegram C2.</p>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/getip.png" alt="Public IP fingerprinting"/>
+      <div class="fig-cap">Figure 2 — IP fingerprinting: net_http_NewRequestWithContext GET to ipapi.co/json, Chrome UA header, JSON unmarshal into opsysinfo.IpInfo</div>
+    </div>
+
+    <h3 style="font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:1px;margin:1.5rem 0 .75rem">2.2 System Information</h3>
+    <p>After IP geolocation, Vortex collects local hardware and user context:</p>
+    <ul class="report-list">
+      <li>Operating system name and version</li>
+      <li>CPU model and core count</li>
+      <li>Total installed RAM</li>
+      <li>Current logged-in username and hostname</li>
+      <li>System locale and language</li>
+    </ul>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/info.png" alt="System information collection"/>
+      <div class="fig-cap">Figure 3 — Host fingerprinting: OS, CPU, RAM, and logged-in user collection</div>
+    </div>
+  </div>
+
+  <!-- ══ 3. LOG FILE ══ -->
+  <div class="report-section">
+    <h2>3. Log File Setup</h2>
+    <p>Before disabling defences, Vortex sets up its internal logging infrastructure. The procedure is:</p>
+
+    <div class="exec-steps">
+      <div class="exec-step">
+        <div class="exec-num">①</div>
+        <div class="exec-body"><strong>Kernel32.dll load</strong> — Loads <code>kernel32.dll</code> dynamically for subsequent API calls.</div>
+      </div>
+      <div class="exec-step">
+        <div class="exec-num">②</div>
+        <div class="exec-body"><strong>CrashHandler.log encryption</strong> — Encrypts the log file name <code>CrashHandler.log</code> and appends it to a string prefixed with <code>ERB1-7C</code> using Base64 encoding. The prefix acts as a simple obfuscation marker.</div>
+      </div>
+      <div class="exec-step">
+        <div class="exec-num">③</div>
+        <div class="exec-body"><strong>Log file creation</strong> — Constructs the full path inside the dump directory (<code>7900020458</code>) and creates the <code>CrashHandler.log</code> file there.</div>
+      </div>
+      <div class="exec-step">
+        <div class="exec-num">④</div>
+        <div class="exec-body"><strong>Log redirect</strong> — Redirects all subsequent internal log output to the newly created file, making all malware activity traceable in a local log that is later exfiltrated.</div>
+      </div>
+    </div>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/logfile.png" alt="Log file setup"/>
+      <div class="fig-cap">Figure 4 — Log file setup: Kernel32 load, ERB1-7C Base64 prefix, CrashHandler.log creation in dump dir, log redirect</div>
+    </div>
+  </div>
+
+  <!-- ══ 4. DEFENCE DISABLING ══ -->
+  <div class="report-section">
+    <h2>4. Defence Disabling</h2>
+    <p>Vortex performs the most aggressive defence-disabling sequence of any sample in this series — hitting UAC, Windows Defender, driver services, and the C: drive exclusion in sequence before touching any victim data.</p>
+
+    <h3 style="font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:1px;margin:1.25rem 0 .75rem">4.1 UAC Disable</h3>
+    <p>Opens <code style="font-family:var(--mono);color:var(--amber)">HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System</code> and sets <code style="font-family:var(--mono);color:var(--amber)">EnableLUA = 0</code>, disabling User Account Control entirely. Takes effect on next logon.</p>
+
+    <h3 style="font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:1px;margin:1.25rem 0 .75rem">4.2 Windows Defender Registry Tampering</h3>
+    <p>Opens <code style="font-family:var(--mono);color:var(--amber)">HKLM\SOFTWARE\Microsoft\Windows Defender</code> and sets multiple values to disable real-time protection, cloud-delivered protection, behaviour monitoring, and IOAV protection:</p>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/windowsdefender.png" alt="Windows Defender registry tampering"/>
+      <div class="fig-cap">Figure 5 — Defender registry tampering: DisableAntiSpyware, DisableRealtimeMonitoring, DisableBehaviorMonitoring, DisableIOAVProtection values set</div>
+    </div>
+
+    <h3 style="font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:1px;margin:1.25rem 0 .75rem">4.3 Driver Service Disabling</h3>
+    <p>Iterates a hardcoded array of driver/service names and opens each under <code style="font-family:var(--mono);color:var(--amber)">HKLM\SYSTEM\CurrentControlSet\Services\&lt;name&gt;</code>, setting <code style="font-family:var(--mono);color:var(--amber)">Start = 4</code> (disabled) to prevent the service from loading on the next boot. Targets include security-related kernel drivers.</p>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/services.png" alt="Driver service disabling"/>
+      <div class="fig-cap">Figure 6 — Driver service disabling: iterates service name array, sets Start=4 (disabled) under CurrentControlSet\Services for each entry</div>
+    </div>
+
+    <h3 style="font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:1px;margin:1.25rem 0 .75rem">4.4 PowerShell AV Manipulation</h3>
+    <p>Iterates a list of <code style="font-family:var(--mono);color:var(--amber)">Set-MpPreference</code> parameters and disables each one, then modifies Defender's threat response behaviour, sample submission, and MAPS reporting settings:</p>
+
+    <div class="cmd-block">Set-MpPreference -DisableRealtimeMonitoring $true -Force -ErrorAction SilentlyContinue
+Set-MpPreference -DisableBehaviorMonitoring $true -Force -ErrorAction SilentlyContinue
+Set-MpPreference -DisableBlockAtFirstSeen $true -Force -ErrorAction SilentlyContinue
+Set-MpPreference -DisableIOAVProtection $true -Force -ErrorAction SilentlyContinue
+Set-MpPreference -DisablePrivacyMode $true -Force -ErrorAction SilentlyContinue
+Set-MpPreference -SignatureDisableUpdateOnStartupWithoutEngine $true -Force -ErrorAction SilentlyContinue
+Set-MpPreference -DisableArchiveScanning $true -Force -ErrorAction SilentlyContinue
+Set-MpPreference -DisableIntrusionPreventionSystem $true -Force -ErrorAction SilentlyContinue
+Set-MpPreference -DisableScriptScanning $true -Force -ErrorAction SilentlyContinue
+Set-MpPreference -SubmitSamplesConsent 2 -Force -ErrorAction SilentlyContinue
+Set-MpPreference -MAPSReporting 0 -Force -ErrorAction SilentlyContinue
+Set-MpPreference -ModerateThreatDefaultAction 6 -Force -ErrorAction SilentlyContinue
+Set-MpPreference -HighThreatDefaultAction 6 -Force -ErrorAction SilentlyContinue
+Set-MpPreference -SevereThreatDefaultAction 6 -Force -ErrorAction SilentlyContinue</div>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/antivirus.png" alt="PowerShell AV disabling"/>
+      <div class="fig-cap">Figure 7 — PowerShell AV manipulation: Set-MpPreference loop disabling all protection features, sample submission, and MAPS reporting</div>
+    </div>
+
+    <h3 style="font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:1px;margin:1.25rem 0 .75rem">4.5 C:\ Drive Exclusion</h3>
+    <p>Adds the entire <code style="font-family:var(--mono);color:var(--amber)">C:\</code> drive and all processes launching from it to Windows Defender's exclusion list — effectively making Defender blind to any file or process on the system drive:</p>
+
+    <div class="cmd-block">Add-MpPreference -ExclusionPath "C:\" -Force -ErrorAction SilentlyContinue
+Add-MpPreference -ExclusionProcess "C:\*" -Force -ErrorAction SilentlyContinue</div>
+
+    <div class="callout callout-red">
+      <strong>Detection:</strong> Sysmon EID 1 — <code style="font-family:var(--mono)">powershell.exe</code> with <code style="font-family:var(--mono)">Set-MpPreference</code> and <code style="font-family:var(--mono)">Add-MpPreference</code> arguments spawned from a non-administrative shell is a high-fidelity alert. Alert on <code style="font-family:var(--mono)">EnableLUA=0</code> registry writes from non-installer processes. Windows Security EID 5001 (Defender disabled).
+    </div>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/C.png" alt="C drive exclusion"/>
+      <div class="fig-cap">Figure 8 — C:\ exclusion: Add-MpPreference ExclusionPath C:\ and ExclusionProcess C:\* — makes Defender blind to all files and processes on the system drive</div>
+    </div>
+  </div>
+
+  <!-- ══ 5. PROCESS TERMINATION ══ -->
+  <div class="report-section">
+    <h2>5. Process Termination</h2>
+    <p>After disabling Defender, Vortex enumerates all running processes, builds a list of process names and PIDs, identifies security-related targets, terminates them, then sleeps for 2 seconds before continuing.</p>
+
+    <div class="callout callout-amber">
+      <strong>Pattern:</strong> The 2-second sleep after process termination is a synchronisation delay — it gives the OS time to fully clean up terminated process handles before the malware begins accessing locked files (browser databases, etc.) that the killed processes may have held open.
+    </div>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/processlist.png" alt="Process enumeration and termination"/>
+      <div class="fig-cap">Figure 9 — Process enumeration: builds name/PID list, identifies targets, TerminateProcess, Sleep(2000)</div>
+    </div>
+  </div>
+
+  <!-- ══ 6. ENCRYPTION ══ -->
+  <div class="report-section">
+    <h2>6. Encryption Scheme</h2>
+    <p>Vortex uses a two-stage encryption pipeline for all data before transmission. The scheme is: <strong style="color:#e8f4ff">Base64 → AES-CBC → encrypted blob</strong>.</p>
+
+    <p>The Telegram bot token and chat ID are encrypted with the following hardcoded AES-CBC key material — operators must encrypt their credentials before compiling:</p>
+
+    <div class="crypto-box">
+      <div class="crypto-label">ALGORITHM</div>
+      <div class="crypto-val green">AES-256-CBC</div>
+      <br/>
+      <div class="crypto-label">AES KEY (32 bytes)</div>
+      <div class="crypto-val">D5 03 E6 E0 63 52 7C B6 24 FE 03 63 FF F9 B3 BD 20 94 1C AF 70 84 92 B6 90 5F 66 43 4D CA 72 77</div>
+      <br/>
+      <div class="crypto-label">AES IV (16 bytes)</div>
+      <div class="crypto-val amber">27 D8 B1 F0 DB 3C AB 3E 20 20 21 56 BA 1B 37 13</div>
+      <br/>
+      <div class="crypto-label">ENCODING</div>
+      <div class="crypto-val green">Base64 (raw output encoded before placement in main.go)</div>
+    </div>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/aes.png" alt="AES encryption init"/>
+      <div class="fig-cap">Figure 10 — Encryption initialisation: Base64 → AES-CBC pipeline setup; same scheme used for Telegram token decryption and data encryption</div>
+    </div>
+  </div>
+
+  <!-- ══ 7. TELEGRAM C2 ══ -->
+  <div class="report-section">
+    <h2>7. Telegram Bot C2</h2>
+    <p>All C2 communication runs through the Telegram Bot API. The implant decrypts the operator's bot token at runtime (Base64+AES), constructs the Bot API URL, and sends HTTP POST requests with a <code style="font-family:var(--mono);color:var(--amber)">Content-Type: application/json</code> header and a hardcoded Chrome-like User-Agent. JSON responses are unmarshalled into <code style="font-family:var(--mono);color:var(--amber)">telehandler_msgResponse</code>.</p>
+
+    <p>The operator controls the implant through the following Telegram bot commands:</p>
+
+    <table class="tg-table">
+      <thead><tr><th>COMMAND</th><th>DESCRIPTION</th></tr></thead>
+      <tbody>
+        <tr><td>/check &lt;ZOMBIE_ID&gt;</td><td>Check if a specific victim host is online</td></tr>
+        <tr><td>/check_all</td><td>List all connected victims and their online status</td></tr>
+        <tr><td>/screenshot &lt;ZOMBIE_ID&gt;</td><td>Capture and return a desktop screenshot from the victim</td></tr>
+        <tr><td>/get_data &lt;ZOMBIE_ID&gt; &lt;TYPE&gt; &lt;PATH&gt;</td><td>Collect images or documents from a specific path on the victim</td></tr>
+        <tr><td>/drop &lt;ZOMBIE_ID&gt; &lt;URL&gt; &lt;NAME&gt; &lt;PATH&gt;</td><td>Download and execute a secondary payload on the victim</td></tr>
+        <tr><td>/upgrade &lt;ZOMBIE_ID&gt; &lt;URL&gt; &lt;NAME&gt;</td><td>Replace the running implant with an updated version</td></tr>
+        <tr><td>/disable_upload &lt;ZOMBIE_ID&gt;</td><td>Stop data upload for a specific victim</td></tr>
+        <tr><td>/enable_upload &lt;ZOMBIE_ID&gt;</td><td>Resume data upload for a specific victim</td></tr>
+      </tbody>
+    </table>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/telegram.png" alt="Telegram C2 communication"/>
+      <div class="fig-cap">Figure 11 — Telegram C2: decrypt bot token (AES+Base64), construct Bot API URL, HTTP POST with Content-Type JSON, unmarshal telehandler_msgResponse</div>
+    </div>
+  </div>
+
+  <!-- ══ 8. DATA THEFT ══ -->
+  <div class="report-section">
+    <h2>8. Data Theft Capabilities</h2>
+    <p>Based on reverse engineering of the sample and analysis of the source code structure, Vortex targets the following categories of data across a broad range of software:</p>
+
+    <div class="cap-grid">
+      <div class="cap-cell">
+        <div class="cap-label" style="color:var(--blue)">BROWSERS (21+)</div>
+        <div class="cap-items">Chrome, Edge, Firefox, Brave, Opera, Opera GX, Vivaldi, Yandex, Waterfox, Palemoon, 7Star, Cent, QQBrowser, Amigo, Chedot, Comodo Dragon, CocCoc, AVG Browser, Slimjet, Sputnik, Icecat</div>
+      </div>
+      <div class="cap-cell">
+        <div class="cap-label" style="color:var(--amber)">CRYPTO WALLETS</div>
+        <div class="cap-items">Zcash, Armory, Exodus, Ethereum, Electrum, Atomic, Guarda, Coinomi, Jaxx, Binance, and more</div>
+      </div>
+      <div class="cap-cell">
+        <div class="cap-label" style="color:#f472b6">WALLET EXTENSIONS (35+)</div>
+        <div class="cap-items">MetaMask, TronLink, Phantom, Coinbase, BinanceChain, Ronin, Nami, Keplr, Slope, Sollet, XdefiWallet, ExodusWeb3, PaliWallet, and more</div>
+      </div>
+      <div class="cap-cell">
+        <div class="cap-label" style="color:#a78bfa">MESSENGERS</div>
+        <div class="cap-items">Discord (token dump), Telegram (session), Element, Signal, Skype, WhatsApp</div>
+      </div>
+      <div class="cap-cell">
+        <div class="cap-label" style="color:var(--green)">VPN CLIENTS</div>
+        <div class="cap-items">NordVPN, ProtonVPN, OpenVPN — config files and credentials</div>
+      </div>
+      <div class="cap-cell">
+        <div class="cap-label" style="color:#2dd4bf">DESKTOP TOOLS</div>
+        <div class="cap-items">FileZilla, PuTTY, TeamViewer, WinSCP, Steam, Uplay/Ubisoft Connect</div>
+      </div>
+      <div class="cap-cell">
+        <div class="cap-label" style="color:var(--red)">SYSTEM DATA</div>
+        <div class="cap-items">Desktop screenshot, WiFi profiles + passwords, running processes, installed software list, full host profile</div>
+      </div>
+      <div class="cap-cell">
+        <div class="cap-label" style="color:var(--amber)">BROWSER DATA</div>
+        <div class="cap-items">Saved passwords, cookies, browsing history, autofill, credit cards, extension data (IndexedDB)</div>
+      </div>
+    </div>
+
+    <!-- Full target table (collapsible) -->
+    <details style="margin-top:1rem">
+      <summary style="font-family:var(--mono);font-size:11px;color:var(--green);cursor:pointer;padding:.5rem 0;letter-spacing:1px">▶ FULL TARGET LIST — all browsers, wallets, extensions, messengers, tools</summary>
+      <div class="target-wrap" style="margin-top:.5rem">
+        <table class="target-table">
+          <thead><tr><th>CATEGORY</th><th>TARGET</th></tr></thead>
+          <tbody>
+            <tr><td>Browser</td><td>7Star, Cent, Chrome, Chromium, Edge, QQBrowser, Opera, OperaNeon, Amigo, Chedot, Brave, ComodoDragon, CocCoc, AVGBrowser, Slimjet, Sputnik, Vivaldi, Firefox, Waterfox, Palemoon, Icecat</td></tr>
+            <tr><td>VPN</td><td>NordVPN, ProtonVPN, OpenVPN</td></tr>
+            <tr><td>Crypto Wallet</td><td>Zcash, Armory, Exodus, Ethereum, Electrum, Atomic, Guarda, Coinomi, Jaxx, Binance</td></tr>
+            <tr><td>Wallet Extension</td><td>Tronlink, NiftyWallet, Metamask, MathWallet, Coinbase, BinanceChain, BraveWallet, GuardaWallet, EqualWallet, JaxxxLiberty, BitAppWallet, iWallet, Wombat, YoroiWallet, TonCrystal, Coin98Wallet, Phantom, GuildWallet, Oxygen, LiqualityWallet, Iconex, Mobox, XinPay, Sollet, Slope, Starcoin, Swash, Finnie, Keplr, Crocobit, AtomWallet, KardiaChain, TerraStation, BoltX, RoninWallet, XdefiWallet, Nami, MultiversXDeFiWallet, PaliWallet, TempleTezosWallet, ExodusWeb3Wallet</td></tr>
+            <tr><td>Messenger</td><td>Discord, Telegram, Element, Signal, Skype, WhatsApp</td></tr>
+            <tr><td>Desktop Tools</td><td>FileZilla, PuTTY, TeamViewer, WinSCP, Steam, Uplay</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <!-- ══ 9. PERSISTENCE ══ -->
+  <div class="report-section">
+    <h2>9. Persistence</h2>
+    <p>After data collection and exfiltration, Vortex establishes persistence as the final step — ensuring it survives reboots and user logoffs.</p>
+
+    <div class="exec-steps">
+      <div class="exec-step">
+        <div class="exec-num">①</div>
+        <div class="exec-body"><strong>Self-copy</strong> — Copies its own executable to a different location on disk (typically a system or user-accessible directory) under a disguised name.</div>
+      </div>
+      <div class="exec-step">
+        <div class="exec-num">②</div>
+        <div class="exec-body"><strong>Run key write</strong> — Opens <code>Software\Microsoft\Windows\CurrentVersion\Run</code> and writes a new value pointing to the copied executable. The malware will launch automatically on every user logon.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <strong>Detection:</strong> Sysmon EID 13 (RegistryValueSet) on <code style="font-family:var(--mono)">HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code> from a Go binary (check image entropy and lack of version info). The Run key write happens <em>after</em> data collection — if defences are re-enabled before reboot, the persistence key may be the only remaining artefact.
+    </div>
+
+    <div class="fig-wrap">
+      <img class="fig-img" src="images/vortex/persistance.png" alt="Persistence via Run key"/>
+      <div class="fig-cap">Figure 12 — Persistence: self-copy to alternate location + Software\Microsoft\Windows\CurrentVersion\Run key write</div>
+    </div>
+  </div>
+
+  <!-- ══ 10. IOCs ══ -->
+  <div class="report-section">
+    <h2>10. Indicators of Compromise</h2>
+    <div class="ioc-block" style="margin-top:1rem">
+      <div class="ioc-header"><span class="dot"></span> INDICATORS OF COMPROMISE</div>
+      <table class="ioc-table">
+        <thead><tr><th>TYPE</th><th>INDICATOR</th><th>DESCRIPTION</th></tr></thead>
+        <tbody>
+          <tr><td class="t-url">URL</td><td>https://ipapi.co/json</td><td style="color:var(--muted)">Geolocation endpoint — HTTP GET for public IP, country, ISP, timezone</td></tr>
+          <tr><td class="t-file">DIR</td><td>7900020458</td><td style="color:var(--muted)">Hardcoded dump directory name — collection staging area</td></tr>
+          <tr><td class="t-file">FILE</td><td>CrashHandler.log</td><td style="color:var(--muted)">Internal activity log created in dump dir; exfiltrated with stolen data</td></tr>
+          <tr><td class="t-str">STRING</td><td>ERB1-7C</td><td style="color:var(--muted)">Hardcoded Base64 prefix prepended to encrypted log filename</td></tr>
+          <tr><td class="t-ua">USER-AGENT</td><td>Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 Safari/537.36</td><td style="color:var(--muted)">Hardcoded UA used in all HTTP requests (IP lookup and Telegram C2)</td></tr>
+          <tr><td class="t-reg">REGISTRY</td><td>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System → EnableLUA=0</td><td style="color:var(--muted)">UAC disable — takes effect on next logon</td></tr>
+          <tr><td class="t-reg">REGISTRY</td><td>HKLM\SOFTWARE\Microsoft\Windows Defender</td><td style="color:var(--muted)">Defender registry tampering — multiple disable values written</td></tr>
+          <tr><td class="t-reg">REGISTRY</td><td>HKLM\SYSTEM\CurrentControlSet\Services\&lt;driver&gt; → Start=4</td><td style="color:var(--muted)">Driver service disabling — iterated for all targeted security drivers</td></tr>
+          <tr><td class="t-reg">REGISTRY</td><td>Software\Microsoft\Windows\CurrentVersion\Run</td><td style="color:var(--muted)">Persistence — self-copy path written for auto-start on logon</td></tr>
+          <tr><td class="t-cmd">PS CMD</td><td>Set-MpPreference -ModerateThreatDefaultAction 6 -Force -ErrorAction SilentlyContinue</td><td style="color:var(--muted)">One of many Set-MpPreference commands disabling Defender threat responses</td></tr>
+          <tr><td class="t-cmd">PS CMD</td><td>Add-MpPreference -ExclusionPath "C:\" -Force</td><td style="color:var(--muted)">Adds entire C:\ to Defender exclusions — makes Defender blind to the system drive</td></tr>
+          <tr><td class="t-cry">CRYPTO</td><td>AES-256-CBC, Base64</td><td style="color:var(--muted)">Encryption pipeline used for Telegram token and exfiltrated data</td></tr>
+          <tr><td class="t-cry">AES KEY</td><td>D503E6E063527CB624FE0363FFF9B3BD20941CAF708492B6905F66434DCA7277</td><td style="color:var(--muted)">Hardcoded AES key for Telegram token encryption (32 bytes)</td></tr>
+          <tr><td class="t-cry">AES IV</td><td>27D8B1F0DB3CAB3E20202156BA1B3713</td><td style="color:var(--muted)">Hardcoded AES IV for Telegram token encryption (16 bytes)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ 11. MITRE ══ -->
+  <div class="report-section">
+    <h2>11. MITRE ATT&amp;CK Mapping</h2>
+    <table class="mitre-table">
+      <thead><tr><th>TACTIC</th><th>ID</th><th>TECHNIQUE</th><th>EVIDENCE</th></tr></thead>
+      <tbody>
+        <tr><td class="mitre-tactic">Discovery</td><td class="mitre-id">T1016</td><td>System Network Configuration Discovery</td><td style="color:var(--muted)">HTTP GET to ipapi.co/json — public IP, country, ISP, timezone</td></tr>
+        <tr><td class="mitre-tactic">Discovery</td><td class="mitre-id">T1082</td><td>System Information Discovery</td><td style="color:var(--muted)">OS, CPU, RAM, hostname, logged-in user collection</td></tr>
+        <tr><td class="mitre-tactic">Discovery</td><td class="mitre-id">T1057</td><td>Process Discovery</td><td style="color:var(--muted)">Process enumeration to build kill target list</td></tr>
+        <tr><td class="mitre-tactic">Defense Evasion</td><td class="mitre-id">T1562.001</td><td>Impair Defenses: Disable or Modify Tools</td><td style="color:var(--muted)">Set-MpPreference disabling all Defender features; registry values disabling real-time protection</td></tr>
+        <tr><td class="mitre-tactic">Defense Evasion</td><td class="mitre-id">T1562.004</td><td>Impair Defenses: Disable or Modify System Firewall</td><td style="color:var(--muted)">Driver services disabled via Start=4 in CurrentControlSet\Services</td></tr>
+        <tr><td class="mitre-tactic">Defense Evasion</td><td class="mitre-id">T1548.002</td><td>Bypass UAC</td><td style="color:var(--muted)">EnableLUA=0 written to Policies\System registry key</td></tr>
+        <tr><td class="mitre-tactic">Defense Evasion</td><td class="mitre-id">T1027</td><td>Obfuscated Files or Information</td><td style="color:var(--muted)">AES-CBC+Base64 encryption of Telegram token and exfiltrated data; ERB1-7C log prefix obfuscation</td></tr>
+        <tr><td class="mitre-tactic">Impact</td><td class="mitre-id">T1489</td><td>Service Stop</td><td style="color:var(--muted)">Security driver services disabled via registry Start=4</td></tr>
+        <tr><td class="mitre-tactic">Impact</td><td class="mitre-id">T1562.006</td><td>Indicator Blocking</td><td style="color:var(--muted)">Add-MpPreference ExclusionPath C:\ and ExclusionProcess C:\* — entire system drive excluded from scanning</td></tr>
+        <tr><td class="mitre-tactic">Execution</td><td class="mitre-id">T1059.001</td><td>PowerShell</td><td style="color:var(--muted)">Multiple Set-MpPreference and Add-MpPreference commands executed via PowerShell</td></tr>
+        <tr><td class="mitre-tactic">Credential Access</td><td class="mitre-id">T1555.003</td><td>Credentials from Web Browsers</td><td style="color:var(--muted)">21+ browsers targeted — passwords, cookies, autofill, credit cards via RecursiveChromiumBrowserDump</td></tr>
+        <tr><td class="mitre-tactic">Collection</td><td class="mitre-id">T1539</td><td>Steal Web Session Cookie</td><td style="color:var(--muted)">Browser cookie databases extracted across all targeted Chromium and Firefox profiles</td></tr>
+        <tr><td class="mitre-tactic">Collection</td><td class="mitre-id">T1213</td><td>Data from Information Repositories</td><td style="color:var(--muted)">Crypto wallet extension storage (IndexedDB, Local Extension Settings) targeted</td></tr>
+        <tr><td class="mitre-tactic">Collection</td><td class="mitre-id">T1113</td><td>Screen Capture</td><td style="color:var(--muted)">Desktop screenshot via /screenshot Telegram command or on initial run</td></tr>
+        <tr><td class="mitre-tactic">Collection</td><td class="mitre-id">T1005</td><td>Data from Local System</td><td style="color:var(--muted)">Discord tokens, Telegram sessions, Steam, WinSCP, FileZilla, VPN configs, WiFi profiles</td></tr>
+        <tr><td class="mitre-tactic">Persistence</td><td class="mitre-id">T1547.001</td><td>Registry Run Keys</td><td style="color:var(--muted)">Software\Microsoft\Windows\CurrentVersion\Run key written with self-copy path</td></tr>
+        <tr><td class="mitre-tactic">Persistence</td><td class="mitre-id">T1036</td><td>Masquerading</td><td style="color:var(--muted)">Self-copy uses a disguised name; Chrome-like User-Agent to blend HTTP traffic</td></tr>
+        <tr><td class="mitre-tactic">C2</td><td class="mitre-id">T1102</td><td>Web Service</td><td style="color:var(--muted)">Telegram Bot API used as the C2 channel — all data exfiltrated and commands received via Telegram</td></tr>
+        <tr><td class="mitre-tactic">C2</td><td class="mitre-id">T1573.001</td><td>Encrypted Channel: Symmetric Cryptography</td><td style="color:var(--muted)">AES-256-CBC+Base64 encryption of Telegram token and outbound data</td></tr>
+        <tr><td class="mitre-tactic">Execution</td><td class="mitre-id">T1203</td><td>Exploitation for Client Execution</td><td style="color:var(--muted)">/drop command — operator can push and execute secondary payloads on victims</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ 12. YARA ══ -->
+  <div class="report-section">
+    <h2>12. YARA Detection Rule</h2>
+    <p>The rule targets Go-compiled Vortex binaries by matching on package path strings embedded by the Go compiler — these are present in any build regardless of obfuscation applied at the binary level. Any 5 of the 10 strings produces a high-confidence match.</p>
+
+    <div class="yara-block"><span class="yara-kw">rule</span> Vortex
+{
+    <span class="yara-kw">meta:</span>
+        <span class="yara-meta">description</span> = <span class="yara-str">"Detects Vortex Stealer — Go-based infostealer with Telegram C2"</span>
+        <span class="yara-meta">author</span>      = <span class="yara-str">"SalahEldin Kamil (Mr_MaTriX)"</span>
+
+    <span class="yara-kw">strings:</span>
+        $m1  = <span class="yara-str">"vortex"</span>                                    ascii wide
+        $m2  = <span class="yara-str">"vortex/messenger.DiscordDataDump"</span>          ascii wide
+        $m3  = <span class="yara-str">"vortex/hutil.mergeBrowserData"</span>             ascii wide
+        $m4  = <span class="yara-str">"vortex/hutil.archiveDataFiles"</span>             ascii wide
+        $m5  = <span class="yara-str">"vortex/hutil.CompressDataFiles"</span>            ascii wide
+        $m6  = <span class="yara-str">"vortex/hutil.archiveFiles"</span>                 ascii wide
+        $m7  = <span class="yara-str">"vortex/hutil.ZipFolder"</span>                    ascii wide
+        $m8  = <span class="yara-str">"vortex/antiav.DisableUAC"</span>                  ascii wide
+        $m9  = <span class="yara-str">"vortex/antiav.disableWinDefendRegs"</span>        ascii wide
+        $m10 = <span class="yara-str">"vortex/browser.RecursiveChromiumBrowserDump"</span> ascii wide
+
+    <span class="yara-kw">condition:</span>
+        uint16(0) == <span class="yara-str">0x5A4D</span>   <span class="yara-com">// MZ header</span>
+        <span class="yara-kw">and</span> filesize &lt; 10MB
+        <span class="yara-kw">and</span> 5 of them
+}</div>
+  </div>
+
+</div><!-- /report-container -->
+
+<footer>
+  <span>&gt;_ secblog // all findings for educational &amp; defensive use only</span>
+  <div class="footer-links" id="footer-links"></div>
+</footer>
+
+<script src="../assets/js/config.js"></script>
+<script>
+(function(){
+  const fl = document.getElementById('footer-links');
+  const l = SITE_CONFIG.links;
+  if(l.github)   fl.innerHTML += `<a href="${l.github}"   target="_blank">GitHub</a>`;
+  if(l.linkedin) fl.innerHTML += `<a href="${l.linkedin}" target="_blank">LinkedIn</a>`;
+  if(l.email)    fl.innerHTML += `<a href="${l.email}">Email</a>`;
+})();
+</script>
+
+</body>
+</html>

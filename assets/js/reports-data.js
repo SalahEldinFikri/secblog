@@ -29,7 +29,7 @@ const REPORTS = [
   {
     slug: "vortex-stealer",
     title: "Vortex: Go-Based Infostealer with Telegram C2 and AV Evasion",
-    date: "2025-09-01",
+    date: "2026-09-23",
     tag: "MALWARE",
     severity: "HIGH",
     readTime: "12 MIN READ",

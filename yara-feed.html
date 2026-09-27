@@ -690,6 +690,20 @@
       .modal-box { max-width: 95vw; }
     }
 
+
+    .sa-standalone-label {
+      font-family: var(--mono); font-size: 9px; letter-spacing: .5px;
+      padding: 2px 8px; border: 1px solid rgba(245,158,11,.35);
+      color: var(--amber);
+    }
+    .sa-del {
+      color: var(--muted) !important;
+    }
+    .sa-del:hover {
+      border-color: var(--red) !important;
+      color: var(--red) !important;
+    }
+
   </style>
 </head>
 
@@ -2335,27 +2349,32 @@ python vol.py -f mem.dmp \
       if (!rules.length) { wrap.innerHTML = ''; return; }
 
       wrap.innerHTML = rules.map(function(r, i) {
+        var uid = 'sa-' + i;
         return [
-          '<div class="sa-block">',
-            '<div class="sa-head">',
-              '<div>',
-                '<div class="sa-name">',
-                  esc(r.name),
-                  '<span class="sa-badge">STANDALONE</span>',
-                  '<span class="tag-pill ' + tagCls(r.tag) + '" style="margin-left:8px;vertical-align:middle">' + esc(r.tag) + '</span>',
-                '</div>',
-                '<div class="sa-meta">',
-                  esc(r.date || '') + ' &nbsp;·&nbsp; ' + esc(r.description || '') +
-                  (r.author ? ' &nbsp;·&nbsp; by ' + esc(r.author) : ''),
-                '</div>',
+          '<div class="yara-block">',
+            '<div class="yara-report-heading">',
+              '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">',
+                '<span class="tag-pill ' + tagCls(r.tag) + '">' + esc(r.tag) + '</span>',
+                '<span class="sa-standalone-label">STANDALONE</span>',
+                '<span class="yara-report-title" style="cursor:default">' + esc(r.name) + '</span>',
               '</div>',
-              '<div class="sa-actions">',
-                '<button class="sa-copy-btn" data-idx="' + i + '">COPY</button>',
-                '<button class="sa-del-btn"  data-idx="' + i + '">DELETE</button>',
+              '<div style="margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--muted);">',
+                esc(r.date || '') + ' &nbsp;·&nbsp; 1 rule',
               '</div>',
             '</div>',
             '<div class="yara-rule-card">',
-              '<div class="yara-rule-body open">',
+              '<div class="yara-rule-header" onclick="toggleRule(\"' + uid + '\", this)">',
+                '<div>',
+                  '<div class="yara-rule-name">' + esc(r.name) + '</div>',
+                  '<div class="yara-rule-meta">' + esc(r.description) + ' &nbsp;·&nbsp; by ' + esc(r.author || 'SalahEldin Kamil') + '</div>',
+                '</div>',
+                '<div class="yara-rule-actions">',
+                  '<button class="yara-copy-btn" data-idx="' + i + '" onclick="event.stopPropagation()">COPY</button>',
+                  '<button class="yara-copy-btn sa-del" data-idx="' + i + '" onclick="event.stopPropagation()" style="border-color:transparent">DELETE</button>',
+                  '<span class="yara-chevron" id="chev-' + uid + '">▼</span>',
+                '</div>',
+              '</div>',
+              '<div class="yara-rule-body" id="' + uid + '">',
                 '<pre>' + colorize(r.rule) + '</pre>',
               '</div>',
             '</div>',
@@ -2364,21 +2383,20 @@ python vol.py -f mem.dmp \
       }).join('');
 
       /* wire copy buttons */
-      wrap.querySelectorAll('.sa-copy-btn').forEach(function(btn) {
+      wrap.querySelectorAll('.yara-copy-btn:not(.sa-del)').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var idx = parseInt(btn.dataset.idx);
           var rules = loadRules();
           if (!rules[idx]) return;
           navigator.clipboard.writeText(rules[idx].rule).then(function() {
-            btn.textContent = 'COPIED!';
-            btn.classList.add('copied');
+            btn.textContent = 'COPIED!'; btn.classList.add('copied');
             setTimeout(function() { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
           });
         });
       });
 
       /* wire delete buttons */
-      wrap.querySelectorAll('.sa-del-btn').forEach(function(btn) {
+      wrap.querySelectorAll('.sa-del').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var idx = parseInt(btn.dataset.idx);
           var rules = loadRules();

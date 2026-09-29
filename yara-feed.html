@@ -1912,15 +1912,15 @@ python vol.py -f mem.dmp \
 
     <div class="stats-row" id="yara-stats"></div>
 
-    <!-- standalone rules injected here -->
-    <div id="standalone-wrap"></div>
-
     <div class="yara-search-wrap">
       <input type="text" class="yara-search" id="yara-search"
         placeholder="&#9642; filter rules by name, tag, or report title...">
     </div>
 
-    <div id="yara-container"></div>
+    <div id="yara-feed-combined">
+      <div id="yara-container"></div>
+      <div id="standalone-wrap"></div>
+    </div>
     <div id="yara-no-match" class="yara-no-match">&gt;_ no rules match that filter.</div>
     <div id="no-yara"
       style="display:none;padding:3rem 0;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);">
@@ -1962,12 +1962,31 @@ python vol.py -f mem.dmp \
 
       const totalRules = reportsWithYara.reduce((a, r) => a + r.yara.length, 0);
 
-      if (statsEl) {
-        statsEl.innerHTML = `
-      <div class="stat-mini"><div class="stat-mini-num">${totalRules}</div><div class="stat-mini-label">YARA RULES</div></div>
-      <div class="stat-mini"><div class="stat-mini-num">${reportsWithYara.length}</div><div class="stat-mini-label">REPORTS</div></div>
-    `;
+      function updateStats() {
+        if (!statsEl) return;
+        let saCount = 0;
+        try { saCount = JSON.parse(localStorage.getItem('secblog_standalone_yara') || '[]').length; } catch(e) {}
+        statsEl.innerHTML =
+          '<div class="stat-mini"><div class="stat-mini-num">' + (totalRules + saCount) + '</div><div class="stat-mini-label">YARA RULES</div></div>' +
+          '<div class="stat-mini"><div class="stat-mini-num">' + reportsWithYara.length + '</div><div class="stat-mini-label">REPORTS</div></div>' +
+          (saCount ? '<div class="stat-mini"><div class="stat-mini-num" style="color:var(--amber)">' + saCount + '</div><div class="stat-mini-label">STANDALONE</div></div>' : '');
       }
+      updateStats();
+      window._yaraUpdateStats = updateStats;
+
+      function sortAllByDate() {
+        // collect all .yara-block elements from both containers
+        var parent = document.getElementById('yara-feed-blocks');
+        if (!parent) return;
+        var blocks = Array.prototype.slice.call(parent.querySelectorAll(':scope > .yara-block-wrap'));
+        blocks.sort(function(a, b) {
+          var da = a.dataset.date || '';
+          var db = b.dataset.date || '';
+          return db.localeCompare(da);
+        });
+        blocks.forEach(function(b) { parent.appendChild(b); });
+      }
+      window._sortAllByDate = sortAllByDate;
 
       function tagClass(tag) { const m = { MALWARE: 'tag-malware', THREAT: 'tag-threat', VULN: 'tag-vuln', APT: 'tag-apt' }; return m[tag] || 'tag-malware'; }
       function sevClass(s) { const m = { CRITICAL: 'sev-crit', HIGH: 'sev-high', MEDIUM: 'sev-med', LOW: 'sev-med' }; return m[s] || 'sev-med'; }
@@ -1976,7 +1995,7 @@ python vol.py -f mem.dmp \
 
       if (container) {
         container.innerHTML = sorted.map((r, ri) => `
-      <div class="yara-block" data-search="${(r.title + ' ' + r.tag + ' ' + r.severity + ' ' + r.yara.map(y => y.name + ' ' + y.description).join(' ')).toLowerCase().replace(/"/g, '&quot;')}">
+      <div class="yara-block" data-date="${r.date}" data-search="${(r.title + ' ' + r.tag + ' ' + r.severity + ' ' + r.yara.map(y => y.name + ' ' + y.description).join(' ')).toLowerCase().replace(/"/g, '&quot;')}">
         <div class="yara-report-heading">
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
             <span class="tag-pill ${tagClass(r.tag)}">${r.tag}</span>
@@ -2012,11 +2031,25 @@ python vol.py -f mem.dmp \
       const searchInput = document.getElementById('yara-search');
       const noMatch = document.getElementById('yara-no-match');
       if (searchInput) {
+        // after initial render, sort all blocks by date across both containers
+        function sortFeed() {
+          var feed = document.getElementById('yara-feed-combined');
+          if (!feed) return;
+          var blocks = Array.prototype.slice.call(feed.children);
+          blocks.sort(function(a, b) {
+            return (b.dataset.date || '').localeCompare(a.dataset.date || '');
+          });
+          blocks.forEach(function(b) { feed.appendChild(b); });
+        }
+        window._sortFeed = sortFeed;
+        setTimeout(sortFeed, 0);
+
         searchInput.addEventListener('input', () => {
           const q = searchInput.value.trim().toLowerCase();
-          const blocks = container.querySelectorAll('.yara-block');
+          // cover both report rules AND standalone rules
+          const allBlocks = document.querySelectorAll('#yara-feed-combined .yara-block');
           let visible = 0;
-          blocks.forEach(b => {
+          allBlocks.forEach(b => {
             const match = !q || (b.dataset.search || '').includes(q);
             b.style.display = match ? '' : 'none';
             if (match) visible++;
@@ -2029,6 +2062,17 @@ python vol.py -f mem.dmp \
       if (dlAll) {
         dlAll.addEventListener('click', () => {
           const lines = ['// YARA Rules — SecBlog by SalahEldin Kamil', '// Generated: ' + new Date().toISOString().split('T')[0], ''];
+          // standalone rules first
+          try {
+            const sa = JSON.parse(localStorage.getItem('secblog_standalone_yara') || '[]');
+            if (sa.length) {
+              lines.push('// ─────────────────────────────────────────────');
+              lines.push('// STANDALONE RULES');
+              lines.push('// ─────────────────────────────────────────────');
+              sa.forEach(r => { lines.push(r.rule); lines.push(''); });
+            }
+          } catch(e) {}
+          // report rules
           sorted.forEach(r => {
             lines.push('// ─────────────────────────────────────────────');
             lines.push('// Report: ' + r.title);
@@ -2050,10 +2094,16 @@ python vol.py -f mem.dmp \
 
       window.toggleRule = function (id, header) {
         const body = document.getElementById(id);
-        const ri = id.split('-')[1], yi = id.split('-')[2];
-        const chev = document.getElementById('chev-' + ri + '-' + yi);
         if (!body) return;
         const open = body.classList.toggle('open');
+        let chevId;
+        if (id.startsWith('sa-')) {
+          chevId = 'chev-' + id;
+        } else {
+          const parts = id.split('-');
+          chevId = 'chev-' + parts[1] + '-' + parts[2];
+        }
+        const chev = document.getElementById(chevId);
         if (chev) chev.style.transform = open ? 'rotate(180deg)' : '';
       };
 
@@ -2345,13 +2395,13 @@ python vol.py -f mem.dmp \
     function renderAll() {
       var wrap = document.getElementById('standalone-wrap');
       if (!wrap) return;
-      var rules = loadRules();
+      var rules = loadRules().slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
       if (!rules.length) { wrap.innerHTML = ''; return; }
 
       wrap.innerHTML = rules.map(function(r, i) {
         var uid = 'sa-' + i;
         return [
-          '<div class="yara-block">',
+          '<div class="yara-block" data-date="' + (r.date||'2000-01-01') + '" data-sa="true" data-search="' + (r.name + ' ' + r.description + ' ' + r.tag).toLowerCase() + '">',
             '<div class="yara-report-heading">',
               '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">',
                 '<span class="tag-pill ' + tagCls(r.tag) + '">' + esc(r.tag) + '</span>',
@@ -2363,7 +2413,7 @@ python vol.py -f mem.dmp \
               '</div>',
             '</div>',
             '<div class="yara-rule-card">',
-              '<div class="yara-rule-header" onclick="toggleRule(\"' + uid + '\", this)">',
+              '<div class="yara-rule-header" onclick="toggleRule(\'' + uid + '\', this)">',
                 '<div>',
                   '<div class="yara-rule-name">' + esc(r.name) + '</div>',
                   '<div class="yara-rule-meta">' + esc(r.description) + ' &nbsp;·&nbsp; by ' + esc(r.author || 'SalahEldin Kamil') + '</div>',
@@ -2405,6 +2455,7 @@ python vol.py -f mem.dmp \
           rules.splice(idx, 1);
           saveRules(rules);
           renderAll();
+          if (window._yaraUpdateStats) window._yaraUpdateStats();
         });
       });
     }
@@ -2474,6 +2525,8 @@ python vol.py -f mem.dmp \
       });
       saveRules(rules);
       renderAll();
+      if (window._yaraUpdateStats) window._yaraUpdateStats();
+      if (window._sortFeed) window._sortFeed();
       closeModal();
 
       /* reset form */
@@ -2493,6 +2546,7 @@ python vol.py -f mem.dmp \
 
     /* init */
     renderAll();
+    setTimeout(function(){ if(window._sortFeed) window._sortFeed(); }, 50);
   })();
   </script>
 

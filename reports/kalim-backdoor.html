@@ -4,9 +4,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kalim Backdoor — SecBlog</title>
+  <title>Kalim Backdoor Analysis — RC4 HTTPS Backdoor | SecBlog</title>
   <link rel="stylesheet" href="../assets/css/style.css" />
   <link rel="stylesheet" href="../assets/css/report.css" />
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"        content="Reverse engineering of Kalim backdoor — RC4-encrypted HTTPS C2, shell command execution, file exfiltration in 64KB chunks, scheduled task and registry persistence."/>
+  <meta name="keywords"           content="Kalim backdoor, RC4 HTTPS, backdoor malware, shell access, file exfiltration, scheduled task persistence, malware analysis, YARA"/>
+  <meta name="author"             content="SalahEldin Kamil (Mr_MaTriX)"/>
+  <meta name="robots"             content="index, follow"/>
+  <link rel="canonical"           href="https://salaheldinfikri.github.io/secblog/reports/kalim-backdoor.html"/>
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type"        content="article"/>
+  <meta property="og:title"       content="Kalim Backdoor Analysis — RC4 HTTPS Backdoor | SecBlog"/>
+  <meta property="og:description" content="Reverse engineering of Kalim backdoor — RC4-encrypted HTTPS C2, shell command execution, file exfiltration in 64KB chunks, scheduled task and registry persistence."/>
+  <meta property="og:url"         content="https://salaheldinfikri.github.io/secblog/reports/kalim-backdoor.html"/>
+  <meta property="og:site_name"   content="SecBlog — Threat Research"/>
+
+  <!-- Article metadata -->
+  <meta property="article:published_time" content="2026-08-20"/>
+  <meta property="article:author"         content="SalahEldin Kamil"/>
+  <meta property="article:section"        content="Cybersecurity"/>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary"/>
+  <meta name="twitter:title"       content="Kalim Backdoor Analysis — RC4 HTTPS Backdoor | SecBlog"/>
+  <meta name="twitter:description" content="Reverse engineering of Kalim backdoor — RC4-encrypted HTTPS C2, shell command execution, file exfiltration in 64KB chunks, scheduled task and registry persistence."/>
+  <meta name="twitter:site"        content="@Sir_SalahEldin"/>
+  <meta name="twitter:creator"     content="@Sir_SalahEldin"/>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Kalim Backdoor Analysis — RC4 HTTPS Backdoor | SecBlog",
+    "description": "Reverse engineering of Kalim backdoor — RC4-encrypted HTTPS C2, shell command execution, file exfiltration in 64KB chunks, scheduled task and registry persistence.",
+    "author": {
+      "@type": "Person",
+      "name": "SalahEldin Kamil",
+      "alternateName": "Mr_MaTriX",
+      "url": "https://salaheldinfikri.github.io/secblog/about.html",
+      "sameAs": [
+        "https://x.com/Sir_SalahEldin",
+        "https://www.linkedin.com/in/salaheldin-fikri-kamil-1ab233218/",
+        "https://github.com/SalahEldinFikri"
+      ]
+    },
+    "datePublished": "2026-08-20",
+    "dateModified": "2026-08-20",
+    "publisher": {
+      "@type": "Organization",
+      "name": "SecBlog",
+      "url": "https://salaheldinfikri.github.io/secblog"
+    },
+    "url": "https://salaheldinfikri.github.io/secblog/reports/kalim-backdoor.html",
+    "keywords": "Kalim backdoor, RC4 HTTPS, backdoor malware, shell access, file exfiltration, scheduled task persistence, malware analysis, YARA"
+  }
+  </script>
 </head>
 
 <body>

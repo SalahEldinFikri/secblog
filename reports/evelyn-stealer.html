@@ -4,9 +4,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Evelyn Stealer — SecBlog</title>
+  <title>Evelyn Stealer Analysis — DLL Hijacking Infostealer | SecBlog</title>
   <link rel="stylesheet" href="../assets/css/style.css" />
   <link rel="stylesheet" href="../assets/css/report.css" />
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"        content="Full technical analysis of Evelyn Stealer — DLL hijacking via Lightshot, browser credential theft, Discord token harvesting, Steam session hijacking, and LSASS dumping."/>
+  <meta name="keywords"           content="Evelyn Stealer, DLL hijacking, infostealer, browser credentials, Discord token, Steam stealer, LSASS dump, malware analysis"/>
+  <meta name="author"             content="SalahEldin Kamil (Mr_MaTriX)"/>
+  <meta name="robots"             content="index, follow"/>
+  <link rel="canonical"           href="https://salaheldinfikri.github.io/secblog/reports/evelyn-stealer.html"/>
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type"        content="article"/>
+  <meta property="og:title"       content="Evelyn Stealer Analysis — DLL Hijacking Infostealer | SecBlog"/>
+  <meta property="og:description" content="Full technical analysis of Evelyn Stealer — DLL hijacking via Lightshot, browser credential theft, Discord token harvesting, Steam session hijacking, and LSASS dumping."/>
+  <meta property="og:url"         content="https://salaheldinfikri.github.io/secblog/reports/evelyn-stealer.html"/>
+  <meta property="og:site_name"   content="SecBlog — Threat Research"/>
+
+  <!-- Article metadata -->
+  <meta property="article:published_time" content="2026-09-15"/>
+  <meta property="article:author"         content="SalahEldin Kamil"/>
+  <meta property="article:section"        content="Cybersecurity"/>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary"/>
+  <meta name="twitter:title"       content="Evelyn Stealer Analysis — DLL Hijacking Infostealer | SecBlog"/>
+  <meta name="twitter:description" content="Full technical analysis of Evelyn Stealer — DLL hijacking via Lightshot, browser credential theft, Discord token harvesting, Steam session hijacking, and LSASS dumping."/>
+  <meta name="twitter:site"        content="@Sir_SalahEldin"/>
+  <meta name="twitter:creator"     content="@Sir_SalahEldin"/>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Evelyn Stealer Analysis — DLL Hijacking Infostealer | SecBlog",
+    "description": "Full technical analysis of Evelyn Stealer — DLL hijacking via Lightshot, browser credential theft, Discord token harvesting, Steam session hijacking, and LSASS dumping.",
+    "author": {
+      "@type": "Person",
+      "name": "SalahEldin Kamil",
+      "alternateName": "Mr_MaTriX",
+      "url": "https://salaheldinfikri.github.io/secblog/about.html",
+      "sameAs": [
+        "https://x.com/Sir_SalahEldin",
+        "https://www.linkedin.com/in/salaheldin-fikri-kamil-1ab233218/",
+        "https://github.com/SalahEldinFikri"
+      ]
+    },
+    "datePublished": "2026-09-15",
+    "dateModified": "2026-09-15",
+    "publisher": {
+      "@type": "Organization",
+      "name": "SecBlog",
+      "url": "https://salaheldinfikri.github.io/secblog"
+    },
+    "url": "https://salaheldinfikri.github.io/secblog/reports/evelyn-stealer.html",
+    "keywords": "Evelyn Stealer, DLL hijacking, infostealer, browser credentials, Discord token, Steam stealer, LSASS dump, malware analysis"
+  }
+  </script>
 </head>
 
 <body>

@@ -4,9 +4,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stealc Worm — SecBlog</title>
+  <title>StealC Worm Analysis — Self-Propagating Infostealer | SecBlog</title>
   <link rel="stylesheet" href="../assets/css/style.css" />
   <link rel="stylesheet" href="../assets/css/report.css" />
+
+  <!-- SEO Meta Tags -->
+  <meta name="description"        content="Technical analysis of StealC worm variant with USB and network share propagation, browser credential theft, crypto clipboard hijacking, and COM-based persistence."/>
+  <meta name="keywords"           content="StealC worm, infostealer, self-propagating malware, USB worm, clipboard hijacking, browser stealer, malware analysis, YARA"/>
+  <meta name="author"             content="SalahEldin Kamil (Mr_MaTriX)"/>
+  <meta name="robots"             content="index, follow"/>
+  <link rel="canonical"           href="https://salaheldinfikri.github.io/secblog/reports/stealc-worm.html"/>
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type"        content="article"/>
+  <meta property="og:title"       content="StealC Worm Analysis — Self-Propagating Infostealer | SecBlog"/>
+  <meta property="og:description" content="Technical analysis of StealC worm variant with USB and network share propagation, browser credential theft, crypto clipboard hijacking, and COM-based persistence."/>
+  <meta property="og:url"         content="https://salaheldinfikri.github.io/secblog/reports/stealc-worm.html"/>
+  <meta property="og:site_name"   content="SecBlog — Threat Research"/>
+
+  <!-- Article metadata -->
+  <meta property="article:published_time" content="2026-09-17"/>
+  <meta property="article:author"         content="SalahEldin Kamil"/>
+  <meta property="article:section"        content="Cybersecurity"/>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary"/>
+  <meta name="twitter:title"       content="StealC Worm Analysis — Self-Propagating Infostealer | SecBlog"/>
+  <meta name="twitter:description" content="Technical analysis of StealC worm variant with USB and network share propagation, browser credential theft, crypto clipboard hijacking, and COM-based persistence."/>
+  <meta name="twitter:site"        content="@Sir_SalahEldin"/>
+  <meta name="twitter:creator"     content="@Sir_SalahEldin"/>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "StealC Worm Analysis — Self-Propagating Infostealer | SecBlog",
+    "description": "Technical analysis of StealC worm variant with USB and network share propagation, browser credential theft, crypto clipboard hijacking, and COM-based persistence.",
+    "author": {
+      "@type": "Person",
+      "name": "SalahEldin Kamil",
+      "alternateName": "Mr_MaTriX",
+      "url": "https://salaheldinfikri.github.io/secblog/about.html",
+      "sameAs": [
+        "https://x.com/Sir_SalahEldin",
+        "https://www.linkedin.com/in/salaheldin-fikri-kamil-1ab233218/",
+        "https://github.com/SalahEldinFikri"
+      ]
+    },
+    "datePublished": "2026-09-17",
+    "dateModified": "2026-09-17",
+    "publisher": {
+      "@type": "Organization",
+      "name": "SecBlog",
+      "url": "https://salaheldinfikri.github.io/secblog"
+    },
+    "url": "https://salaheldinfikri.github.io/secblog/reports/stealc-worm.html",
+    "keywords": "StealC worm, infostealer, self-propagating malware, USB worm, clipboard hijacking, browser stealer, malware analysis, YARA"
+  }
+  </script>
 </head>
 
 <body>

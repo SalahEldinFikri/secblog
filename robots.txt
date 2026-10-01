@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Block git internals
+Disallow: /.git/
+Disallow: /reports/images/
+
+Sitemap: https://salaheldinfikri.github.io/secblog/sitemap.xml

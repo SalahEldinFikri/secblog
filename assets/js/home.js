@@ -35,4 +35,53 @@ document.addEventListener('DOMContentLoaded', () => {
         </a>`;
     }
   }
+
+  // ── New drop: a YARA rule + extractor published before its report ──
+  //    (entries in extractors-data.js / saved extractors with report: "")
+  const dropsEl = document.getElementById('unreported-drops');
+  if (dropsEl) {
+    const store = window.ExtractorStore;
+    const esc = store ? store.esc : (s) => String(s);
+    const cut = (s, n) => (s.length > n ? s.slice(0, n) + '…' : s);
+    const arrow = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    const all = store ? store.all() : [];
+    const pending = store ? store.unreported() : [];
+
+    if (pending.length) {
+      const e = pending[0];
+      const ageDays = (Date.now() - new Date(e.date).getTime()) / 86400000;
+      const isNew = ageDays <= 7;
+      const nIocs = e.iocs ? e.iocs.length : 0;
+      const desc = e.description || 'A YARA rule and config extractor, published ahead of the full write-up.';
+      dropsEl.innerHTML = `
+        <div class="atl-drops-eyebrow">
+          <span class="atl-drops-dot"></span>
+          New Drop · No Report Yet
+          ${isNew ? '<span class="atl-drops-new">NEW</span>' : ''}
+        </div>
+        <h3>${esc(cut(e.name, 70))}</h3>
+        <p>${esc(cut(desc, 160))}</p>
+        <div class="atl-drops-chips">
+          ${e.yara && e.yara.rule ? '<span class="atl-drops-chip">YARA ✓</span>' : ''}
+          <span class="atl-drops-chip">EXTRACTOR ✓</span>
+          ${nIocs ? `<span class="atl-drops-chip">${nIocs} IOC${nIocs !== 1 ? 's' : ''}</span>` : ''}
+          <span class="atl-drops-chip atl-drops-chip-muted">${esc(e.family || '')}</span>
+        </div>
+        <a href="extractors.html#${esc(e.slug)}" class="atl-btn-outline atl-btn-amber">View Extractor ${arrow}</a>
+        ${pending.length > 1 ? `<a href="extractors.html?filter=noreport" class="atl-drops-more">+${pending.length - 1} more without a report →</a>` : ''}`;
+    } else {
+      const none = !all.length;
+      dropsEl.innerHTML = `
+        <div class="atl-drops-eyebrow atl-drops-idle">
+          <span class="atl-drops-dot"></span>
+          Extractor Drops
+        </div>
+        <h3>${none ? 'No extractors yet' : 'All caught up'}</h3>
+        <p>${none
+          ? 'Config extractors and the YARA rules that find them will be announced here the moment they land.'
+          : 'Every published extractor has a full report. When a YARA rule + extractor goes up before its write-up, it is announced right here.'}</p>
+        <a href="extractors.html" class="atl-btn-outline atl-btn-amber">${none ? 'Open Extractors' : 'Browse Extractors'} ${arrow}</a>`;
+    }
+  }
+
 });

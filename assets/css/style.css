@@ -316,6 +316,11 @@ nav {
   color: var(--green);
 }
 
+.tag-extractor {
+  border-color: rgba(167, 139, 250, .45);
+  color: #a78bfa;
+}
+
 .posts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -573,7 +578,13 @@ nav .nav-cta { order: 3; }
 .nav-toggle.open .icon-open { display: none; }
 .nav-toggle.open .icon-close { display: block; }
 
-@media(max-width:1180px) and (min-width:861px) {
+/* 10 nav links: compact spacing up to 1400px, the tagline steps aside below
+   1260px, and the hamburger menu takes over at 1060px and below. */
+.logo .logo-sub {
+  white-space: nowrap;
+}
+
+@media(max-width:1400px) and (min-width:1061px) {
   nav {
     padding: 0 1.25rem;
   }
@@ -587,7 +598,13 @@ nav .nav-cta { order: 3; }
   }
 }
 
-@media(max-width:860px) {
+@media(max-width:1259px) and (min-width:1061px) {
+  .logo .logo-sub {
+    display: none;
+  }
+}
+
+@media(max-width:1060px) {
   .nav-toggle {
     display: flex;
   }

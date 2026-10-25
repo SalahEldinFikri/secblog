@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
   REPORTS.forEach(r => {
     if (r.iocs) r.iocs.forEach(i => allIocs.push({ ...i, reportSlug: r.slug }));
   });
+  // + IOCs extracted by the extractors (extractors-data.js / this browser)
+  if (window.ExtractorStore) {
+    ExtractorStore.iocSources().forEach(s => s.iocs.forEach(i => allIocs.push({ ...i, reportSlug: s.slug })));
+  }
 
   // ── Chart 1: IOC Types (doughnut) ──
   const typeCounts = {};

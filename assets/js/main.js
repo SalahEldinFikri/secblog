@@ -46,7 +46,8 @@
   // Update IOC count in hero
   const iocCountEl = document.getElementById('ioc-count');
   if (iocCountEl) {
-    const total = REPORTS.reduce((n, r) => n + (r.iocs ? r.iocs.length : 0), 0);
+    const total = REPORTS.reduce((n, r) => n + (r.iocs ? r.iocs.length : 0), 0)
+                + (window.ExtractorStore ? ExtractorStore.iocSources().reduce((n, s) => n + s.iocs.length, 0) : 0);
     iocCountEl.textContent = total || '0';
   }
 
@@ -63,6 +64,7 @@
   const noIoc        = document.getElementById('home-no-iocs');
 
   const reportsWithIocs = REPORTS.filter(r => r.iocs && r.iocs.length)
+                                  .concat(window.ExtractorStore ? ExtractorStore.iocSources() : [])
                                   .sort((a, b) => b.date.localeCompare(a.date));
 
   if (!reportsWithIocs.length) {
@@ -74,12 +76,15 @@
     for (const r of reportsWithIocs) {
       for (const ioc of r.iocs) {
         if (preview.length >= 8) break;
-        preview.push({ ...ioc, reportTitle: r.title, reportSlug: r.slug, reportTag: r.tag, reportSev: r.severity });
+        preview.push({ ...ioc, reportTitle: r.title, reportSlug: r.slug, reportTag: r.tag, reportSev: r.severity,
+                       reportHref: r.href || ('reports/' + r.slug + '.html'), isExtractor: !!r.isExtractor });
       }
       if (preview.length >= 8) break;
     }
 
     const totalIocs = reportsWithIocs.reduce((n, r) => n + r.iocs.length, 0);
+    // extractor data comes from JSON files — escape it before it goes into innerHTML
+    const ex = (i, v) => i.isExtractor ? ExtractorStore.esc(v) : v;
 
     iocContainer.innerHTML = `
       <div style="overflow-x:auto;">
@@ -90,22 +95,22 @@
               <th>INDICATOR</th>
               <th>FAMILY</th>
               <th>CONFIDENCE</th>
-              <th>SOURCE REPORT</th>
+              <th>SOURCE</th>
             </tr>
           </thead>
           <tbody>
             ${preview.map(i => `
             <tr>
-              <td style="color:${typeColor(i.type)}">${i.type}</td>
-              <td class="${indicatorClass(i.type)}">${i.indicator}</td>
-              <td>${i.family || '—'}</td>
-              <td style="color:${sevColor(i.confidence)}">${i.confidence}</td>
+              <td style="color:${typeColor(i.type)}">${ex(i, i.type)}</td>
+              <td class="${indicatorClass(i.type)}">${ex(i, i.indicator)}</td>
+              <td>${ex(i, i.family || '—')}</td>
+              <td style="color:${sevColor(i.confidence)}">${ex(i, i.confidence)}</td>
               <td style="font-size:11px;">
-                <a href="reports/${i.reportSlug}.html"
+                <a href="${i.reportHref}"
                    style="color:var(--muted-bright);text-decoration:none;border-bottom:1px solid var(--border);"
                    onmouseover="this.style.color='var(--green)'"
                    onmouseout="this.style.color='var(--muted-bright)'"
-                >${i.reportTitle.length > 55 ? i.reportTitle.slice(0, 55) + '…' : i.reportTitle}</a>
+                >${ex(i, i.reportTitle.length > 55 ? i.reportTitle.slice(0, 55) + '…' : i.reportTitle)}</a>
               </td>
             </tr>`).join('')}
           </tbody>

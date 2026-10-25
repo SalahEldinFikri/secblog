@@ -27,7 +27,8 @@ git add . && git commit -m "Add report" && git push
 secblog/
 ├── index.html              Homepage
 ├── reports.html            All reports + filter
-├── ioc-feed.html           Aggregated IOC table + CSV export
+├── ioc-feed.html           Aggregated IOC table + CSV export (reports + extractors)
+├── extractors.html         YARA + extractor + extracted IOCs/config, add form
 ├── about.html              Author page
 ├── reports/
 │   ├── report-template.html  Copy this for each new report
@@ -39,8 +40,10 @@ secblog/
 │   └── js/
 │       ├── config.js        ← EDIT THIS — your name/bio/links
 │       ├── reports-data.js  ← EDIT THIS — one entry per report
+│       ├── extractors-data.js ← one entry per extractor (export from extractors.html)
 │       └── *.js             Page logic
-└── HOW-TO-ADD-REPORT.md    Step-by-step guide
+├── HOW-TO-ADD-REPORT.md    Step-by-step guide
+└── HOW-TO-ADD-EXTRACTOR.md Step-by-step guide for extractors
 ```
 
 ## License

@@ -107,7 +107,29 @@ body.home-body::before {
   letter-spacing: .5px;
 }
 
-@media(max-width:860px) {
+/* 10 nav links: the homepage's roomier nav goes compact up to 1400px,
+   drops the tagline below 1340px, and uses the hamburger at 1060px and below. */
+@media(max-width:1400px) and (min-width:1061px) {
+  .home-body nav {
+    padding: 0 1.25rem;
+  }
+
+  .home-body .nav-links {
+    gap: 1rem;
+  }
+
+  .home-body .nav-links a {
+    font-size: 12.5px;
+  }
+}
+
+@media(max-width:1339px) and (min-width:1061px) {
+  .home-body .logo-sub {
+    display: none;
+  }
+}
+
+@media(max-width:1060px) {
   .home-body nav {
     height: 64px;
     padding: 0 1.2rem;
@@ -682,3 +704,118 @@ body.home-body::before {
   .home-body nav { padding: 0 1.2rem; }
   .atl-hero, .atl-section { padding-left: 1.2rem; padding-right: 1.2rem; }
 }
+
+/* ── New Drop panel (YARA + extractor published before its report) ── */
+.atl-drops {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(245,158,11,.09), transparent 70%),
+    var(--atl-surface);
+  border: 1px solid rgba(245,158,11,.28);
+}
+
+.atl-drops-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: var(--atl-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #f59e0b;
+  margin-bottom: 1rem;
+}
+
+.atl-drops-idle { color: var(--atl-muted); }
+.atl-drops-idle .atl-drops-dot { background: var(--atl-muted); animation: none; }
+
+.atl-drops-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: 0 0 0 0 rgba(245,158,11,.55);
+  animation: atlDropPulse 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes atlDropPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(245,158,11,.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
+  100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atl-drops-dot { animation: none; }
+}
+
+.atl-drops-new {
+  margin-left: auto;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  color: #0a0e17;
+  background: #f59e0b;
+  border-radius: 3px;
+  padding: 2px 7px;
+}
+
+.atl-drops h3 {
+  font-family: var(--atl-serif);
+  font-size: 22px;
+  font-weight: 600;
+  color: #f1f6f7;
+  line-height: 1.25;
+  margin-bottom: .8rem;
+  overflow-wrap: anywhere;
+}
+
+.atl-drops p {
+  font-size: 13px;
+  line-height: 1.65;
+  color: #9fb4c0;
+  margin-bottom: 1.1rem;
+  flex: 1;
+}
+
+.atl-drops-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1.2rem;
+}
+
+.atl-drops-chip {
+  font-family: var(--mono, monospace);
+  font-size: 10px;
+  letter-spacing: .6px;
+  color: #f59e0b;
+  border: 1px solid rgba(245,158,11,.4);
+  border-radius: 3px;
+  padding: 3px 8px;
+}
+
+.atl-drops-chip-muted {
+  color: var(--atl-muted);
+  border-color: var(--atl-border);
+}
+
+.atl-drops-chip-muted:empty { display: none; }
+
+.atl-btn-amber {
+  color: #f59e0b;
+  border-color: #f59e0b;
+}
+
+.atl-btn-amber:hover { background: rgba(245,158,11,.10); }
+
+.atl-drops-more {
+  align-self: flex-start;
+  margin-top: .9rem;
+  font-family: var(--mono, monospace);
+  font-size: 11px;
+  color: var(--atl-muted);
+  border-bottom: 1px solid var(--atl-border);
+}
+
+.atl-drops-more:hover { color: #f59e0b; border-color: #f59e0b; }

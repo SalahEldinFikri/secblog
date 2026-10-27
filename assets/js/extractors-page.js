@@ -1,5 +1,5 @@
 // ============================================================
-//  EXTRACTORS-PAGE.JS — extractors.html
+//  EXTRACTORS-PAGE.JS — the "Extractors" tab on detections.html
 //  Renders the extractor feed, the "add extractor" modal, the
 //  IOC / config JSON import, and the export for publishing.
 // ============================================================
@@ -23,7 +23,7 @@
   })();
 
   // ============================================================
-  //  Syntax colouring (YARA / Python / JSON) — tokens styled in extractors.html
+  //  Syntax colouring (YARA / Python / JSON) — tokens styled in detections.css
   // ============================================================
   function escHtml(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -447,6 +447,7 @@
       if (!confirm('Delete "' + e.name + '" from this browser?')) return;
       S.saveLocal(S.loadLocal().filter(function (x) { return x.slug !== slug; }));
       renderAll();
+      window.dispatchEvent(new Event('det:changed'));
       toast('Deleted "' + e.name + '" from this browser.');
       return;
     }
@@ -629,6 +630,7 @@
     state.q = ''; state.filter = 'all';
     if (search) search.value = '';
     renderAll();
+    window.dispatchEvent(new Event('det:changed'));
 
     var msg = 'Saved "' + name + '" in this browser.';
     if (entry.iocs.length) msg += ' ' + entry.iocs.length + ' IOCs added to the IOC feed.';
@@ -642,12 +644,13 @@
   // ── init ───────────────────────────────────────────────────
   (function init() {
     var p = new URLSearchParams(location.search);
-    var f = p.get('filter');
+    var mine = !p.get('tab') || p.get('tab') === 'extractors';   // other tabs own their own deep links
+    var f = mine ? p.get('filter') : null;
     if (f && ['noreport', 'report', 'local'].indexOf(f) !== -1) state.filter = f;
     renderAll();
     refreshSummary();
 
-    var id = decodeURIComponent((location.hash || '').slice(1));
+    var id = mine ? decodeURIComponent((location.hash || '').slice(1)) : '';
     if (id) {
       var el = $('ex-' + id) || $(id);
       if (el && el.classList.contains('ex-block')) {

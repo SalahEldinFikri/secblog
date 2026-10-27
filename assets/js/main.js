@@ -160,7 +160,7 @@
       </div>
       <div style="margin-top:1rem;font-family:var(--mono);font-size:11px;color:var(--muted);">
         showing ${yaraPreview.length} of ${totalRules} total rules —
-        <a href="yara-feed.html" style="color:var(--green);border-bottom:1px solid;">view full feed →</a>
+        <a href="detections.html?tab=yara" style="color:var(--green);border-bottom:1px solid;">view full feed →</a>
       </div>`;
 
     // Wire up copy buttons

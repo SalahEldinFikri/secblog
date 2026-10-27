@@ -28,7 +28,9 @@ secblog/
 ├── index.html              Homepage
 ├── reports.html            All reports + filter
 ├── ioc-feed.html           Aggregated IOC table + CSV export (reports + extractors)
-├── extractors.html         YARA + extractor + extracted IOCs/config, add form
+├── detections.html         ONE page, 3 tabs: YARA rules · Sigma rules · Config extractors
+├── yara-feed.html          (redirect → detections.html?tab=yara)
+├── extractors.html         (redirect → detections.html?tab=extractors)
 ├── about.html              Author page
 ├── reports/
 │   ├── report-template.html  Copy this for each new report
@@ -40,10 +42,12 @@ secblog/
 │   └── js/
 │       ├── config.js        ← EDIT THIS — your name/bio/links
 │       ├── reports-data.js  ← EDIT THIS — one entry per report
-│       ├── extractors-data.js ← one entry per extractor (export from extractors.html)
+│       ├── extractors-data.js ← one entry per extractor (export from the Extractors tab)
+│       ├── sigma-data.js    ← one entry per Sigma rule (export from the Sigma tab)
 │       └── *.js             Page logic
 ├── HOW-TO-ADD-REPORT.md    Step-by-step guide
-└── HOW-TO-ADD-EXTRACTOR.md Step-by-step guide for extractors
+├── HOW-TO-ADD-EXTRACTOR.md Step-by-step guide for extractors
+└── HOW-TO-ADD-SIGMA.md     Step-by-step guide for Sigma rules
 ```
 
 ## License

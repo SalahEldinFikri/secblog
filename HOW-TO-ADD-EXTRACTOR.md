@@ -8,7 +8,7 @@ its IOCs go to the IOC feed, and the homepage announces it in the **New Drop** b
 
 ## Step 1 — Add it on the Extractors page
 
-Open `extractors.html` → **＋ ADD EXTRACTOR** and fill in:
+Open `detections.html` → the **EXTRACTORS** tab → **＋ ADD EXTRACTOR** and fill in:
 
 | Field | Notes |
 |---|---|

@@ -67,8 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
           ${nIocs ? `<span class="atl-drops-chip">${nIocs} IOC${nIocs !== 1 ? 's' : ''}</span>` : ''}
           <span class="atl-drops-chip atl-drops-chip-muted">${esc(e.family || '')}</span>
         </div>
-        <a href="extractors.html#${esc(e.slug)}" class="atl-btn-outline atl-btn-amber">View Extractor ${arrow}</a>
-        ${pending.length > 1 ? `<a href="extractors.html?filter=noreport" class="atl-drops-more">+${pending.length - 1} more without a report →</a>` : ''}`;
+        <a href="detections.html?tab=extractors#${esc(e.slug)}" class="atl-btn-outline atl-btn-amber">View Extractor ${arrow}</a>
+        ${pending.length > 1 ? `<a href="detections.html?tab=extractors&filter=noreport" class="atl-drops-more">+${pending.length - 1} more without a report →</a>` : ''}`;
     } else {
       const none = !all.length;
       dropsEl.innerHTML = `
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p>${none
           ? 'Config extractors and the YARA rules that find them will be announced here the moment they land.'
           : 'Every published extractor has a full report. When a YARA rule + extractor goes up before its write-up, it is announced right here.'}</p>
-        <a href="extractors.html" class="atl-btn-outline atl-btn-amber">${none ? 'Open Extractors' : 'Browse Extractors'} ${arrow}</a>`;
+        <a href="detections.html?tab=extractors" class="atl-btn-outline atl-btn-amber">${none ? 'Open Extractors' : 'Browse Extractors'} ${arrow}</a>`;
     }
   }
 

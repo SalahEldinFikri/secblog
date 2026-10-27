@@ -3,12 +3,12 @@
 // ============================================================
 //
 //  HOW IT WORKS
-//  1. Open extractors.html and click "＋ ADD EXTRACTOR".
+//  1. Open detections.html → the "EXTRACTORS" tab and click "＋ ADD EXTRACTOR".
 //     Fill in the form, attach your YARA rule + extractor code, and
 //     (optionally) the .json file with the IOCs / config you extracted.
 //     It is saved in YOUR BROWSER so you can check how it looks.
 //  2. To publish it for visitors click "⬇ export extractors-data.js"
-//     on that page, replace THIS file with the download, then
+//     on that tab, replace THIS file with the download, then
 //     git add, git commit, git push — done!
 //
 //  WHAT HAPPENS AUTOMATICALLY

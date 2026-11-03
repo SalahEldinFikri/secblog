@@ -10,7 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── YARA rule count stat ──
   const yaraCountEl = document.getElementById('yara-count');
   if (yaraCountEl) {
-    const total = REPORTS.reduce((n, r) => n + (r.yara ? r.yara.length : 0), 0);
+    // rules written inside reports + standalone rules (yara-data.js, and any added in this browser)
+    const total = REPORTS.reduce((n, r) => n + (r.yara ? r.yara.length : 0), 0)
+                + (window.YaraStore ? YaraStore.count() : 0);
     yaraCountEl.textContent = total || '0';
   }
 

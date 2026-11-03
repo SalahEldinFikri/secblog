@@ -143,7 +143,8 @@
       if (yaraPreview.length >= 3) break;
     }
 
-    const totalRules = reportsWithYara.reduce((n, r) => n + r.yara.length, 0);
+    const totalRules = reportsWithYara.reduce((n, r) => n + r.yara.length, 0)
+                     + (window.YaraStore ? YaraStore.count() : 0);
 
     yaraContainer.innerHTML = `
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--border);">

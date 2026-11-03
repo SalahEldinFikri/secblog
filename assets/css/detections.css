@@ -834,7 +834,7 @@
     }
 
 /* ═══════════════════════════════════════════════════════════
-   DETECTIONS PAGE — tab bar, panels, Sigma
+   DETECTIONS PAGE — tab bar and panels
    ═══════════════════════════════════════════════════════════ */
 .det-tabbar-wrap {
   position: sticky;
@@ -903,60 +903,8 @@
 .det-panel { display: none; }
 .det-panel.active { display: block; }
 
-.det-intro {
-  max-width: 760px;
-  font-size: 13px;
-  line-height: 1.75;
-  color: var(--muted);
-  margin-bottom: 1.25rem;
-}
-
-.det-intro a { color: var(--green); text-decoration: none; border-bottom: 1px solid rgba(0, 255, 157, .4); }
 
 @media(max-width:700px) {
   .det-tabbar { padding: 0 .75rem; }
   .det-tab { padding: 13px 14px; font-size: 11px; letter-spacing: .8px; }
 }
-
-/* ── Sigma ── */
-.tag-sigma {
-  border-color: rgba(34, 211, 238, .45);
-  color: #22d3ee;
-}
-
-.sg-level {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: .9px;
-  padding: 3px 8px;
-  border: 1px solid;
-  text-transform: uppercase;
-}
-
-.sg-level.critical { color: var(--red); border-color: rgba(255, 77, 109, .6); background: rgba(255, 77, 109, .08); }
-.sg-level.high { color: var(--red); border-color: rgba(255, 77, 109, .4); }
-.sg-level.medium { color: var(--amber); border-color: rgba(245, 158, 11, .45); }
-.sg-level.low { color: var(--blue); border-color: rgba(56, 189, 248, .45); }
-.sg-level.informational { color: var(--muted); border-color: var(--border); }
-
-.sg-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-
-.sg-chip {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: .4px;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  padding: 3px 8px;
-  text-decoration: none;
-}
-
-a.sg-chip { color: var(--blue); border-color: rgba(56, 189, 248, .35); }
-a.sg-chip:hover { background: rgba(56, 189, 248, .08); }
-.sg-chip.logsrc { color: var(--text); }
-.sg-chip.status { color: var(--muted); border-style: dashed; }
-
-/* YAML tokens (Sigma) */
-.tok-key { color: var(--blue); }
-.tok-op { color: var(--red); }
-.tok-dash { color: var(--muted); }

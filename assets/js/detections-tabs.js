@@ -1,15 +1,14 @@
 // ============================================================
-//  DETECTIONS-TABS.JS — YARA / Sigma / Extractors tabs
-//  URL:  detections.html?tab=yara | sigma | extractors
-//        (detections.html#sigma works too)
+//  DETECTIONS-TABS.JS — YARA / Extractors tabs
+//  URL:  detections.html?tab=yara | extractors
+//        (detections.html#extractors works too)
 //  Load this BEFORE the panel scripts so the right tab is already
 //  visible when a deep link (#slug) scrolls to an entry.
 // ============================================================
 (function () {
-  var TABS = ['yara', 'sigma', 'extractors'];
+  var TABS = ['yara', 'extractors'];
   var TITLES = {
     yara: 'YARA Rules — Detections — SecBlog',
-    sigma: 'Sigma Rules — Detections — SecBlog',
     extractors: 'Config Extractors — Detections — SecBlog'
   };
 
@@ -77,6 +76,7 @@
 
   // ── live counts on the tabs ────────────────────────────────
   function yaraCount() {
+    if (window.YaraStore) return window.YaraStore.total();   // report rules + standalone rules
     var n = 0;
     if (typeof REPORTS !== 'undefined') REPORTS.forEach(function (r) { n += (r.yara ? r.yara.length : 0); });
     try { n += JSON.parse(localStorage.getItem('secblog_standalone_yara') || '[]').length; } catch (e) { }
@@ -90,7 +90,6 @@
 
   function refresh() {
     setCount('yara', yaraCount());
-    setCount('sigma', window.SigmaPage ? window.SigmaPage.count() : 0);
     setCount('extractors', window.ExtractorStore ? window.ExtractorStore.all().length : 0);
   }
 

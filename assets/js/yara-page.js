@@ -34,7 +34,8 @@
       function updateStats() {
         if (!statsEl) return;
         let saCount = 0;
-        try { saCount = JSON.parse(localStorage.getItem('secblog_standalone_yara') || '[]').length; } catch(e) {}
+        if (window.YaraStore) saCount = YaraStore.count();   // published (yara-data.js) + added in this browser
+        else { try { saCount = JSON.parse(localStorage.getItem('secblog_standalone_yara') || '[]').length; } catch(e) {} }
         statsEl.innerHTML =
           '<div class="stat-mini"><div class="stat-mini-num">' + (totalRules + saCount) + '</div><div class="stat-mini-label">YARA RULES</div></div>' +
           '<div class="stat-mini"><div class="stat-mini-num">' + reportsWithYara.length + '</div><div class="stat-mini-label">REPORTS</div></div>' +
@@ -133,7 +134,7 @@
           const lines = ['// YARA Rules — SecBlog by SalahEldin Kamil', '// Generated: ' + new Date().toISOString().split('T')[0], ''];
           // standalone rules first
           try {
-            const sa = JSON.parse(localStorage.getItem('secblog_standalone_yara') || '[]');
+            const sa = window.YaraStore ? YaraStore.all() : JSON.parse(localStorage.getItem('secblog_standalone_yara') || '[]');
             if (sa.length) {
               lines.push('// ─────────────────────────────────────────────');
               lines.push('// STANDALONE RULES');
@@ -311,20 +312,17 @@
   
 
 // ───── block 6 ─────
-  /* ══ STANDALONE YARA RULES — ADD / DISPLAY / DELETE ══ */
+  /* ══ STANDALONE YARA RULES — ADD / DISPLAY / DELETE / EXPORT ══
+     Published rules live in assets/js/yara-data.js, rules you add here live in
+     this browser until you publish them. YaraStore (yara-lib.js) merges the two and
+     is also what the homepage "YARA Rules Written" counter reads. */
   (function () {
-    var SK = 'secblog_standalone_yara';
-
-    function loadRules() {
-      try { return JSON.parse(localStorage.getItem(SK) || '[]'); }
-      catch (e) { return []; }
-    }
-    function saveRules(arr) {
-      try { localStorage.setItem(SK, JSON.stringify(arr)); } catch(e) {}
-    }
+    var Y = window.YaraStore;
+    if (!Y) return;
+    var AUTODL_KEY = 'secblog_yara_autodl';
 
     function esc(s) {
-      return String(s)
+      return String(s == null ? '' : s)
         .replace(/&/g,'&amp;').replace(/</g,'&lt;')
         .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
@@ -332,7 +330,7 @@
     function colorize(raw) {
       var e = esc(raw);
       return e.replace(
-        /(#[^\n]*|\/\/[^\n]*)|(\"(?:[^\"\\\\]|\\\\.)*\")|(\$[A-Za-z_][A-Za-z0-9_]*\b|\$)|(0x[0-9A-Fa-f]+)|\b(rule|meta|strings|condition|import|and|or|not|any|all|of|them|for|in|matches|filesize|uint8|uint16|uint32|uint64|int8|int16|int32|true|false|private|global|ascii|wide|nocase|fullword|entrypoint)\b|(\d+)/g,
+        /(#[^\n]*|\/\/[^\n]*)|(\"(?:[^\"\\]|\\.)*\")|(\$[A-Za-z_][A-Za-z0-9_]*\b|\$)|(0x[0-9A-Fa-f]+)|\b(rule|meta|strings|condition|import|and|or|not|any|all|of|them|for|in|matches|filesize|uint8|uint16|uint32|uint64|int8|int16|int32|true|false|private|global|ascii|wide|nocase|fullword|entrypoint)\b|(\d+)/g,
         function(m, cmt, str, varr, hex, kw, num) {
           if (cmt)  return '<span class="tok-comment">'  + cmt  + '</span>';
           if (str)  return '<span class="tok-string">'   + str  + '</span>';
@@ -349,20 +347,68 @@
       return {MALWARE:'tag-malware',THREAT:'tag-threat',VULN:'tag-vuln',APT:'tag-apt'}[t] || 'tag-malware';
     }
 
+    function download(filename, text) {
+      var blob = new Blob([text], { type: 'text/javascript;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = filename;
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text).catch(function () { fallbackCopy(text); });
+      }
+      fallbackCopy(text); return Promise.resolve();
+    }
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      ta.remove();
+    }
+
+    function toast(msg) {
+      var el = document.getElementById('ex-toast'); if (!el) return;
+      el.textContent = msg; el.classList.add('show');
+      clearTimeout(toast._t); toast._t = setTimeout(function () { el.classList.remove('show'); }, 5200);
+    }
+
+    function refreshEverywhere() {
+      if (window._yaraUpdateStats) window._yaraUpdateStats();
+      window.dispatchEvent(new Event('det:changed'));
+    }
+
+    function updateBanner(rules) {
+      var el = document.getElementById('yara-local-banner'); if (!el) return;
+      var n = rules.filter(function (r) { return r._local; }).length;
+      el.style.display = n ? 'flex' : 'none';
+      var c = document.getElementById('yara-local-count');
+      if (c && n) c.textContent = n + ' YARA rule' + (n !== 1 ? 's' : '');
+    }
+
     function renderAll() {
       var wrap = document.getElementById('standalone-wrap');
+      var rules = Y.all();
+      updateBanner(rules);
       if (!wrap) return;
-      var rules = loadRules().slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
       if (!rules.length) { wrap.innerHTML = ''; return; }
 
       wrap.innerHTML = rules.map(function(r, i) {
         var uid = 'sa-' + i;
+        var id = esc(r.id);
+        var search = esc([r.name, r.description, r.tag, r.author].join(' ').toLowerCase());
+        var del = r._local
+          ? '<button class="yara-copy-btn sa-del" data-id="' + id + '" onclick="event.stopPropagation()" style="border-color:transparent">DELETE</button>'
+          : '';
         return [
-          '<div class="yara-block" data-date="' + (r.date||'2000-01-01') + '" data-sa="true" data-search="' + (r.name + ' ' + r.description + ' ' + r.tag).toLowerCase() + '">',
+          '<div class="yara-block" id="yara-sa-' + id + '" data-date="' + esc(r.date || '2000-01-01') + '" data-sa="true" data-search="' + search + '">',
             '<div class="yara-report-heading">',
               '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">',
                 '<span class="tag-pill ' + tagCls(r.tag) + '">' + esc(r.tag) + '</span>',
                 '<span class="sa-standalone-label">STANDALONE</span>',
+                (r._local ? '<span class="ex-status local" title="Added in this browser only — export yara-data.js & commit to publish">LOCAL ONLY</span>' : ''),
                 '<span class="yara-report-title" style="cursor:default">' + esc(r.name) + '</span>',
               '</div>',
               '<div style="margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--muted);">',
@@ -376,8 +422,8 @@
                   '<div class="yara-rule-meta">' + esc(r.description) + ' &nbsp;·&nbsp; by ' + esc(r.author || 'SalahEldin Kamil') + '</div>',
                 '</div>',
                 '<div class="yara-rule-actions">',
-                  '<button class="yara-copy-btn" data-idx="' + i + '" onclick="event.stopPropagation()">COPY</button>',
-                  '<button class="yara-copy-btn sa-del" data-idx="' + i + '" onclick="event.stopPropagation()" style="border-color:transparent">DELETE</button>',
+                  '<button class="yara-copy-btn sa-copy" data-id="' + id + '" onclick="event.stopPropagation()">COPY</button>',
+                  del,
                   '<span class="yara-chevron" id="chev-' + uid + '">▼</span>',
                 '</div>',
               '</div>',
@@ -390,32 +436,38 @@
       }).join('');
 
       /* wire copy buttons */
-      wrap.querySelectorAll('.yara-copy-btn:not(.sa-del)').forEach(function(btn) {
+      wrap.querySelectorAll('.sa-copy').forEach(function(btn) {
         btn.addEventListener('click', function() {
-          var idx = parseInt(btn.dataset.idx);
-          var rules = loadRules();
-          if (!rules[idx]) return;
-          navigator.clipboard.writeText(rules[idx].rule).then(function() {
+          var r = Y.all().filter(function (x) { return x.id === btn.dataset.id; })[0];
+          if (!r) return;
+          copyText(r.rule).then(function() {
             btn.textContent = 'COPIED!'; btn.classList.add('copied');
             setTimeout(function() { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
           });
         });
       });
 
-      /* wire delete buttons */
+      /* wire delete buttons (only rules added in this browser can be deleted here) */
       wrap.querySelectorAll('.sa-del').forEach(function(btn) {
         btn.addEventListener('click', function() {
-          var idx = parseInt(btn.dataset.idx);
-          var rules = loadRules();
-          if (!rules[idx]) return;
-          if (!confirm('Delete rule "' + rules[idx].name + '"?')) return;
-          rules.splice(idx, 1);
-          saveRules(rules);
+          var r = Y.all().filter(function (x) { return x.id === btn.dataset.id; })[0];
+          if (!r) return;
+          if (!confirm('Delete rule "' + r.name + '"?')) return;
+          Y.removeLocal(r.id);
           renderAll();
-          if (window._yaraUpdateStats) window._yaraUpdateStats();
+          refreshEverywhere();
+          toast('Deleted "' + r.name + '" from this browser.');
         });
       });
     }
+
+    /* ── export for publishing ── */
+    function doExport(autoMsg) {
+      download('yara-data.js', Y.exportJs());
+      toast((autoMsg || 'Downloaded yara-data.js') + ' — replace assets/js/yara-data.js with it, then commit & push. That is what adds it to the homepage counter for everyone.');
+    }
+    var exBtn  = document.getElementById('yara-export');         if (exBtn)  exBtn.addEventListener('click',  function () { doExport(); });
+    var exBtn2 = document.getElementById('yara-export-banner');  if (exBtn2) exBtn2.addEventListener('click', function () { doExport(); });
 
     /* ── modal ── */
     var overlay    = document.getElementById('add-modal');
@@ -424,6 +476,14 @@
     var cancelBtn  = document.getElementById('modal-cancel');
     var saveBtn    = document.getElementById('modal-save');
     var errEl      = document.getElementById('modal-err');
+    var autoDl     = document.getElementById('m-autodl');
+
+    // remember the "also download yara-data.js" choice (on by default)
+    if (autoDl) {
+      var pref = null; try { pref = localStorage.getItem(AUTODL_KEY); } catch (e) {}
+      autoDl.checked = pref !== '0';
+      autoDl.addEventListener('change', function () { try { localStorage.setItem(AUTODL_KEY, autoDl.checked ? '1' : '0'); } catch (e) {} });
+    }
 
     function openModal() {
       overlay.classList.add('open');
@@ -470,8 +530,8 @@
         return;
       }
 
-      var rules = loadRules();
-      rules.unshift({
+      var entry = {
+        id: Y.uniqueId(Y.slugify(name)),
         name: name,
         description: desc,
         author: author || 'SalahEldin Kamil (Mr_MaTriX)',
@@ -479,10 +539,14 @@
         rule: rule,
         reference: ref,
         date: new Date().toISOString().split('T')[0]
-      });
-      saveRules(rules);
+      };
+      if (!Y.addLocal(entry)) {
+        showErr('Browser storage is full — export yara-data.js and delete some local rules.');
+        return;
+      }
+
       renderAll();
-      if (window._yaraUpdateStats) window._yaraUpdateStats();
+      refreshEverywhere();
       if (window._sortFeed) window._sortFeed();
       closeModal();
 
@@ -494,15 +558,19 @@
       document.getElementById('m-ref').value    = '';
       document.getElementById('m-tag').value    = 'MALWARE';
 
-      /* scroll to new card */
-      var wrap = document.getElementById('standalone-wrap');
-      if (wrap && wrap.firstChild) {
-        wrap.firstChild.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      /* write the rule into the data file (a fresh yara-data.js is downloaded) */
+      if (autoDl && autoDl.checked) {
+        doExport('Saved "' + entry.name + '" and downloaded yara-data.js');
+      } else {
+        toast('Saved "' + entry.name + '" in this browser and added to the counter. Click “export yara-data.js” to publish it for everyone.');
       }
+
+      /* scroll to new card */
+      var card = document.getElementById('yara-sa-' + entry.id);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
     /* init */
     renderAll();
     setTimeout(function(){ if(window._sortFeed) window._sortFeed(); }, 50);
   })();
-  
